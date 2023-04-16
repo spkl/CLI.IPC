@@ -20,12 +20,15 @@ namespace spkl.IPC
         {
             this.Socket = MessageChannel.GetSocket();
             this.Socket.Bind(MessageChannel.GetEndPoint(filePath));
-            this.Socket.Listen();
-
+            
             this.handleNewConnection = handleNewConnection;
+        }
 
+        public void AcceptConnections()
+        {
+            this.Socket.Listen();
             this.listenerThread = new Thread(new ThreadStart(this.Accept));
-            this.listenerThread.Name = $"{nameof(MessageChannelHost)} listener for {filePath}";
+            this.listenerThread.Name = $"{nameof(MessageChannelHost)} listener for {this.Socket.LocalEndPoint}";
             this.listenerThread.Start();
         }
 

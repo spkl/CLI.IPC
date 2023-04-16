@@ -37,6 +37,7 @@ namespace Server
                         Console.WriteLine("Closing connection");
                         channel.Socket.Close();
                     });
+            host.AcceptConnections();
         }
 
         private static void SendOutString(Socket socket, string str)
