@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace spkl.IPC
 {
@@ -20,8 +14,8 @@ namespace spkl.IPC
         internal MessageChannel(Socket socket)
         {
             this.Socket = socket;
-            this.Receiver = new MessageReceiver(socket);
-            this.Sender = new MessageSender(socket);
+            this.Receiver = new MessageReceiver(this, socket);
+            this.Sender = new MessageSender(this, socket);
         }
 
         public void Close()

@@ -2,9 +2,6 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 
 namespace Server
@@ -20,41 +17,32 @@ namespace Server
                 File.Delete(Path);
             }
 
-            MessageChannelHost host = new MessageChannelHost(Path,
-                channel =>
-                    {
-                        Console.WriteLine("Accepted connection");
-                        for (int i = 0; i < 100; i++)
-                        {
-                            string str = $"abcdefghijklmnopqrstuvwxyz {i}{Environment.NewLine}";
-
-                            SendOutString(channel.Socket, str);
-                            SendOutString(channel.Socket, "");
-
-                            Thread.Sleep(100);
-                        }
-
-                        Console.WriteLine("Closing connection");
-                        channel.Socket.Close();
-                    });
+            MessageChannelHost host = new MessageChannelHost(Path, HandleNewConnection);
             host.AcceptConnections();
         }
 
-        private static void SendOutString(Socket socket, string str)
+        private static void HandleNewConnection(MessageChannel channel)
         {
-            byte[] buffer = Encoding.UTF8.GetBytes(str);
-            EnsureSend(socket, new byte[] { (byte)MessageType.OutString });
-            EnsureSend(socket, BitConverter.GetBytes(buffer.Length));
-            EnsureSend(socket, buffer);
-        }
+            Console.WriteLine("Accepted connection");
 
-        private static void EnsureSend(Socket socket, ReadOnlySpan<byte> buffer)
-        {
-            int bytesSent = 0;
-            while (bytesSent < buffer.Length)
+            channel.Sender.SendReqArgs();
+            string[] clientArgs = channel.Receiver.ReceiveArgs();
+            Console.WriteLine($"Received args: {string.Join(" ", clientArgs.Select(arg => $@"""{arg}"""))}");
+
+            for (int i = 0; i < 100; i++)
             {
-                bytesSent += socket.Send(buffer[bytesSent..]);
+                string str = $"abcdefghijklmnopqrstuvwxyz {i}{Environment.NewLine}";
+
+                channel.Sender.SendOutStr(str);
+
+                Thread.Sleep(100);
             }
+
+            channel.Sender.SendErrStr("this is an error string");
+            channel.Sender.SendExit(1);
+
+            Console.WriteLine("Closing connection");
+            channel.Close();
         }
     }
 }

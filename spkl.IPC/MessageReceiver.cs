@@ -1,20 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace spkl.IPC
 {
     public class MessageReceiver
     {
-        private readonly Socket socket;
+        public MessageChannel Channel { get; }
+
+        public Socket Socket { get; }
+
         private byte[] buffer;
 
-        internal MessageReceiver(Socket socket)
+        internal MessageReceiver(MessageChannel channel, Socket socket)
         {
-            this.socket = socket;
+            this.Channel = channel;
+            this.Socket = socket;
             this.buffer = new byte[4];
         }
 
@@ -23,10 +24,48 @@ namespace spkl.IPC
             ReadOnlySpan<byte> result = this.ExpectBytesOrConnectionEnd(sizeof(MessageType));
             if (result.Length == 0)
             {
-                return MessageType.ConnectionClosed;
+                return MessageType.ConnClosed;
             }
 
             return (MessageType)result[0];
+        }
+
+        public void ReceiveReqArgs()
+        {
+            if (this.ReceiveMessage() != MessageType.ReqArgs)
+            {
+                throw new Exception("Expected MessageType.ReqArgs"); // TODO is exception right? exception type?
+            }
+        }
+
+        public string[] ReceiveArgs()
+        {
+            if (this.ReceiveMessage() != MessageType.Args)
+            {
+                throw new Exception("Expected MessageType.Args"); // TODO is exception right? exception type?
+            }
+
+            int nArgs = this.ExpectInt();
+            string[] args = new string[nArgs];
+            for (int i = 0; i < nArgs; i++)
+            {
+                args[i] = this.ExpectString();
+            }
+
+            return args;
+        }
+
+        public string ExpectString()
+        {
+            int length = this.ExpectInt();
+            ReadOnlySpan<byte> messageBytes = this.ExpectBytes(length);
+            return Encoding.UTF8.GetString(messageBytes);
+        }
+
+        public int ExpectInt()
+        {
+            ReadOnlySpan<byte> n = this.ExpectBytes(sizeof(int));
+            return BitConverter.ToInt32(n);
         }
 
         public ReadOnlySpan<byte> ExpectBytes(int expectedBytes)
@@ -56,7 +95,7 @@ namespace spkl.IPC
             int totalBytesReceived = 0;
             while (totalBytesReceived < expectedBytes)
             {
-                bytesReceived = socket.Receive(this.buffer, totalBytesReceived, expectedBytes - totalBytesReceived, SocketFlags.None);
+                bytesReceived = this.Socket.Receive(this.buffer, totalBytesReceived, expectedBytes - totalBytesReceived, SocketFlags.None);
                 totalBytesReceived += bytesReceived;
                 if (bytesReceived == 0)
                 {
