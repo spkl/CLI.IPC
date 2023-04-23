@@ -9,7 +9,7 @@ namespace Client
         static void Main(string[] args)
         {
             MessageChannel channel = MessageChannel.ConnectTo(@"C:\Users\Sebastian\Documents\Projects\StreamTest\Server\bin\Debug\net6.0\socket");
-            channel.Receiver.ReceiveReqArgs();
+            channel.Receiver.ReceiveReqArgs(); // TODO do we need more information? current directory? environment variables?
             channel.Sender.SendArgs(args);
 
             bool receivedExit = false;
