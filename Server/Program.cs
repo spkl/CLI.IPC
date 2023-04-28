@@ -1,6 +1,5 @@
-﻿using spkl.IPC.Messaging;
+﻿using spkl.IPC;
 using System;
-using System.IO;
 using System.Linq;
 using System.Threading;
 
@@ -12,42 +11,33 @@ namespace Server
 
         static void Main(string[] args)
         {
-            if (File.Exists(Path))
-            {
-                File.Delete(Path);
-            }
-
-            MessageChannelHost host = new MessageChannelHost(Path, HandleNewConnection);
-            host.AcceptConnections();
+            Host.Start(Path, new ClientHandler());
         }
 
-        private static void HandleNewConnection(MessageChannel channel)
+        private class ClientHandler : IClientHandler
         {
-            Console.WriteLine("Accepted connection");
-
-            channel.Sender.SendReqArgs();
-            string[] clientArgs = channel.Receiver.ReceiveArgs();
-            Console.WriteLine($"Received args: {string.Join(" ", clientArgs.Select(arg => $@"""{arg}"""))}");
-
-            channel.Sender.SendReqCurrentDir();
-            string currentDir = channel.Receiver.ReceiveCurrentDir();
-            Console.WriteLine($"Received current directory: {currentDir}");
-            
-
-            for (int i = 0; i < 100; i++)
+            public void HandleCall(ClientConnection connection)
             {
-                string str = $"abcdefghijklmnopqrstuvwxyz {i}{Environment.NewLine}";
+                Console.WriteLine("Accepted connection");
 
-                channel.Sender.SendOutStr(str);
+                string[] clientArgs = connection.Properties.Arguments;
+                Console.WriteLine($"Arguments: {string.Join(" ", clientArgs.Select(arg => $@"""{arg}"""))}");
 
-                Thread.Sleep(100);
+                string currentDir = connection.Properties.CurrentDirectory;
+                Console.WriteLine($"CurrentDirectory: {currentDir}");
+
+
+                for (int i = 0; i < 100; i++)
+                {
+                    connection.Out.WriteLine($"abcdefghijklmnopqrstuvwxyz {i}");
+                    Thread.Sleep(100);
+                }
+
+                connection.Error.Write("this is an error string");
+                connection.Exit(1);
+
+                connection.Out.Write(true);
             }
-
-            channel.Sender.SendErrStr("this is an error string");
-            channel.Sender.SendExit(1);
-
-            Console.WriteLine("Closing connection");
-            channel.Close();
         }
     }
 }
