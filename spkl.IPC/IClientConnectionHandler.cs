@@ -1,6 +1,6 @@
 ﻿namespace spkl.IPC
 {
-    public interface IClientHandler
+    public interface IClientConnectionHandler
     {
         void HandleCall(ClientConnection connection);
     }

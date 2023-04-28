@@ -11,10 +11,10 @@ namespace Server
 
         static void Main(string[] args)
         {
-            Host.Start(Path, new ClientHandler());
+            Host.Start(Path, new ClientConnectionHandler());
         }
 
-        private class ClientHandler : IClientHandler
+        private class ClientConnectionHandler : IClientConnectionHandler
         {
             public void HandleCall(ClientConnection connection)
             {

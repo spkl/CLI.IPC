@@ -7,7 +7,7 @@ namespace spkl.IPC
     {
         public string FilePath { get; private set; }
 
-        public IClientHandler Handler { get; private set; }
+        public IClientConnectionHandler Handler { get; private set; }
 
         private MessageChannelHost MessageChannelHost { get; set; }
 
@@ -15,7 +15,7 @@ namespace spkl.IPC
         {
         }
 
-        public static Host Start(string filePath, IClientHandler handler)
+        public static Host Start(string filePath, IClientConnectionHandler handler)
         {
             File.Delete(filePath);
 
@@ -37,6 +37,12 @@ namespace spkl.IPC
 
         private void HandleNewMessageChannel(MessageChannel channel)
         {
+            ClientProperties properties = this.ReceiveClientProperties(channel);
+            this.Handler.HandleCall(new ClientConnection(properties, channel));
+        }
+
+        private ClientProperties ReceiveClientProperties(MessageChannel channel)
+        {
             ClientProperties properties = new ClientProperties();
 
             channel.Sender.SendReqArgs();
@@ -45,7 +51,7 @@ namespace spkl.IPC
             channel.Sender.SendReqCurrentDir();
             properties.CurrentDirectory = channel.Receiver.ReceiveCurrentDir();
 
-            this.Handler.HandleCall(new ClientConnection(properties, channel));
+            return properties;
         }
 
         public void Shutdown()
