@@ -3,7 +3,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace spkl.IPC
+namespace spkl.IPC.Messaging
 {
     public class MessageChannelHost
     {

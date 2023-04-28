@@ -1,4 +1,4 @@
-﻿namespace spkl.IPC
+﻿namespace spkl.IPC.Messaging
 {
     public enum MessageType : byte
     {
@@ -19,6 +19,17 @@
         /// Layout: Number of arguments (int); [Length of Argument in bytes (int); Argument (string)] for every argument.
         /// </summary>
         Args = 0x31,
+
+        /// <summary>
+        /// Request to send current directory.
+        /// Layout: Empty.
+        /// </summary>
+        ReqCurrentDir = 0x32,
+        /// <summary>
+        /// Current directory.
+        /// Layout: Directory (string).
+        /// </summary>
+        CurrentDir = 0x33,
 
         /// <summary>
         /// Message to write to the standard output of the client.

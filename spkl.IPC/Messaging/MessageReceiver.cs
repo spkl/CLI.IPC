@@ -2,7 +2,7 @@
 using System.Net.Sockets;
 using System.Text;
 
-namespace spkl.IPC
+namespace spkl.IPC.Messaging
 {
     public class MessageReceiver
     {
@@ -38,6 +38,14 @@ namespace spkl.IPC
             }
         }
 
+        public void ReceiveReqCurrentDir()
+        {
+            if (this.ReceiveMessage() != MessageType.ReqCurrentDir)
+            {
+                throw new Exception("Expected MessageType.ReqCurrentDir"); // TODO is exception right? exception type?
+            }
+        }
+
         public string[] ReceiveArgs()
         {
             if (this.ReceiveMessage() != MessageType.Args)
@@ -53,6 +61,16 @@ namespace spkl.IPC
             }
 
             return args;
+        }
+
+        public string ReceiveCurrentDir()
+        {
+            if (this.ReceiveMessage() != MessageType.CurrentDir)
+            {
+                throw new Exception("Expected MessageType.Args"); // TODO is exception right? exception type?
+            }
+
+            return this.ExpectString();
         }
 
         public string ExpectString()

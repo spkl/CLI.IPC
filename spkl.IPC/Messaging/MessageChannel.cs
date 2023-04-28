@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 
-namespace spkl.IPC
+namespace spkl.IPC.Messaging
 {
     public class MessageChannel
     {

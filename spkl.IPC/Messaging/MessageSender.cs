@@ -2,7 +2,7 @@
 using System.Net.Sockets;
 using System.Text;
 
-namespace spkl.IPC
+namespace spkl.IPC.Messaging
 {
     public class MessageSender
     {
@@ -21,6 +21,11 @@ namespace spkl.IPC
             this.SendMessageType(MessageType.ReqArgs);
         }
 
+        public void SendReqCurrentDir()
+        {
+            this.SendMessageType(MessageType.ReqCurrentDir);
+        }
+
         public void SendArgs(string[] args)
         {
             this.SendMessageType(MessageType.Args);
@@ -29,6 +34,12 @@ namespace spkl.IPC
             {
                 this.SendString(arg);
             }
+        }
+
+        public void SendCurrentDir(string currentDir)
+        {
+            this.SendMessageType(MessageType.CurrentDir);
+            this.SendString(currentDir);
         }
 
         public void SendOutStr(string str)

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading;
-using spkl.IPC;
+using spkl.IPC.Messaging;
 
 namespace Client
 {
@@ -11,6 +11,8 @@ namespace Client
             MessageChannel channel = MessageChannel.ConnectTo(@"C:\Users\Sebastian\Documents\Projects\StreamTest\Server\bin\Debug\net6.0\socket");
             channel.Receiver.ReceiveReqArgs(); // TODO do we need more information? current directory? environment variables?
             channel.Sender.SendArgs(args);
+            channel.Receiver.ReceiveReqCurrentDir();
+            channel.Sender.SendCurrentDir(Environment.CurrentDirectory);
 
             bool receivedExit = false;
             MessageType messageType;

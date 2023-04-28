@@ -1,4 +1,4 @@
-﻿using spkl.IPC;
+﻿using spkl.IPC.Messaging;
 using System;
 using System.IO;
 using System.Linq;
@@ -28,6 +28,11 @@ namespace Server
             channel.Sender.SendReqArgs();
             string[] clientArgs = channel.Receiver.ReceiveArgs();
             Console.WriteLine($"Received args: {string.Join(" ", clientArgs.Select(arg => $@"""{arg}"""))}");
+
+            channel.Sender.SendReqCurrentDir();
+            string currentDir = channel.Receiver.ReceiveCurrentDir();
+            Console.WriteLine($"Received current directory: {currentDir}");
+            
 
             for (int i = 0; i < 100; i++)
             {
