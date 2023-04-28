@@ -10,10 +10,21 @@ namespace spkl.IPC.Messaging
 
         public Socket Socket { get; }
 
+        private byte[] buffer;
+
         internal MessageSender(MessageChannel channel, Socket socket)
         {
             this.Channel = channel;
             this.Socket = socket;
+            this.buffer = new byte[4];
+        }
+
+        private void EnsureBufferSize(int requiredSize)
+        {
+            if (this.buffer.Length < requiredSize)
+            {
+                this.buffer = new byte[requiredSize];
+            }
         }
 
         public void SendReqArgs()
@@ -62,19 +73,26 @@ namespace spkl.IPC.Messaging
 
         private void SendMessageType(MessageType type)
         {
-            this.SendBytes(new byte[] { (byte)type });
+            Span<byte> messageTypeBuffer = this.buffer.AsSpan(0, 1);
+            messageTypeBuffer[0] = (byte)type;
+            this.SendBytes(messageTypeBuffer);
         }
 
         private void SendString(string str)
         {
-            byte[] buffer = Encoding.UTF8.GetBytes(str);
-            this.SendInt(buffer.Length);
-            this.SendBytes(buffer);
+            int byteCount = Encoding.UTF8.GetByteCount(str);
+            this.SendInt(byteCount);
+
+            this.EnsureBufferSize(byteCount);
+            Encoding.UTF8.GetBytes(str, 0, str.Length, this.buffer, 0);
+            this.SendBytes(this.buffer.AsSpan(0, byteCount));
         }
 
         private void SendInt(int n)
         {
-            this.SendBytes(BitConverter.GetBytes(n));
+            Span<byte> intBuffer = this.buffer.AsSpan(0, sizeof(int));
+            BitConverter.TryWriteBytes(intBuffer, n);
+            this.SendBytes(intBuffer);
         }
 
         private void SendBytes(ReadOnlySpan<byte> buffer)

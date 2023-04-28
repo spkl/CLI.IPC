@@ -19,6 +19,14 @@ namespace spkl.IPC.Messaging
             this.buffer = new byte[4];
         }
 
+        private void EnsureBufferSize(int requiredSize)
+        {
+            if (this.buffer.Length < requiredSize)
+            {
+                this.buffer = new byte[requiredSize];
+            }
+        }
+
         public MessageType ReceiveMessage()
         {
             ReadOnlySpan<byte> result = this.ExpectBytesOrConnectionEnd(sizeof(MessageType));
@@ -104,10 +112,7 @@ namespace spkl.IPC.Messaging
                 return ReadOnlySpan<byte>.Empty;
             }
 
-            if (this.buffer.Length < expectedBytes)
-            {
-                this.buffer = new byte[expectedBytes];
-            }
+            this.EnsureBufferSize(expectedBytes);
 
             int bytesReceived;
             int totalBytesReceived = 0;
