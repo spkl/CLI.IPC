@@ -29,6 +29,11 @@ namespace spkl.IPC.Messaging
             this.listenerThread.Start();
         }
 
+        public void Shutdown()
+        {
+            this.Socket.Close();
+        }
+
         private void Accept()
         {
             while (true)
