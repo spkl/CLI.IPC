@@ -11,14 +11,17 @@ namespace spkl.IPC.Messaging
 
         private Action<MessageChannel> handleNewConnection;
 
+        private Action<Exception> handleListenerException;
+
         private Thread listenerThread;
 
-        public MessageChannelHost(string filePath, Action<MessageChannel> handleNewConnection)
+        public MessageChannelHost(string filePath, Action<MessageChannel> handleNewConnection, Action<Exception> handleListenerException)
         {
             this.Socket = MessageChannel.GetSocket();
             this.Socket.Bind(MessageChannel.GetEndPoint(filePath));
             
             this.handleNewConnection = handleNewConnection;
+            this.handleListenerException = handleListenerException;
         }
 
         public void AcceptConnections()
@@ -36,11 +39,26 @@ namespace spkl.IPC.Messaging
 
         private void Accept()
         {
-            while (true)
+            try
             {
-                Socket incoming = this.Socket.Accept();
-                MessageChannel messageChannel = new MessageChannel(incoming);
-                Task.Factory.StartNew(() => this.handleNewConnection(messageChannel));
+                while (true)
+                {
+                    Socket incoming = this.Socket.Accept();
+                    MessageChannel messageChannel = new MessageChannel(incoming);
+                    Task.Factory.StartNew(() => this.handleNewConnection(messageChannel));
+                }
+            }
+            catch (SocketException e) when (e.SocketErrorCode == SocketError.Interrupted)
+            {
+                // This host was shut down - allow thread to end.
+            }
+            catch (Exception e)
+            {
+                this.handleListenerException(e);
+            }
+            finally
+            {
+                this.Socket.Close();
             }
         }
     }

@@ -25,8 +25,17 @@ namespace spkl.IPC.Messaging
 
         public static MessageChannel ConnectTo(string filePath)
         {
-            Socket socket = GetSocket();
-            socket.Connect(GetEndPoint(filePath));
+            Socket socket = null;
+            try
+            {
+                socket = GetSocket();
+                socket.Connect(GetEndPoint(filePath));
+            }
+            catch (SocketException)
+            {
+                socket?.Close();
+                throw;
+            }
 
             return new MessageChannel(socket);
         }

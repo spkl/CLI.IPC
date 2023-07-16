@@ -1,5 +1,6 @@
 ﻿using spkl.IPC.Messaging;
 using System;
+using System.Net.Sockets;
 
 namespace spkl.IPC
 {
@@ -17,7 +18,15 @@ namespace spkl.IPC
 
         public static void Attach(string filePath, IHostConnectionHandler handler)
         {
-            MessageChannel channel = MessageChannel.ConnectTo(filePath);
+            MessageChannel channel;
+            try
+            {
+                channel = MessageChannel.ConnectTo(filePath);
+            }
+            catch (SocketException e)
+            {
+                throw new Exception($"Could not connect. Reason: {e.Message}");
+            }
 
             Client client = new() 
             {
@@ -26,8 +35,19 @@ namespace spkl.IPC
                 Handler = handler
             };
 
-            client.SendClientProperties();
-            client.RunReceiveLoop();
+            try
+            {
+                client.SendClientProperties();
+                client.RunReceiveLoop();
+            }
+            catch (SocketException e)
+            {
+                throw new Exception($"The connection was closed unexpectedly. Reason: {e.Message}"); // TODO exception type
+            }
+            finally
+            {
+                channel.Close();
+            }
         }
 
         private void SendClientProperties()
@@ -45,31 +65,36 @@ namespace spkl.IPC
             MessageType messageType;
             while ((messageType = this.Channel.Receiver.ReceiveMessage()) != MessageType.ConnClosed)
             {
-                if (messageType == MessageType.OutStr)
-                {
-                    string str = this.Channel.Receiver.ExpectString();
-                    this.Handler.HandleOutString(str);
-                }
-                else if (messageType == MessageType.ErrStr)
-                {
-                    string str = this.Channel.Receiver.ExpectString();
-                    this.Handler.HandleErrorString(str);
-                }
-                else if (messageType == MessageType.Exit)
-                {
-                    int exitCode = this.Channel.Receiver.ExpectInt();
-                    this.Handler.HandleExit(exitCode);
-                    receivedExit = true;
-                }
-                else
-                {
-                    throw new Exception($"Received unexpected message type {messageType}"); // TODO exception type
-                }
-            }
+                this.Receive(ref messageType, ref receivedExit);
+            }           
 
             if (!receivedExit)
             {
                 throw new Exception("Did not receive exit message"); // TODO exception type
+            }
+        }
+
+        private void Receive(ref MessageType messageType, ref bool receivedExit)
+        {
+            if (messageType == MessageType.OutStr)
+            {
+                string str = this.Channel.Receiver.ExpectString();
+                this.Handler.HandleOutString(str);
+            }
+            else if (messageType == MessageType.ErrStr)
+            {
+                string str = this.Channel.Receiver.ExpectString();
+                this.Handler.HandleErrorString(str);
+            }
+            else if (messageType == MessageType.Exit)
+            {
+                int exitCode = this.Channel.Receiver.ExpectInt();
+                this.Handler.HandleExit(exitCode);
+                receivedExit = true;
+            }
+            else
+            {
+                throw new Exception($"Received unexpected message type {messageType}"); // TODO exception type
             }
         }
     }

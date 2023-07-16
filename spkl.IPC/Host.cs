@@ -1,5 +1,7 @@
 ﻿using spkl.IPC.Messaging;
+using System;
 using System.IO;
+using System.Net.Sockets;
 
 namespace spkl.IPC
 {
@@ -31,14 +33,37 @@ namespace spkl.IPC
 
         private void AcceptConnections()
         {
-            this.MessageChannelHost = new MessageChannelHost(this.FilePath, this.HandleNewMessageChannel);
+            this.MessageChannelHost = new MessageChannelHost(this.FilePath, this.HandleNewMessageChannel, this.HandleListenerException);
             this.MessageChannelHost.AcceptConnections();
         }
 
         private void HandleNewMessageChannel(MessageChannel channel)
         {
-            ClientProperties properties = this.ReceiveClientProperties(channel);
-            this.Handler.HandleCall(new ClientConnection(properties, channel));
+            ClientProperties properties;
+            try
+            {
+                properties = this.ReceiveClientProperties(channel);
+            }
+            catch (SocketException e)
+            {
+                this.Handler.HandleListenerError(new ListenerError(e, false));
+                return;
+            }
+
+            try
+            {
+                this.Handler.HandleCall(new ClientConnection(properties, channel));
+            }
+            catch
+            {
+                channel.Close();
+                throw;
+            }
+        }
+
+        private void HandleListenerException(Exception exception)
+        {
+            this.Handler.HandleListenerError(new ListenerError(exception, true));
         }
 
         private ClientProperties ReceiveClientProperties(MessageChannel channel)

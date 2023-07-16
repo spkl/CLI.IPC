@@ -24,7 +24,7 @@ namespace spkl.IPC
 
         public void Exit(int exitCode)
         {
-            this.Channel.Sender.SendExit(exitCode);
+            this.Channel.Sender.SendExit(exitCode); // TODO handle exceptions
             this.Channel.Close();
         }
     }

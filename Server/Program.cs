@@ -11,7 +11,10 @@ namespace Server
 
         static void Main(string[] args)
         {
-            Host.Start(Path, new ClientConnectionHandler());
+            var host = Host.Start(Path, new ClientConnectionHandler());
+            Console.WriteLine("Press Enter to shutdown...");
+            Console.ReadLine();
+            host.Shutdown();
         }
 
         private class ClientConnectionHandler : IClientConnectionHandler
@@ -37,6 +40,11 @@ namespace Server
                 connection.Exit(1);
 
                 connection.Out.Write(true);
+            }
+
+            public void HandleListenerError(ListenerError error)
+            {
+                Console.WriteLine(error.Exception);
             }
         }
     }

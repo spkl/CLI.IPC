@@ -29,7 +29,7 @@ namespace spkl.IPC.Internal
         {
             if (value != null)
             {
-                this.InternalWrite(value);
+                this.InternalWrite(value); // TODO (all calls of InternalWrite) catch exception and encapsulate in own exception type?
             }
         }
     }
