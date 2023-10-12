@@ -16,6 +16,6 @@
         /// <summary>
         /// Handles an error that occurs while listening for client connections.
         /// </summary>
-        void HandleListenerError(ListenerError error);
+        void HandleListenerError(ListenerException error);
     }
 }

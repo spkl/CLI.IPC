@@ -45,6 +45,7 @@ namespace spkl.IPC.Messaging
                 {
                     Socket incoming = this.Socket.Accept();
                     MessageChannel messageChannel = new MessageChannel(incoming);
+                    // TODO does this need to do some kind of exception passing, because the exception in the task would be hidden?
                     Task.Factory.StartNew(() => this.handleNewConnection(messageChannel));
                 }
             }

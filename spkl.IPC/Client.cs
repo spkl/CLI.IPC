@@ -42,7 +42,7 @@ namespace spkl.IPC
             }
             catch (SocketException e)
             {
-                throw new Exception($"The connection was closed unexpectedly. Reason: {e.Message}"); // TODO exception type
+                throw new ConnectionException($"There was an unexpected connection error. Reason: {e.Message}", e);
             }
             finally
             {
@@ -70,7 +70,7 @@ namespace spkl.IPC
 
             if (!receivedExit)
             {
-                throw new Exception("Did not receive exit message"); // TODO exception type
+                throw new ConnectionException("The connection was closed without receiving the exit code.");
             }
         }
 
@@ -94,7 +94,7 @@ namespace spkl.IPC
             }
             else
             {
-                throw new Exception($"Received unexpected message type {messageType}"); // TODO exception type
+                throw new ConnectionException($"Received unexpected message type '{messageType}' after the connection was established.");
             }
         }
     }

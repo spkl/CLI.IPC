@@ -40,25 +40,28 @@ namespace spkl.IPC.Messaging
 
         public void ReceiveReqArgs()
         {
-            if (this.ReceiveMessage() != MessageType.ReqArgs)
+            MessageType messageType = this.ReceiveMessage();
+            if (messageType != MessageType.ReqArgs)
             {
-                throw new Exception("Expected MessageType.ReqArgs"); // TODO is exception right? exception type?
+                throw new ConnectionException($"Received unexpected message type '{messageType}' when trying to establish the connection. Expected {MessageType.ReqArgs}.");
             }
         }
 
         public void ReceiveReqCurrentDir()
         {
-            if (this.ReceiveMessage() != MessageType.ReqCurrentDir)
+            MessageType messageType = this.ReceiveMessage();
+            if (messageType != MessageType.ReqCurrentDir)
             {
-                throw new Exception("Expected MessageType.ReqCurrentDir"); // TODO is exception right? exception type?
+                throw new ConnectionException($"Received unexpected message type '{messageType}' when trying to establish the connection. Expected {MessageType.ReqCurrentDir}.");
             }
         }
 
         public string[] ReceiveArgs()
         {
-            if (this.ReceiveMessage() != MessageType.Args)
+            MessageType messageType = this.ReceiveMessage();
+            if (messageType != MessageType.Args)
             {
-                throw new Exception("Expected MessageType.Args"); // TODO is exception right? exception type?
+                throw new ConnectionException($"Received unexpected message type '{messageType}' when trying to establish the connection. Expected {MessageType.Args}.");
             }
 
             int nArgs = this.ExpectInt();
@@ -73,9 +76,10 @@ namespace spkl.IPC.Messaging
 
         public string ReceiveCurrentDir()
         {
-            if (this.ReceiveMessage() != MessageType.CurrentDir)
+            MessageType messageType = this.ReceiveMessage();
+            if (messageType != MessageType.CurrentDir)
             {
-                throw new Exception("Expected MessageType.Args"); // TODO is exception right? exception type?
+                throw new ConnectionException($"Received unexpected message type '{messageType}' when trying to establish the connection. Expected {MessageType.CurrentDir}.");
             }
 
             return this.ExpectString();
@@ -99,7 +103,7 @@ namespace spkl.IPC.Messaging
             ReadOnlySpan<byte> result = this.ExpectBytesOrConnectionEnd(expectedBytes);
             if (expectedBytes != 0 && result.Length == 0)
             {
-                throw new Exception("Connection was closed.");
+                throw new ConnectionException("The connection was closed unexpectedly.");
             }
 
             return result;

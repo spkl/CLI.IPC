@@ -46,7 +46,7 @@ namespace spkl.IPC
             }
             catch (SocketException e)
             {
-                this.Handler.HandleListenerError(new ListenerError(e, false));
+                this.Handler.HandleListenerError(new ListenerException(e, false));
                 return;
             }
 
@@ -63,7 +63,7 @@ namespace spkl.IPC
 
         private void HandleListenerException(Exception exception)
         {
-            this.Handler.HandleListenerError(new ListenerError(exception, true));
+            this.Handler.HandleListenerError(new ListenerException(exception, true));
         }
 
         private ClientProperties ReceiveClientProperties(MessageChannel channel)

@@ -42,7 +42,7 @@ namespace Server
                 connection.Out.Write(true);
             }
 
-            public void HandleListenerError(ListenerError error)
+            public void HandleListenerError(ListenerException error)
             {
                 Console.WriteLine(error.Exception);
             }

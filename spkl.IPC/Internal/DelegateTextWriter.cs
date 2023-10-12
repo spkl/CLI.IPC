@@ -29,7 +29,9 @@ namespace spkl.IPC.Internal
         {
             if (value != null)
             {
-                this.InternalWrite(value); // TODO (all calls of InternalWrite) catch exception and encapsulate in own exception type?
+                // No need to handle SocketException here, because it is already wrapped
+                // as ConnectionException in MessageSender.SendOutStr/SendErrStr.
+                this.InternalWrite(value);
             }
         }
     }

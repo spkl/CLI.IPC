@@ -97,10 +97,17 @@ namespace spkl.IPC.Messaging
 
         private void SendBytes(ReadOnlySpan<byte> buffer)
         {
-            int bytesSent = 0;
-            while (bytesSent < buffer.Length)
+            try
             {
-                bytesSent += this.Socket.Send(buffer[bytesSent..]);
+                int bytesSent = 0;
+                while (bytesSent < buffer.Length)
+                {
+                    bytesSent += this.Socket.Send(buffer[bytesSent..]);
+                }
+            }
+            catch (SocketException e)
+            {
+                throw new ConnectionException($"There was an unexpected connection error. Reason: {e.Message}", e);
             }
         }
     }
