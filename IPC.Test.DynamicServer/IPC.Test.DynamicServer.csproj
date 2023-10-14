@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+	<AssemblyName>spkl.IPC.Test.DynamicServer</AssemblyName>
+	<RootNamespace>spkl.IPC.Test.DynamicServer</RootNamespace>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\spkl.IPC\IPC.csproj" />
+  </ItemGroup>
+
+</Project>
