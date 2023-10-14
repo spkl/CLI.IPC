@@ -1,7 +1,14 @@
-﻿namespace spkl.IPC;
+﻿using System.Threading.Tasks;
+
+namespace spkl.IPC;
 
 public interface IClientConnectionHandler
 {
+    /// <summary>
+    /// Gets the TaskFactory responsible for creating a task for a new incoming connection.
+    /// </summary>
+    TaskFactory TaskFactory => Task.Factory;
+
     /// <summary>
     /// Handles an incoming client connection.
     /// This method must implement its own exception handling, otherwise exceptions might be left unhandled.

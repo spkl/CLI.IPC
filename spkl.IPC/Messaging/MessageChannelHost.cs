@@ -9,17 +9,20 @@ public class MessageChannelHost
 {
     public Socket Socket { get; }
 
+    private readonly TaskFactory taskFactory;
+
     private readonly Action<MessageChannel> handleNewConnection;
 
     private readonly Action<Exception> handleListenerException;
 
     private Thread? listenerThread;
 
-    public MessageChannelHost(string filePath, Action<MessageChannel> handleNewConnection, Action<Exception> handleListenerException)
+    public MessageChannelHost(string filePath, TaskFactory taskFactory, Action<MessageChannel> handleNewConnection, Action<Exception> handleListenerException)
     {
         this.Socket = MessageChannel.GetSocket();
         this.Socket.Bind(MessageChannel.GetEndPoint(filePath));
         
+        this.taskFactory = taskFactory;
         this.handleNewConnection = handleNewConnection;
         this.handleListenerException = handleListenerException;
     }
@@ -46,7 +49,7 @@ public class MessageChannelHost
                 Socket incoming = this.Socket.Accept();
                 MessageChannel messageChannel = new MessageChannel(incoming);
                 // TODO does this need to do some kind of exception passing, because the exception in the task would be hidden?
-                Task.Factory.StartNew(() => this.handleNewConnection(messageChannel));
+                this.taskFactory.StartNew(() => this.handleNewConnection(messageChannel));
             }
         }
         catch (SocketException e) when (e.SocketErrorCode == SocketError.Interrupted)

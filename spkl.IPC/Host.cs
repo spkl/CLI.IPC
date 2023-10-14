@@ -30,7 +30,7 @@ public class Host
 
     private void AcceptConnections()
     {
-        this.MessageChannelHost = new MessageChannelHost(this.FilePath, this.HandleNewMessageChannel, this.HandleListenerException);
+        this.MessageChannelHost = new MessageChannelHost(this.FilePath, this.Handler.TaskFactory, this.HandleNewMessageChannel, this.HandleListenerException);
         this.MessageChannelHost.AcceptConnections();
     }
 
