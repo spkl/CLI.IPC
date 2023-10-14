@@ -1,15 +1,14 @@
-﻿namespace spkl.IPC
+﻿namespace spkl.IPC;
+
+public interface IHostConnectionHandler
 {
-    public interface IHostConnectionHandler
-    {
-        string[] Arguments { get; }
+    string[] Arguments { get; }
 
-        string CurrentDirectory { get; }
+    string CurrentDirectory { get; }
 
-        void HandleOutString(string text);
+    void HandleOutString(string text);
 
-        void HandleErrorString(string text);
+    void HandleErrorString(string text);
 
-        void HandleExit(int exitCode);
-    }
+    void HandleExit(int exitCode);
 }

@@ -2,37 +2,36 @@
 using System.IO;
 using System.Text;
 
-namespace spkl.IPC.Internal
+namespace spkl.IPC.Internal;
+
+internal class DelegateTextWriter : TextWriter
 {
-    internal class DelegateTextWriter : TextWriter
+    public override Encoding Encoding => Encoding.UTF8;
+
+    public Action<string> InternalWrite { get; }
+
+    public DelegateTextWriter(Action<string> writeString)
     {
-        public override Encoding Encoding => Encoding.UTF8;
+        this.InternalWrite = writeString;
+    }
 
-        public Action<string> InternalWrite { get; }
+    public override void Write(char value)
+    {
+        this.InternalWrite(new string(value, 1));
+    }
 
-        public DelegateTextWriter(Action<string> writeString)
+    public override void Write(char[] buffer, int index, int count)
+    {
+        this.InternalWrite(new string(buffer, index, count));
+    }
+
+    public override void Write(string? value)
+    {
+        if (value != null)
         {
-            this.InternalWrite = writeString;
-        }
-
-        public override void Write(char value)
-        {
-            this.InternalWrite(new string(value, 1));
-        }
-
-        public override void Write(char[] buffer, int index, int count)
-        {
-            this.InternalWrite(new string(buffer, index, count));
-        }
-
-        public override void Write(string? value)
-        {
-            if (value != null)
-            {
-                // No need to handle SocketException here, because it is already wrapped
-                // as ConnectionException in MessageSender.SendOutStr/SendErrStr.
-                this.InternalWrite(value);
-            }
+            // No need to handle SocketException here, because it is already wrapped
+            // as ConnectionException in MessageSender.SendOutStr/SendErrStr.
+            this.InternalWrite(value);
         }
     }
 }

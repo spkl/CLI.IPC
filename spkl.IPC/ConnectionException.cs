@@ -1,19 +1,18 @@
 ﻿using System;
 
-namespace spkl.IPC
+namespace spkl.IPC;
+
+public class ConnectionException : Exception
 {
-    public class ConnectionException : Exception
+    public ConnectionException()
     {
-        public ConnectionException()
-        {
-        }
+    }
 
-        public ConnectionException(string message) : base(message)
-        {
-        }
+    public ConnectionException(string message) : base(message)
+    {
+    }
 
-        public ConnectionException(string message, Exception innerException) : base(message, innerException)
-        {
-        }
+    public ConnectionException(string message, Exception innerException) : base(message, innerException)
+    {
     }
 }

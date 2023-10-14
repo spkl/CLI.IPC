@@ -1,14 +1,13 @@
 ﻿using spkl.IPC;
 
-namespace Client
+namespace Client;
+
+internal class Program
 {
-    internal class Program
+    static void Main(string[] args)
     {
-        static void Main(string[] args)
-        {
-            spkl.IPC.Client.Attach(
-                @"C:\Users\Sebastian\Documents\Projects\StreamTest\Server\bin\Debug\net6.0\socket",
-                new DefaultHostConnectionHandler());
-        }
+        spkl.IPC.Client.Attach(
+            @"C:\Users\Sebastian\Documents\Projects\StreamTest\Server\bin\Debug\net6.0\socket",
+            new DefaultHostConnectionHandler());
     }
 }

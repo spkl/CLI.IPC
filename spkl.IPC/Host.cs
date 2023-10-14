@@ -3,83 +3,82 @@ using System;
 using System.IO;
 using System.Net.Sockets;
 
-namespace spkl.IPC
+namespace spkl.IPC;
+
+public class Host
 {
-    public class Host
+    public string FilePath { get; }
+
+    public IClientConnectionHandler Handler { get; }
+
+    private MessageChannelHost? MessageChannelHost { get; set; }
+
+    private Host(string filePath, IClientConnectionHandler handler)
     {
-        public string FilePath { get; }
+        this.FilePath = filePath;
+        this.Handler = handler;
+    }
 
-        public IClientConnectionHandler Handler { get; }
+    public static Host Start(string filePath, IClientConnectionHandler handler)
+    {
+        File.Delete(filePath);
 
-        private MessageChannelHost? MessageChannelHost { get; set; }
+        Host host = new(filePath, handler);
+        host.AcceptConnections();
+        return host;
+    }
 
-        private Host(string filePath, IClientConnectionHandler handler)
+    private void AcceptConnections()
+    {
+        this.MessageChannelHost = new MessageChannelHost(this.FilePath, this.HandleNewMessageChannel, this.HandleListenerException);
+        this.MessageChannelHost.AcceptConnections();
+    }
+
+    private void HandleNewMessageChannel(MessageChannel channel)
+    {
+        ClientProperties properties;
+        try
         {
-            this.FilePath = filePath;
-            this.Handler = handler;
+            properties = this.ReceiveClientProperties(channel);
+        }
+        catch (SocketException e)
+        {
+            this.Handler.HandleListenerError(new ListenerException(e, false));
+            return;
         }
 
-        public static Host Start(string filePath, IClientConnectionHandler handler)
+        try
         {
-            File.Delete(filePath);
-
-            Host host = new(filePath, handler);
-            host.AcceptConnections();
-            return host;
+            this.Handler.HandleCall(new ClientConnection(properties, channel));
         }
-
-        private void AcceptConnections()
+        catch
         {
-            this.MessageChannelHost = new MessageChannelHost(this.FilePath, this.HandleNewMessageChannel, this.HandleListenerException);
-            this.MessageChannelHost.AcceptConnections();
+            channel.Close();
+            throw;
         }
+    }
 
-        private void HandleNewMessageChannel(MessageChannel channel)
-        {
-            ClientProperties properties;
-            try
-            {
-                properties = this.ReceiveClientProperties(channel);
-            }
-            catch (SocketException e)
-            {
-                this.Handler.HandleListenerError(new ListenerException(e, false));
-                return;
-            }
+    private void HandleListenerException(Exception exception)
+    {
+        this.Handler.HandleListenerError(new ListenerException(exception, true));
+    }
 
-            try
-            {
-                this.Handler.HandleCall(new ClientConnection(properties, channel));
-            }
-            catch
-            {
-                channel.Close();
-                throw;
-            }
-        }
+    private ClientProperties ReceiveClientProperties(MessageChannel channel)
+    {
+        ClientProperties properties = new ClientProperties();
 
-        private void HandleListenerException(Exception exception)
-        {
-            this.Handler.HandleListenerError(new ListenerException(exception, true));
-        }
+        channel.Sender.SendReqArgs();
+        properties.Arguments = channel.Receiver.ReceiveArgs();
 
-        private ClientProperties ReceiveClientProperties(MessageChannel channel)
-        {
-            ClientProperties properties = new ClientProperties();
+        channel.Sender.SendReqCurrentDir();
+        properties.CurrentDirectory = channel.Receiver.ReceiveCurrentDir();
 
-            channel.Sender.SendReqArgs();
-            properties.Arguments = channel.Receiver.ReceiveArgs();
+        return properties;
+    }
 
-            channel.Sender.SendReqCurrentDir();
-            properties.CurrentDirectory = channel.Receiver.ReceiveCurrentDir();
-
-            return properties;
-        }
-
-        public void Shutdown()
-        {
-            this.MessageChannelHost?.Shutdown();
-            File.Delete(this.FilePath);
-        }
+    public void Shutdown()
+    {
+        this.MessageChannelHost?.Shutdown();
+        File.Delete(this.FilePath);
     }
 }

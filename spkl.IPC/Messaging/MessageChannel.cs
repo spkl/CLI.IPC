@@ -1,53 +1,52 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 
-namespace spkl.IPC.Messaging
+namespace spkl.IPC.Messaging;
+
+public class MessageChannel
 {
-    public class MessageChannel
+    public Socket Socket { get; }
+
+    public MessageReceiver Receiver { get; }
+
+    public MessageSender Sender { get; }
+
+    internal MessageChannel(Socket socket)
     {
-        public Socket Socket { get; }
+        this.Socket = socket;
+        this.Receiver = new MessageReceiver(this, socket);
+        this.Sender = new MessageSender(this, socket);
+    }
 
-        public MessageReceiver Receiver { get; }
+    public void Close()
+    {
+        this.Socket.Close();
+    }
 
-        public MessageSender Sender { get; }
-
-        internal MessageChannel(Socket socket)
+    public static MessageChannel ConnectTo(string filePath)
+    {
+        Socket? socket = null;
+        try
         {
-            this.Socket = socket;
-            this.Receiver = new MessageReceiver(this, socket);
-            this.Sender = new MessageSender(this, socket);
+            socket = GetSocket();
+            socket.Connect(GetEndPoint(filePath));
+        }
+        catch (SocketException)
+        {
+            socket?.Close();
+            throw;
         }
 
-        public void Close()
-        {
-            this.Socket.Close();
-        }
+        return new MessageChannel(socket);
+    }
 
-        public static MessageChannel ConnectTo(string filePath)
-        {
-            Socket? socket = null;
-            try
-            {
-                socket = GetSocket();
-                socket.Connect(GetEndPoint(filePath));
-            }
-            catch (SocketException)
-            {
-                socket?.Close();
-                throw;
-            }
+    internal static Socket GetSocket()
+    {
+        return new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.Unspecified);
+    }
 
-            return new MessageChannel(socket);
-        }
-
-        internal static Socket GetSocket()
-        {
-            return new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.Unspecified);
-        }
-
-        internal static EndPoint GetEndPoint(string filePath)
-        {
-            return new UnixDomainSocketEndPoint(filePath);
-        }
+    internal static EndPoint GetEndPoint(string filePath)
+    {
+        return new UnixDomainSocketEndPoint(filePath);
     }
 }
