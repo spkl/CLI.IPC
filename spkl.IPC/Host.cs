@@ -43,7 +43,7 @@ public class Host
         }
         catch (SocketException e)
         {
-            this.Handler.HandleListenerError(new ListenerException(e, false));
+            this.Handler.HandleListenerError(new ListenerError(e, false));
             return;
         }
 
@@ -60,7 +60,7 @@ public class Host
 
     private void HandleListenerException(Exception exception)
     {
-        this.Handler.HandleListenerError(new ListenerException(exception, true));
+        this.Handler.HandleListenerError(new ListenerError(exception, true));
     }
 
     private ClientProperties ReceiveClientProperties(MessageChannel channel)

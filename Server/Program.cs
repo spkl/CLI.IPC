@@ -42,7 +42,7 @@ internal class Program
             connection.Out.Write(true);
         }
 
-        public void HandleListenerError(ListenerException error)
+        public void HandleListenerError(ListenerError error)
         {
             Console.WriteLine(error.Exception);
         }

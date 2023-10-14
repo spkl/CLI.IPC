@@ -23,5 +23,5 @@ public interface IClientConnectionHandler
     /// <summary>
     /// Handles an error that occurs while listening for client connections.
     /// </summary>
-    void HandleListenerError(ListenerException error);
+    void HandleListenerError(ListenerError error);
 }

@@ -2,7 +2,7 @@
 
 namespace spkl.IPC;
 
-public class ListenerException
+public class ListenerError
 {
     /// <summary>
     /// The exception that occurred.
@@ -14,7 +14,7 @@ public class ListenerException
     /// </summary>
     public bool HostWasShutDown { get; }
 
-    public ListenerException(Exception exception, bool hostWasShutDown)
+    public ListenerError(Exception exception, bool hostWasShutDown)
     {
         this.Exception = exception;
         this.HostWasShutDown = hostWasShutDown;
