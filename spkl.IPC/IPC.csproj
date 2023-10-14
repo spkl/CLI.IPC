@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
+	<RootNamespace>spkl.IPC</RootNamespace>
+	<AssemblyName>spkl.IPC</AssemblyName>
 	<Nullable>enable</Nullable>
   </PropertyGroup>
 

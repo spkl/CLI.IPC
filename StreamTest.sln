@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server", "Server\Server.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client", "Client\Client.csproj", "{515D0BB3-5DA3-4D23-BA8F-180D28FF64A0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "spkl.IPC", "spkl.IPC\spkl.IPC.csproj", "{3BC34278-A2CC-4FE2-88B4-CE63B293E9C6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IPC", "spkl.IPC\IPC.csproj", "{3BC34278-A2CC-4FE2-88B4-CE63B293E9C6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
