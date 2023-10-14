@@ -1,5 +1,4 @@
 ﻿using spkl.IPC.Messaging;
-using System;
 using System.Net.Sockets;
 
 namespace spkl.IPC;
@@ -28,7 +27,7 @@ public class Client
         }
         catch (SocketException e)
         {
-            throw new Exception($"Could not connect. Reason: {e.Message}");
+            throw new ConnectionException($"Could not connect. Reason: {e.Message}");
         }
 
         Client client = new(filePath, channel, handler);
