@@ -27,7 +27,7 @@ public enum MessageType : byte
     ReqCurrentDir = 0x32,
     /// <summary>
     /// Current directory.
-    /// Layout: Directory (string).
+    /// Layout: Length of Directory in bytes (int); Directory (string).
     /// </summary>
     CurrentDir = 0x33,
 
