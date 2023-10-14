@@ -53,10 +53,10 @@ namespace spkl.IPC
         private void SendClientProperties()
         {
             this.Channel.Receiver.ReceiveReqArgs();
-            this.Channel.Sender.SendArgs(Environment.GetCommandLineArgs());
+            this.Channel.Sender.SendArgs(this.Handler.Arguments);
 
             this.Channel.Receiver.ReceiveReqCurrentDir();
-            this.Channel.Sender.SendCurrentDir(Environment.CurrentDirectory);
+            this.Channel.Sender.SendCurrentDir(this.Handler.CurrentDirectory);
         }
 
         private void RunReceiveLoop()

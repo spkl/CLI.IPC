@@ -4,6 +4,10 @@ namespace spkl.IPC
 {
     public class DefaultHostConnectionHandler : IHostConnectionHandler
     {
+        public virtual string[] Arguments => Environment.GetCommandLineArgs();
+
+        public virtual string CurrentDirectory => Environment.CurrentDirectory;
+
         public virtual void HandleOutString(string text)
         {
             Console.Out.Write(text);
