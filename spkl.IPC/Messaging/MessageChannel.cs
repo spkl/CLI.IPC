@@ -25,7 +25,7 @@ namespace spkl.IPC.Messaging
 
         public static MessageChannel ConnectTo(string filePath)
         {
-            Socket socket = null;
+            Socket? socket = null;
             try
             {
                 socket = GetSocket();

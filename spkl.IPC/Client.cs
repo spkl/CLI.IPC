@@ -6,14 +6,17 @@ namespace spkl.IPC
 {
     public class Client
     {
-        public string FilePath { get; private set; }
+        public string FilePath { get; }
 
-        private MessageChannel Channel { get; set; }
+        private MessageChannel Channel { get; }
 
-        public IHostConnectionHandler Handler { get; private set; }
+        public IHostConnectionHandler Handler { get; }
 
-        private Client()
+        private Client(string filePath, MessageChannel channel, IHostConnectionHandler handler)
         {
+            this.FilePath = filePath;
+            this.Channel = channel;
+            this.Handler = handler;
         }
 
         public static void Attach(string filePath, IHostConnectionHandler handler)
@@ -28,12 +31,7 @@ namespace spkl.IPC
                 throw new Exception($"Could not connect. Reason: {e.Message}");
             }
 
-            Client client = new() 
-            {
-                FilePath = filePath,
-                Channel = channel,
-                Handler = handler
-            };
+            Client client = new(filePath, channel, handler);
 
             try
             {

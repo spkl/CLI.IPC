@@ -7,26 +7,23 @@ namespace spkl.IPC
 {
     public class Host
     {
-        public string FilePath { get; private set; }
+        public string FilePath { get; }
 
-        public IClientConnectionHandler Handler { get; private set; }
+        public IClientConnectionHandler Handler { get; }
 
-        private MessageChannelHost MessageChannelHost { get; set; }
+        private MessageChannelHost? MessageChannelHost { get; set; }
 
-        private Host()
+        private Host(string filePath, IClientConnectionHandler handler)
         {
+            this.FilePath = filePath;
+            this.Handler = handler;
         }
 
         public static Host Start(string filePath, IClientConnectionHandler handler)
         {
             File.Delete(filePath);
 
-            Host host = new()
-            {
-                FilePath = filePath,
-                Handler = handler
-            };
-
+            Host host = new(filePath, handler);
             host.AcceptConnections();
             return host;
         }
@@ -81,7 +78,7 @@ namespace spkl.IPC
 
         public void Shutdown()
         {
-            this.MessageChannelHost.Shutdown();
+            this.MessageChannelHost?.Shutdown();
             File.Delete(this.FilePath);
         }
     }

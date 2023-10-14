@@ -9,11 +9,11 @@ namespace spkl.IPC.Messaging
     {
         public Socket Socket { get; }
 
-        private Action<MessageChannel> handleNewConnection;
+        private readonly Action<MessageChannel> handleNewConnection;
 
-        private Action<Exception> handleListenerException;
+        private readonly Action<Exception> handleListenerException;
 
-        private Thread listenerThread;
+        private Thread? listenerThread;
 
         public MessageChannelHost(string filePath, Action<MessageChannel> handleNewConnection, Action<Exception> handleListenerException)
         {

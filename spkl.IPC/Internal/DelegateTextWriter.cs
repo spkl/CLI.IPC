@@ -25,7 +25,7 @@ namespace spkl.IPC.Internal
             this.InternalWrite(new string(buffer, index, count));
         }
 
-        public override void Write(string value)
+        public override void Write(string? value)
         {
             if (value != null)
             {

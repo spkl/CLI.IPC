@@ -1,13 +1,9 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace spkl.IPC
+﻿namespace spkl.IPC
 {
     public interface IHostConnectionHandler
     {
-        [NotNull]
         string[] Arguments { get; }
 
-        [NotNull]
         string CurrentDirectory { get; }
 
         void HandleOutString(string text);
