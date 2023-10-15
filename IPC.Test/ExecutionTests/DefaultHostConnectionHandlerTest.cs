@@ -1,9 +1,9 @@
 ﻿using System;
 
-namespace spkl.IPC.Test;
+namespace spkl.IPC.Test.ExecutionTests;
 
 [TestFixture]
-public class DefaultHostConnectionHandlerTest : DynamicTest
+public class DefaultHostConnectionHandlerTest : ExecutionTest
 {
     [Test]
     public void Test()
