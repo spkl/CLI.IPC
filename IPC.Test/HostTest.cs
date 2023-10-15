@@ -11,10 +11,10 @@ internal class HostTest
     [TearDown]
     public void TearDown()
     {
-        if (host != null)
+        if (this.host != null)
         {
-            host.Shutdown();
-            host = null;
+            this.host.Shutdown();
+            this.host = null;
         }
     }
 
@@ -30,11 +30,15 @@ internal class HostTest
     }
 
     [Test]
-    public void Test()
+    public void HostCanBeInSameProcessAsClient()
     {
-        Host host = Host.Start("test", new ClientConnectionHandler());
-        Client.Attach("test", new HostConnectionHandler());
-        host.Shutdown();
+        // arrange
+        const string fileName = "someFile";
+        this.host = Host.Start(fileName, new ClientConnectionHandler());
+
+        // act & assert
+        Assert.That(() => Client.Attach(fileName, new HostConnectionHandler()), Throws.Nothing);
+        Assert.That(() => this.host.Shutdown(), Throws.Nothing);
     }
 
     private class ClientConnectionHandler : IClientConnectionHandler
