@@ -9,17 +9,20 @@ public class DefaultHostConnectionHandlerTest : ExecutionTest
     public void Test()
     {
         // act
-        this.RunServerAndClient<ClientConnectionHandler, DefaultHostConnectionHandler>();
+        this.RunHostAndClient<ClientConnectionHandler, DefaultHostConnectionHandler>();
 
         // assert
-        Assert.That(this.Client.ExitCode, Is.EqualTo(42));
-        Assert.That(this.Client.StandardOutput.ReadToEnd(), Is.EqualTo(
+        Assert.Multiple(() =>
+        {
+            Assert.That(this.Client.ExitCode, Is.EqualTo(42));
+            Assert.That(this.Client.StandardOutput.ReadToEnd(), Is.EqualTo(
 @$"Arguments: {this.Client.StartInfo.FileName.Replace(".exe", ".dll")},{string.Join(",", this.Client.StartInfo.ArgumentList)}.
 CurrentDirectory: {TestContext.CurrentContext.TestDirectory}.
 "));
-        Assert.That(this.Client.StandardError.ReadToEnd(), Is.EqualTo(
+            Assert.That(this.Client.StandardError.ReadToEnd(), Is.EqualTo(
 @"This is an error output.
 "));
+        });
     }
 
     private class ClientConnectionHandler : IClientConnectionHandler

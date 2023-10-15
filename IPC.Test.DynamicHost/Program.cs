@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using System;
 
-namespace spkl.IPC.Test.DynamicServer;
+namespace spkl.IPC.Test.DynamicHost;
 
 internal class Program
 {

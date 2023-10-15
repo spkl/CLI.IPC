@@ -17,7 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Playground", "Playground", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IPC.Test.DynamicClient", "IPC.Test.DynamicClient\IPC.Test.DynamicClient.csproj", "{79148858-CF85-48AE-8E62-22FC4A22AC5F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IPC.Test.DynamicServer", "IPC.Test.DynamicServer\IPC.Test.DynamicServer.csproj", "{3DFB5A21-C03E-44FB-A650-312A70CE96FF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IPC.Test.DynamicHost", "IPC.Test.DynamicHost\IPC.Test.DynamicHost.csproj", "{3DFB5A21-C03E-44FB-A650-312A70CE96FF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F40CACBD-C736-4F3C-9A45-FED4E539ECAA}"
 	ProjectSection(SolutionItems) = preProject
