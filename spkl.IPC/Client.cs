@@ -5,32 +5,29 @@ namespace spkl.IPC;
 
 public class Client
 {
-    public string FilePath { get; }
-
     private MessageChannel Channel { get; }
 
     public IHostConnectionHandler Handler { get; }
 
-    private Client(string filePath, MessageChannel channel, IHostConnectionHandler handler)
+    private Client(MessageChannel channel, IHostConnectionHandler handler)
     {
-        this.FilePath = filePath;
         this.Channel = channel;
         this.Handler = handler;
     }
 
-    public static void Attach(string filePath, IHostConnectionHandler handler)
+    public static void Attach(ITransport transport, IHostConnectionHandler handler)
     {
         MessageChannel channel;
         try
         {
-            channel = MessageChannel.ConnectTo(filePath);
+            channel = MessageChannel.ConnectTo(transport);
         }
         catch (SocketException e)
         {
             throw new ConnectionException($"Could not connect. Reason: {e.Message}");
         }
 
-        Client client = new(filePath, channel, handler);
+        Client client = new(channel, handler);
 
         try
         {

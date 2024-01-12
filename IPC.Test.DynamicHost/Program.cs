@@ -14,7 +14,7 @@ internal class Program
         Type clientConnectionHandlerType = Assembly.LoadFrom(dllPath).GetType(typeName) ?? throw new Exception($"Could not find type {typeName} in DLL {dllPath}.");
         IClientConnectionHandler clientConnectionHandler = (IClientConnectionHandler)Activator.CreateInstance(clientConnectionHandlerType)!;
 
-        Host host = Host.Start(socketPath, clientConnectionHandler);
+        Host host = Host.Start(new UdsTransport(socketPath), clientConnectionHandler);
         Console.ReadLine();
         host.Shutdown();
     }

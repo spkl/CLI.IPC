@@ -1,5 +1,4 @@
-﻿using System.Net;
-using System.Net.Sockets;
+﻿using System.Net.Sockets;
 
 namespace spkl.IPC.Messaging;
 
@@ -23,13 +22,13 @@ public class MessageChannel
         this.Socket.Close();
     }
 
-    public static MessageChannel ConnectTo(string filePath)
+    public static MessageChannel ConnectTo(ITransport transport)
     {
         Socket? socket = null;
         try
         {
-            socket = GetSocket();
-            socket.Connect(GetEndPoint(filePath));
+            socket = transport.Socket;
+            socket.Connect(transport.EndPoint);
         }
         catch (SocketException)
         {
@@ -38,15 +37,5 @@ public class MessageChannel
         }
 
         return new MessageChannel(socket);
-    }
-
-    internal static Socket GetSocket()
-    {
-        return new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.Unspecified);
-    }
-
-    internal static EndPoint GetEndPoint(string filePath)
-    {
-        return new UnixDomainSocketEndPoint(filePath);
     }
 }

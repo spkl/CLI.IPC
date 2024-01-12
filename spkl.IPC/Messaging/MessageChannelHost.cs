@@ -17,10 +17,10 @@ public class MessageChannelHost
 
     private Thread? listenerThread;
 
-    public MessageChannelHost(string filePath, TaskFactory taskFactory, Action<MessageChannel> handleNewConnection, Action<Exception> handleListenerException)
+    public MessageChannelHost(ITransport transport, TaskFactory taskFactory, Action<MessageChannel> handleNewConnection, Action<Exception> handleListenerException)
     {
-        this.Socket = MessageChannel.GetSocket();
-        this.Socket.Bind(MessageChannel.GetEndPoint(filePath));
+        this.Socket = transport.Socket;
+        this.Socket.Bind(transport.EndPoint);
         
         this.taskFactory = taskFactory;
         this.handleNewConnection = handleNewConnection;

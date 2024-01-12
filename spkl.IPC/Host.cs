@@ -1,36 +1,35 @@
 ﻿using spkl.IPC.Messaging;
 using System;
-using System.IO;
 using System.Net.Sockets;
 
 namespace spkl.IPC;
 
 public class Host
 {
-    public string FilePath { get; }
+    public ITransport Transport { get; }
 
     public IClientConnectionHandler Handler { get; }
 
     private MessageChannelHost? MessageChannelHost { get; set; }
 
-    private Host(string filePath, IClientConnectionHandler handler)
+    private Host(ITransport transport, IClientConnectionHandler handler)
     {
-        this.FilePath = filePath;
+        this.Transport = transport;
         this.Handler = handler;
     }
 
-    public static Host Start(string filePath, IClientConnectionHandler handler)
+    public static Host Start(ITransport transport, IClientConnectionHandler handler)
     {
-        File.Delete(filePath);
+        transport.BeforeHostStart();
 
-        Host host = new(filePath, handler);
+        Host host = new(transport, handler);
         host.AcceptConnections();
         return host;
     }
 
     private void AcceptConnections()
     {
-        this.MessageChannelHost = new MessageChannelHost(this.FilePath, this.Handler.TaskFactory, this.HandleNewMessageChannel, this.HandleListenerException);
+        this.MessageChannelHost = new MessageChannelHost(this.Transport, this.Handler.TaskFactory, this.HandleNewMessageChannel, this.HandleListenerException);
         this.MessageChannelHost.AcceptConnections();
     }
 
@@ -79,6 +78,6 @@ public class Host
     public void Shutdown()
     {
         this.MessageChannelHost?.Shutdown();
-        File.Delete(this.FilePath);
+        this.Transport.AfterHostShutdown();
     }
 }

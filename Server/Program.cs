@@ -11,7 +11,7 @@ internal class Program
 
     static void Main(string[] args)
     {
-        var host = Host.Start(Path, new ClientConnectionHandler());
+        var host = Host.Start(new UdsTransport(Path), new ClientConnectionHandler());
         Console.WriteLine("Press Enter to shutdown...");
         Console.ReadLine();
         host.Shutdown();

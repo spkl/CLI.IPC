@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace spkl.IPC.Test;
@@ -18,6 +19,15 @@ internal class HostTest
         }
     }
 
+    public static IEnumerable<TestCaseData> Transports
+    {
+        get
+        {
+            yield return new TestCaseData(() => new UdsTransport("someFile")).SetArgDisplayNames(nameof(UdsTransport));
+            yield return new TestCaseData(() => new TcpLoopbackTransport(65056)).SetArgDisplayNames(nameof(TcpLoopbackTransport));
+        }
+    }
+
     [Test]
     public void CanStartHostOnExistingFile()
     {
@@ -26,18 +36,18 @@ internal class HostTest
         File.WriteAllText(fileName, "");
 
         // act & assert
-        Assert.That(() => this.host = Host.Start(fileName, new ClientConnectionHandler()), Throws.Nothing);
+        Assert.That(() => this.host = Host.Start(new UdsTransport(fileName), new ClientConnectionHandler()), Throws.Nothing);
     }
 
     [Test]
-    public void HostCanBeInSameProcessAsClient()
+    [TestCaseSource(nameof(HostTest.Transports))]
+    public void HostCanBeInSameProcessAsClient(Func<ITransport> createTransport)
     {
         // arrange
-        const string fileName = "someFile";
-        this.host = Host.Start(fileName, new ClientConnectionHandler());
+        this.host = Host.Start(createTransport(), new ClientConnectionHandler());
 
         // act & assert
-        Assert.That(() => Client.Attach(fileName, new HostConnectionHandler()), Throws.Nothing);
+        Assert.That(() => Client.Attach(createTransport(), new HostConnectionHandler()), Throws.Nothing);
         Assert.That(() => this.host.Shutdown(), Throws.Nothing);
     }
 

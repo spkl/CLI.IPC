@@ -7,7 +7,7 @@ internal class Program
     static void Main(string[] args)
     {
         spkl.IPC.Client.Attach(
-            @"C:\Users\Sebastian\Documents\Projects\StreamTest\Server\bin\Debug\net6.0\socket",
+            new UdsTransport(@"C:\Users\Sebastian\Documents\Projects\StreamTest\Server\bin\Debug\net6.0\socket"),
             new DefaultHostConnectionHandler());
     }
 }
