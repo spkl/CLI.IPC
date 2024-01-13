@@ -19,4 +19,9 @@ public class ListenerError
         this.Exception = exception;
         this.HostWasShutDown = hostWasShutDown;
     }
+
+    public override string ToString()
+    {
+        return this.Exception.ToString();
+    }
 }
