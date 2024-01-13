@@ -9,6 +9,8 @@
 
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\keys\spkl.IPC.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <ItemGroup>

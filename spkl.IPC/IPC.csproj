@@ -6,6 +6,8 @@
 	<AssemblyName>spkl.IPC</AssemblyName>
 	<Nullable>enable</Nullable>
 	<LangVersion>10.0</LangVersion>
+	<SignAssembly>True</SignAssembly>
+	<AssemblyOriginatorKeyFile>..\keys\spkl.IPC.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
 </Project>
