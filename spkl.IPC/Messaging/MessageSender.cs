@@ -1,6 +1,11 @@
 ﻿using System;
 using System.Net.Sockets;
 using System.Text;
+#if NET6_0_OR_GREATER
+using Bytes = System.Span<byte>;
+#else
+using Bytes = System.ArraySegment<byte>;
+#endif
 
 namespace spkl.IPC.Messaging;
 
@@ -73,8 +78,12 @@ public class MessageSender
 
     private void SendMessageType(MessageType type)
     {
-        Span<byte> messageTypeBuffer = this.buffer.AsSpan(0, 1);
+        Bytes messageTypeBuffer = this.GetBytesFromBuffer(0, 1);
+#if NET6_0_OR_GREATER
         messageTypeBuffer[0] = (byte)type;
+#else
+        messageTypeBuffer.Array[messageTypeBuffer.Offset] = (byte)type;
+#endif
         this.SendBytes(messageTypeBuffer);
     }
 
@@ -85,29 +94,55 @@ public class MessageSender
 
         this.EnsureBufferSize(byteCount);
         Encoding.UTF8.GetBytes(str, 0, str.Length, this.buffer, 0);
-        this.SendBytes(this.buffer.AsSpan(0, byteCount));
+        this.SendBytes(this.GetBytesFromBuffer(0, byteCount));
     }
 
     private void SendInt(int n)
     {
-        Span<byte> intBuffer = this.buffer.AsSpan(0, sizeof(int));
+#if NET6_0_OR_GREATER
+        Bytes intBuffer = this.GetBytesFromBuffer(0, sizeof(int));
         BitConverter.TryWriteBytes(intBuffer, n);
+#else
+        Bytes intBuffer = new ArraySegment<byte>(BitConverter.GetBytes(n));
+#endif
         this.SendBytes(intBuffer);
     }
 
-    private void SendBytes(ReadOnlySpan<byte> buffer)
+    private void SendBytes(Bytes buffer)
     {
         try
         {
             int bytesSent = 0;
-            while (bytesSent < buffer.Length)
+            while (bytesSent < MessageSender.GetLength(buffer))
             {
+#if NET6_0_OR_GREATER
                 bytesSent += this.Socket.Send(buffer[bytesSent..]);
+#else
+                bytesSent += this.Socket.Send(buffer.Array, buffer.Offset, buffer.Count, SocketFlags.None);
+#endif
             }
         }
         catch (SocketException e)
         {
             throw new ConnectionException($"There was an unexpected connection error. Reason: {e.Message}", e);
         }
+    }
+
+    private Bytes GetBytesFromBuffer(int start, int length)
+    {
+#if NET6_0_OR_GREATER
+        return this.buffer.AsSpan(start, length);
+#else
+        return new ArraySegment<byte>(this.buffer, start, length);
+#endif
+    }
+
+    private static int GetLength(Bytes bytes)
+    {
+#if NET6_0_OR_GREATER
+        return bytes.Length;
+#else
+        return bytes.Count;
+#endif
     }
 }

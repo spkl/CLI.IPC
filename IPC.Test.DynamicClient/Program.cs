@@ -7,13 +7,22 @@ internal class Program
 {
     static void Main(string[] args)
     {
-        string socketPath = args[0];
+        string transportArgument = args[0];
         string dllPath = args[1];
         string typeName = args[2];
 
-        Type hostConnectionHandlerType = Assembly.LoadFrom(dllPath).GetType(typeName) ?? throw new Exception($"Could not find type {typeName} in DLL {dllPath}.");
+        Type hostConnectionHandlerType = Type.GetType(typeName + ", spkl.IPC, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null")
+                                         ?? Assembly.LoadFrom(dllPath).GetType(typeName)
+                                         ?? throw new Exception($"Could not find type {typeName} in DLL {dllPath}.");
         IHostConnectionHandler hostConnectionHandler = (IHostConnectionHandler)Activator.CreateInstance(hostConnectionHandlerType)!;
 
-        Client.Attach(new UdsTransport(socketPath), hostConnectionHandler);
+        ITransport transport;
+#if NET6_0_OR_GREATER
+        transport = new UdsTransport(transportArgument);
+#else
+        transport = new TcpLoopbackTransport(int.Parse(transportArgument));
+#endif
+
+        Client.Attach(transport, hostConnectionHandler);
     }
 }

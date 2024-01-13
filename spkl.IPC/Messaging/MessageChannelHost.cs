@@ -7,6 +7,13 @@ namespace spkl.IPC.Messaging;
 
 public class MessageChannelHost
 {
+#if !NET6_0_OR_GREATER
+    /// <summary>
+    /// Controls how large the socket backlog for connection requests is.
+    /// </summary>
+    public static int SocketBacklog = 5;
+#endif
+
     public Socket Socket { get; }
 
     private readonly TaskFactory taskFactory;
@@ -29,7 +36,11 @@ public class MessageChannelHost
 
     public void AcceptConnections()
     {
+#if NET6_0_OR_GREATER
         this.Socket.Listen();
+#else
+        this.Socket.Listen(MessageChannelHost.SocketBacklog);
+#endif
         this.listenerThread = new Thread(new ThreadStart(this.Accept));
         this.listenerThread.Name = $"{nameof(MessageChannelHost)} listener for {this.Socket.LocalEndPoint}";
         this.listenerThread.Start();

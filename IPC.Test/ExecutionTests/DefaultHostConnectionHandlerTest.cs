@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace spkl.IPC.Test.ExecutionTests;
 
@@ -12,11 +13,16 @@ public class DefaultHostConnectionHandlerTest : ExecutionTest
         this.RunHostAndClient<ClientConnectionHandler, DefaultHostConnectionHandler>();
 
         // assert
+        string expectedExecutable = this.Client.StartInfo.FileName;
+#if NET6_0_OR_GREATER
+        expectedExecutable = expectedExecutable.Replace(".exe", ".dll");
+#endif
+
         Assert.Multiple(() =>
         {
             Assert.That(this.Client.ExitCode, Is.EqualTo(42));
             Assert.That(this.Client.StandardOutput.ReadToEnd(), Is.EqualTo(
-@$"Arguments: {this.Client.StartInfo.FileName.Replace(".exe", ".dll")},{string.Join(",", this.Client.StartInfo.ArgumentList)}.
+@$"Arguments: {expectedExecutable},{string.Join(",", this.ClientArguments)}.
 CurrentDirectory: {TestContext.CurrentContext.TestDirectory}.
 "));
             Assert.That(this.Client.StandardError.ReadToEnd(), Is.EqualTo(
@@ -27,6 +33,8 @@ CurrentDirectory: {TestContext.CurrentContext.TestDirectory}.
 
     private class ClientConnectionHandler : IClientConnectionHandler
     {
+        public TaskFactory TaskFactory => Task.Factory;
+
         public void HandleCall(ClientConnection connection)
         {
             connection.Out.WriteLine($"Arguments: {string.Join(",", connection.Properties.Arguments)}.");

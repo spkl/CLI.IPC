@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿#if NET6_0_OR_GREATER
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 
@@ -30,3 +31,4 @@ public class UdsTransport : ITransport
         File.Delete(this.FilePath);
     }
 }
+#endif

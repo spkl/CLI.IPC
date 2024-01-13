@@ -6,8 +6,15 @@ internal class Program
 {
     static void Main(string[] args)
     {
+        ITransport transport;
+#if NET6_0_OR_GREATER
+        transport = new UdsTransport(@"C:\Users\Sebastian\Documents\Projects\StreamTest\Server\bin\Debug\net6.0\socket");
+#else
+        transport = new TcpLoopbackTransport(65056);
+#endif
+
         spkl.IPC.Client.Attach(
-            new UdsTransport(@"C:\Users\Sebastian\Documents\Projects\StreamTest\Server\bin\Debug\net6.0\socket"),
+            transport,
             new DefaultHostConnectionHandler());
     }
 }

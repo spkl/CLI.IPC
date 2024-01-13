@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace spkl.IPC.Test.ExecutionTests;
 
@@ -26,6 +27,8 @@ public class HostShutdownTest : ExecutionTest
 
     private class ClientConnectionHandler : IClientConnectionHandler
     {
+        public TaskFactory TaskFactory => Task.Factory;
+
         public void HandleCall(ClientConnection connection)
         {
             connection.Exit(0);

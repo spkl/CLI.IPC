@@ -3,16 +3,25 @@ using System.IO;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Linq;
 
 namespace spkl.IPC.Test.ExecutionTests;
 
 public abstract class ExecutionTest
 {
-    protected static string SocketPath => Path.Combine(TestContext.CurrentContext.TestDirectory, "TestSocket");
+#if NET6_0_OR_GREATER
+    protected static string TransportArgument => Path.Combine(TestContext.CurrentContext.TestDirectory, "TestSocket");
+#else
+    protected static string TransportArgument => "65056";
+#endif
 
     protected Process Host { get; set; } = new();
 
+    protected List<string> HostArguments { get; private set; } = new();
+
     protected Process Client { get; set; } = new();
+
+    protected List<string> ClientArguments { get; private set; } = new();
 
     protected List<Process> Clients { get; set; } = new();
 
@@ -21,7 +30,7 @@ public abstract class ExecutionTest
     {
         try
         {
-            if (this.Host.HasExited)
+            if (!this.Host.HasExited)
             {
                 this.Host.Kill();
             }
@@ -55,12 +64,17 @@ public abstract class ExecutionTest
         Assume.That(dynamicHostExe, Does.Exist);
 
         ProcessStartInfo hostStart = new(dynamicHostExe);
-        hostStart.ArgumentList.Add(SocketPath);
-        hostStart.ArgumentList.Add(typeof(T).Assembly.Location);
-        hostStart.ArgumentList.Add(typeof(T).FullName!);
+        this.HostArguments = new List<string>()
+        {
+            TransportArgument,
+            typeof(T).Assembly.Location,
+            typeof(T).FullName!,
+        };
+        hostStart.Arguments = string.Join(" ", this.HostArguments.Select(arg => $@"""{arg}"""));
         hostStart.RedirectStandardError = true;
         hostStart.RedirectStandardInput = true;
         hostStart.RedirectStandardOutput = true;
+        hostStart.UseShellExecute = false;
         this.Host = new() { StartInfo = hostStart };
         this.Host.Start();
         Thread.Sleep(500);
@@ -74,12 +88,17 @@ public abstract class ExecutionTest
         Assume.That(dynamicClientExe, Does.Exist);
 
         ProcessStartInfo clientStart = new(dynamicClientExe);
-        clientStart.ArgumentList.Add(SocketPath);
-        clientStart.ArgumentList.Add(typeof(T).Assembly.Location);
-        clientStart.ArgumentList.Add(typeof(T).FullName!);
+        this.ClientArguments = new List<string>()
+        {
+            TransportArgument,
+            typeof(T).Assembly.Location,
+            typeof(T).FullName!,
+        };
+        clientStart.Arguments = string.Join(" ", this.ClientArguments.Select(arg => $@"""{arg}"""));
         clientStart.RedirectStandardError = true;
         clientStart.RedirectStandardInput = true;
         clientStart.RedirectStandardOutput = true;
+        clientStart.UseShellExecute = false;
         this.Client = new() { StartInfo = clientStart };
         this.Client.Start();
 

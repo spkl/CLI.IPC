@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace spkl.IPC.Test;
 
@@ -23,11 +24,14 @@ internal class HostTest
     {
         get
         {
+#if NET6_0_OR_GREATER
             yield return new TestCaseData(() => new UdsTransport("someFile")).SetArgDisplayNames(nameof(UdsTransport));
+#endif
             yield return new TestCaseData(() => new TcpLoopbackTransport(65056)).SetArgDisplayNames(nameof(TcpLoopbackTransport));
         }
     }
 
+#if NET6_0_OR_GREATER
     [Test]
     public void CanStartHostOnExistingFile()
     {
@@ -38,6 +42,7 @@ internal class HostTest
         // act & assert
         Assert.That(() => this.host = Host.Start(new UdsTransport(fileName), new ClientConnectionHandler()), Throws.Nothing);
     }
+#endif
 
     [Test]
     [TestCaseSource(nameof(HostTest.Transports))]
@@ -53,6 +58,8 @@ internal class HostTest
 
     private class ClientConnectionHandler : IClientConnectionHandler
     {
+        public TaskFactory TaskFactory => Task.Factory;
+
         public void HandleCall(ClientConnection connection)
         {
             connection.Exit(0);

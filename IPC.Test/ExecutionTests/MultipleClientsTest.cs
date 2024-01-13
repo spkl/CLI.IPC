@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace spkl.IPC.Test.ExecutionTests;
 
@@ -38,6 +39,8 @@ internal class MultipleClientsTest : ExecutionTest
 
     private class ClientConnectionHandler : IClientConnectionHandler
     {
+        public TaskFactory TaskFactory => Task.Factory;
+
         public void HandleCall(ClientConnection connection)
         {
             Thread.Sleep(2000);

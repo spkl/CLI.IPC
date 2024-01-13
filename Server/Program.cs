@@ -2,16 +2,22 @@
 using System;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Server;
 
 internal class Program
 {
-    private const string Path = @"C:\Users\Sebastian\Documents\Projects\StreamTest\Server\bin\Debug\net6.0\socket";
-
     static void Main(string[] args)
     {
-        var host = Host.Start(new UdsTransport(Path), new ClientConnectionHandler());
+        ITransport transport;
+#if NET6_0_OR_GREATER
+        transport = new UdsTransport(@"C:\Users\Sebastian\Documents\Projects\StreamTest\Server\bin\Debug\net6.0\socket");
+#else
+        transport = new TcpLoopbackTransport(65056);
+#endif
+
+        var host = Host.Start(transport, new ClientConnectionHandler());
         Console.WriteLine("Press Enter to shutdown...");
         Console.ReadLine();
         host.Shutdown();
@@ -19,6 +25,8 @@ internal class Program
 
     private class ClientConnectionHandler : IClientConnectionHandler
     {
+        public TaskFactory TaskFactory => Task.Factory;
+
         public void HandleCall(ClientConnection connection)
         {
             Console.WriteLine("Accepted connection");

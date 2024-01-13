@@ -1,6 +1,11 @@
 ﻿using System;
 using System.Net.Sockets;
 using System.Text;
+#if NET6_0_OR_GREATER
+using Bytes = System.ReadOnlySpan<byte>;
+#else
+using Bytes = System.ArraySegment<byte>;
+#endif
 
 namespace spkl.IPC.Messaging;
 
@@ -29,13 +34,13 @@ public class MessageReceiver
 
     public MessageType ReceiveMessage()
     {
-        ReadOnlySpan<byte> result = this.ExpectBytesOrConnectionEnd(sizeof(MessageType));
-        if (result.Length == 0)
+        Bytes result = this.ExpectBytesOrConnectionEnd(sizeof(MessageType));
+        if (MessageReceiver.IsZeroBytes(result))
         {
             return MessageType.ConnClosed;
         }
 
-        return (MessageType)result[0];
+        return (MessageType)MessageReceiver.GetFirstByte(result);
     }
 
     public void ReceiveReqArgs()
@@ -88,20 +93,28 @@ public class MessageReceiver
     public string ExpectString()
     {
         int length = this.ExpectInt();
-        ReadOnlySpan<byte> messageBytes = this.ExpectBytes(length);
+        Bytes messageBytes = this.ExpectBytes(length);
+#if NET6_0_OR_GREATER
         return Encoding.UTF8.GetString(messageBytes);
+#else
+        return Encoding.UTF8.GetString(messageBytes.Array, messageBytes.Offset, messageBytes.Count);
+#endif
     }
 
     public int ExpectInt()
     {
-        ReadOnlySpan<byte> n = this.ExpectBytes(sizeof(int));
+        Bytes n = this.ExpectBytes(sizeof(int));
+#if NET6_0_OR_GREATER
         return BitConverter.ToInt32(n);
+#else
+        return BitConverter.ToInt32(n.Array, n.Offset);
+#endif
     }
 
-    public ReadOnlySpan<byte> ExpectBytes(int expectedBytes)
-    {
-        ReadOnlySpan<byte> result = this.ExpectBytesOrConnectionEnd(expectedBytes);
-        if (expectedBytes != 0 && result.Length == 0)
+    public Bytes ExpectBytes(int expectedBytes)
+    { 
+        Bytes result = this.ExpectBytesOrConnectionEnd(expectedBytes);
+        if (expectedBytes != 0 && MessageReceiver.IsZeroBytes(result))
         {
             throw new ConnectionException("The connection was closed unexpectedly.");
         }
@@ -109,11 +122,11 @@ public class MessageReceiver
         return result;
     }
 
-    public ReadOnlySpan<byte> ExpectBytesOrConnectionEnd(int expectedBytes)
+    public Bytes ExpectBytesOrConnectionEnd(int expectedBytes)
     {
         if (expectedBytes == 0)
         {
-            return ReadOnlySpan<byte>.Empty;
+            return MessageReceiver.GetZeroBytes();
         }
 
         this.EnsureBufferSize(expectedBytes);
@@ -127,10 +140,46 @@ public class MessageReceiver
             if (bytesReceived == 0)
             {
                 // Connection was closed
-                return ReadOnlySpan<byte>.Empty;
+                return MessageReceiver.GetZeroBytes();
             }
         }
 
-        return this.buffer.AsSpan(0, expectedBytes);
+        return this.GetBytesFromBuffer(0, expectedBytes);
+    }
+
+    private static Bytes GetZeroBytes()
+    {
+#if NET6_0_OR_GREATER
+        return ReadOnlySpan<byte>.Empty;
+#else
+        return new ArraySegment<byte>(Array.Empty<byte>());
+#endif
+    }
+
+    private static bool IsZeroBytes(Bytes bytes)
+    {
+#if NET6_0_OR_GREATER
+        return bytes.Length == 0;
+#else
+        return bytes.Count == 0;
+#endif
+    }
+
+    private static byte GetFirstByte(Bytes bytes)
+    {
+#if NET6_0_OR_GREATER
+        return bytes[0];
+#else
+        return bytes.Array[bytes.Offset];
+#endif
+    }
+
+    private Bytes GetBytesFromBuffer(int start, int length)
+    {
+#if NET6_0_OR_GREATER
+        return this.buffer.AsSpan(start, length);
+#else
+        return new ArraySegment<byte>(this.buffer, start, length);
+#endif
     }
 }

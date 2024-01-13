@@ -6,8 +6,13 @@ public interface IClientConnectionHandler
 {
     /// <summary>
     /// Gets the TaskFactory responsible for creating a task for a new incoming connection.
+    /// Default: <see cref="Task.Factory"/>.
     /// </summary>
+#if NET6_0_OR_GREATER
     TaskFactory TaskFactory => Task.Factory;
+#else
+    TaskFactory TaskFactory { get; }
+#endif
 
     /// <summary>
     /// Handles an incoming client connection.
