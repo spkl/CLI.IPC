@@ -1,4 +1,5 @@
-﻿using System;
+﻿using spkl.IPC.Services;
+using System;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -58,7 +59,7 @@ public class MessageChannelHost
             while (true)
             {
                 Socket incoming = this.Socket.Accept();
-                MessageChannel messageChannel = new MessageChannel(incoming);
+                MessageChannel messageChannel = ServiceProvider.MessageChannelFactory.CreateForIncoming(incoming);
                 // TODO does this need to do some kind of exception passing, because the exception in the task would be hidden?
                 this.taskFactory.StartNew(() => this.handleNewConnection(messageChannel));
             }

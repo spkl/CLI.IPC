@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 namespace spkl.IPC.Test.ExecutionTests;
 
 [TestFixture]
-public class HostShutdownTest : ExecutionTest
+internal class HostShutdownTest : ExecutionTest
 {
     [Test]
     public void Test()

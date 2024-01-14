@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 namespace spkl.IPC.Test.ExecutionTests;
 
 [TestFixture]
-public class DefaultHostConnectionHandlerTest : ExecutionTest
+internal class DefaultHostConnectionHandlerTest : ExecutionTest
 {
     [Test]
     public void Test()

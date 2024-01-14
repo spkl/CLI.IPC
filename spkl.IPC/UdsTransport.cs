@@ -17,7 +17,7 @@ public class UdsTransport : ITransport
         this.FilePath = filePath;
     }
 
-    public Socket Socket => new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.Unspecified);
+    public Socket Socket => new(AddressFamily.Unix, SocketType.Stream, ProtocolType.Unspecified);
 
     public EndPoint EndPoint => new UnixDomainSocketEndPoint(this.FilePath);
 

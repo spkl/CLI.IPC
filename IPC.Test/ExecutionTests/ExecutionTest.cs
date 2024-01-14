@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace spkl.IPC.Test.ExecutionTests;
 
-public abstract class ExecutionTest
+internal abstract class ExecutionTest : TestBase
 {
 #if NET6_0_OR_GREATER
     protected static string TransportArgument => Path.Combine(TestContext.CurrentContext.TestDirectory, "TestSocket");

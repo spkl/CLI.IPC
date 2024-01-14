@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace spkl.IPC.Test;
 
-[TestFixture]
-internal class HostTest
+internal class HostTest : TestBase
 {
     private Host? host;
 
@@ -28,7 +27,7 @@ internal class HostTest
 #if NET6_0_OR_GREATER
             yield return new TestCaseData(() => new UdsTransport("someFile")).SetArgDisplayNames(nameof(UdsTransport));
 #endif
-            yield return new TestCaseData(() => new TcpLoopbackTransport(65057)).SetArgDisplayNames(nameof(TcpLoopbackTransport));
+            yield return new TestCaseData(() => new TcpLoopbackTransport(TestBase.GetUnusedPort())).SetArgDisplayNames(nameof(TcpLoopbackTransport));
         }
     }
 
@@ -51,12 +50,25 @@ internal class HostTest
     public void HostCanBeInSameProcessAsClient(Func<ITransport> createTransport)
     {
         // arrange
-        this.host = Host.Start(createTransport(), new ClientConnectionHandler());
+        ITransport transport = createTransport();
+        ClientConnectionHandler clientConnectionHandler = new();
+        HostConnectionHandler hostConnectionHandler = new();
+        this.host = Host.Start(transport, clientConnectionHandler);
         this.WaitForHostStartUp();
 
-        // act & assert
-        Assert.That(() => Client.Attach(createTransport(), new HostConnectionHandler()), Throws.Nothing);
-        Assert.That(() => this.host.Shutdown(), Throws.Nothing);
+        // act
+        Client.Attach(transport, hostConnectionHandler);
+        this.host.Shutdown();
+
+        // assert
+        Assert.That(clientConnectionHandler.ReceivedClientProperties, Is.Not.Null);
+        Assert.That(clientConnectionHandler.ReceivedClientProperties.Arguments, Is.EqualTo(hostConnectionHandler.Arguments));
+        Assert.That(clientConnectionHandler.ReceivedClientProperties.CurrentDirectory, Is.EqualTo(hostConnectionHandler.CurrentDirectory));
+
+        Assert.That(hostConnectionHandler.ReceivedOutString, Is.EqualTo("Out1Out2" + Environment.NewLine));
+        Assert.That(hostConnectionHandler.ReceivedErrorString, Is.EqualTo("Error1Error2" + Environment.NewLine));
+        Assert.That(hostConnectionHandler.ReceivedExitCode, Is.EqualTo(42));
+
     }
 
     private void WaitForHostStartUp()
@@ -70,31 +82,50 @@ internal class HostTest
 
         public void HandleCall(ClientConnection connection)
         {
-            connection.Exit(0);
+            this.ReceivedClientProperties = connection.Properties;
+
+            connection.Out.Write('O');
+            connection.Out.Write("ut1");
+            connection.Error.Write('E');
+            connection.Error.Write("rror1");
+            connection.Out.WriteLine("Out2");
+            connection.Error.WriteLine("Error2");
+            connection.Exit(42);
         }
 
         public void HandleListenerError(ListenerError error)
         {
             Assert.Fail(error.ToString());
         }
+
+        public ClientProperties? ReceivedClientProperties { get; private set; }
     }
 
     private class HostConnectionHandler : IHostConnectionHandler
     {
-        public string[] Arguments => Array.Empty<string>();
+        public string[] Arguments => new[] { "Foo", "Bar" };
 
-        public string CurrentDirectory => "";
+        public string CurrentDirectory => "Baz";
+
+        public void HandleOutString(string text)
+        {
+            this.ReceivedOutString += text;
+        }
 
         public void HandleErrorString(string text)
         {
+            this.ReceivedErrorString += text;
         }
 
         public void HandleExit(int exitCode)
         {
+            this.ReceivedExitCode = exitCode;
         }
 
-        public void HandleOutString(string text)
-        {
-        }
+        public string ReceivedOutString { get; private set; } = "";
+
+        public string ReceivedErrorString { get; private set; } = "";
+
+        public int? ReceivedExitCode { get; private set; }
     }
 }

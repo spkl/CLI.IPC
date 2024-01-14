@@ -13,29 +13,12 @@ public class MessageChannel
     internal MessageChannel(Socket socket)
     {
         this.Socket = socket;
-        this.Receiver = new MessageReceiver(this, socket);
-        this.Sender = new MessageSender(this, socket);
+        this.Receiver = new MessageReceiver(socket);
+        this.Sender = new MessageSender(socket);
     }
 
     public void Close()
     {
         this.Socket.Close();
-    }
-
-    public static MessageChannel ConnectTo(ITransport transport)
-    {
-        Socket? socket = null;
-        try
-        {
-            socket = transport.Socket;
-            socket.Connect(transport.EndPoint);
-        }
-        catch (SocketException)
-        {
-            socket?.Close();
-            throw;
-        }
-
-        return new MessageChannel(socket);
     }
 }

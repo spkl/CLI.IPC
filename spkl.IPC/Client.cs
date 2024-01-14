@@ -1,4 +1,5 @@
 ﻿using spkl.IPC.Messaging;
+using spkl.IPC.Services;
 using System.Net.Sockets;
 
 namespace spkl.IPC;
@@ -20,7 +21,7 @@ public class Client
         MessageChannel channel;
         try
         {
-            channel = MessageChannel.ConnectTo(transport);
+            channel = ServiceProvider.MessageChannelFactory.CreateForOutgoing(transport);
         }
         catch (SocketException e)
         {

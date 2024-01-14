@@ -64,7 +64,7 @@ public class Host
 
     private ClientProperties ReceiveClientProperties(MessageChannel channel)
     {
-        ClientProperties properties = new ClientProperties();
+        ClientProperties properties = new();
 
         channel.Sender.SendReqArgs();
         properties.Arguments = channel.Receiver.ReceiveArgs();

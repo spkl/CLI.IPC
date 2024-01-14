@@ -11,15 +11,12 @@ namespace spkl.IPC.Messaging;
 
 public class MessageReceiver
 {
-    public MessageChannel Channel { get; }
-
     public Socket Socket { get; }
 
     private byte[] buffer;
 
-    internal MessageReceiver(MessageChannel channel, Socket socket)
+    internal MessageReceiver(Socket socket)
     {
-        this.Channel = channel;
         this.Socket = socket;
         this.buffer = new byte[4];
     }

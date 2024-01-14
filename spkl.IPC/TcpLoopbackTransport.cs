@@ -15,7 +15,7 @@ public class TcpLoopbackTransport : ITransport
         this.Port = port;
     }
 
-    public Socket Socket => new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+    public Socket Socket => new(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
     public EndPoint EndPoint => new IPEndPoint(IPAddress.Loopback, this.Port);
 
