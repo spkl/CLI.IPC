@@ -62,7 +62,7 @@ internal abstract class ExecutionTest : TestBase
     protected Process StartHost<T>() where T : IClientConnectionHandler
     {
         string dynamicHostExe = Path.GetFullPath(Path.Combine(TestContext.CurrentContext.TestDirectory.Replace("IPC.Test", "IPC.Test.DynamicHost"), "spkl.IPC.Test.DynamicHost.exe"));
-#if !NET6_0_OR_GREATER
+#if NET6_0_OR_GREATER
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
             dynamicHostExe = dynamicHostExe.Substring(0, dynamicHostExe.Length - ".exe".Length);
@@ -93,7 +93,7 @@ internal abstract class ExecutionTest : TestBase
     protected Process StartClient<T>() where T : IHostConnectionHandler
     {
         string dynamicClientExe = Path.GetFullPath(Path.Combine(TestContext.CurrentContext.TestDirectory.Replace("IPC.Test", "IPC.Test.DynamicClient"), "spkl.IPC.Test.DynamicClient.exe"));
-#if !NET6_0_OR_GREATER
+#if NET6_0_OR_GREATER
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
             dynamicClientExe = dynamicClientExe.Substring(0, dynamicClientExe.Length - ".exe".Length);
