@@ -4,14 +4,6 @@
 name: .NET
 
 on:
-  workflow_dispatch:
-    inputs:
-      chosen-os:
-        required: true
-        type: choice
-        options:
-          - ubuntu-latest
-          - windows-latest
   push:
     branches: [ "master" ]
   pull_request:
@@ -20,7 +12,11 @@ on:
 jobs:
   build:
 
-    runs-on: "${{ inputs.chosen-os }}"
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest ]
 
     steps:
     - uses: actions/checkout@v3
