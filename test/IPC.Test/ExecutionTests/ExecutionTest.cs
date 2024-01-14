@@ -67,7 +67,7 @@ internal abstract class ExecutionTest : TestBase
             dynamicHostExe = dynamicHostExe.Substring(0, dynamicHostExe.Length - ".exe".Length);
         }
 
-        Assume.That(dynamicHostExe, Does.Exist);
+        Assume.That(dynamicHostExe, Does.Exist, () => string.Join(",", new DirectoryInfo(Path.GetDirectoryName(dynamicHostExe)!).GetFiles().Select(o => o.Name)));
 
         ProcessStartInfo hostStart = new(dynamicHostExe);
         this.HostArguments = new List<string>()
