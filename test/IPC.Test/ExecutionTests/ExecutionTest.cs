@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace spkl.IPC.Test.ExecutionTests;
 
@@ -61,6 +62,13 @@ internal abstract class ExecutionTest : TestBase
     protected Process StartHost<T>() where T : IClientConnectionHandler
     {
         string dynamicHostExe = Path.GetFullPath(Path.Combine(TestContext.CurrentContext.TestDirectory.Replace("IPC.Test", "IPC.Test.DynamicHost"), "spkl.IPC.Test.DynamicHost.exe"));
+#if NET6_0_OR_GREATER
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            dynamicHostExe = dynamicHostExe.Substring(0, dynamicHostExe.Length - ".exe".Length);
+        }
+#endif
+
         Assume.That(dynamicHostExe, Does.Exist);
 
         ProcessStartInfo hostStart = new(dynamicHostExe);
@@ -85,6 +93,13 @@ internal abstract class ExecutionTest : TestBase
     protected Process StartClient<T>() where T : IHostConnectionHandler
     {
         string dynamicClientExe = Path.GetFullPath(Path.Combine(TestContext.CurrentContext.TestDirectory.Replace("IPC.Test", "IPC.Test.DynamicClient"), "spkl.IPC.Test.DynamicClient.exe"));
+#if NET6_0_OR_GREATER
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            dynamicClientExe = dynamicClientExe.Substring(0, dynamicClientExe.Length - ".exe".Length);
+        }
+#endif
+
         Assume.That(dynamicClientExe, Does.Exist);
 
         ProcessStartInfo clientStart = new(dynamicClientExe);
