@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace spkl.IPC.Test.ExecutionTests;
@@ -15,7 +16,14 @@ internal class DefaultHostConnectionHandlerTest : ExecutionTest
         // assert
         string expectedExecutable = this.Client.StartInfo.FileName;
 #if NET6_0_OR_GREATER
-        expectedExecutable = expectedExecutable.Replace(".exe", ".dll");
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            expectedExecutable = expectedExecutable.Replace(".exe", ".dll");
+        }
+        else
+        {
+            expectedExecutable += ".dll";
+        }
 #endif
 
         Assert.Multiple(() =>
