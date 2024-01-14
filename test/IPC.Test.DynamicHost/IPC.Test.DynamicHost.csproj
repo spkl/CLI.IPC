@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\spkl.IPC\IPC.csproj" />
+    <ProjectReference Include="..\..\src\IPC.csproj" />
   </ItemGroup>
 
 </Project>

@@ -3,12 +3,14 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFrameworks>net6.0;net48</TargetFrameworks>
-	<Nullable>enable</Nullable>
+	<AssemblyName>spkl.IPC.Test.DynamicClient</AssemblyName>
+	<RootNamespace>spkl.IPC.Test.DynamicClient</RootNamespace>
+    <Nullable>enable</Nullable>
 	<LangVersion>10.0</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\spkl.IPC\IPC.csproj" />
+    <ProjectReference Include="..\..\src\IPC.csproj" />
   </ItemGroup>
 
 </Project>
