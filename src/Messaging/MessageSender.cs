@@ -115,7 +115,7 @@ public class MessageSender
 #if NET6_0_OR_GREATER
                 bytesSent += this.Socket.Send(buffer[bytesSent..]);
 #else
-                bytesSent += this.Socket.Send(buffer.Array, buffer.Offset, buffer.Count, SocketFlags.None);
+                bytesSent += this.Socket.Send(buffer.Array, buffer.Offset + bytesSent, buffer.Count - bytesSent, SocketFlags.None);
 #endif
             }
         }
