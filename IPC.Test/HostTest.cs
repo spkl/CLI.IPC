@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace spkl.IPC.Test;
@@ -27,7 +28,7 @@ internal class HostTest
 #if NET6_0_OR_GREATER
             yield return new TestCaseData(() => new UdsTransport("someFile")).SetArgDisplayNames(nameof(UdsTransport));
 #endif
-            yield return new TestCaseData(() => new TcpLoopbackTransport(65056)).SetArgDisplayNames(nameof(TcpLoopbackTransport));
+            yield return new TestCaseData(() => new TcpLoopbackTransport(65057)).SetArgDisplayNames(nameof(TcpLoopbackTransport));
         }
     }
 
@@ -41,6 +42,7 @@ internal class HostTest
 
         // act & assert
         Assert.That(() => this.host = Host.Start(new UdsTransport(fileName), new ClientConnectionHandler()), Throws.Nothing);
+        this.WaitForHostStartUp();
     }
 #endif
 
@@ -50,10 +52,16 @@ internal class HostTest
     {
         // arrange
         this.host = Host.Start(createTransport(), new ClientConnectionHandler());
+        this.WaitForHostStartUp();
 
         // act & assert
         Assert.That(() => Client.Attach(createTransport(), new HostConnectionHandler()), Throws.Nothing);
         Assert.That(() => this.host.Shutdown(), Throws.Nothing);
+    }
+
+    private void WaitForHostStartUp()
+    {
+        Thread.Sleep(100);
     }
 
     private class ClientConnectionHandler : IClientConnectionHandler

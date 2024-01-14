@@ -10,7 +10,7 @@ internal class Program
 #if NET6_0_OR_GREATER
         transport = new UdsTransport(@"C:\Users\Sebastian\Documents\Projects\StreamTest\Server\bin\Debug\net6.0\socket");
 #else
-        transport = new TcpLoopbackTransport(65056);
+        transport = new TcpLoopbackTransport(65058);
 #endif
 
         spkl.IPC.Client.Attach(
