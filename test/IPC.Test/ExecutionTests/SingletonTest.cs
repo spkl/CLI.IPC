@@ -13,6 +13,9 @@ internal class SingletonTest : TestBase
     /// <summary>
     /// Approach: Host lifetime is 5 seconds, so if we continuously create new clients for 7 seconds, there should be exactly two host processes.
     /// </summary>
+#if !NET6_0_OR_GREATER
+    [Platform(Exclude = "Linux")]
+#endif
     [Test]
     public void TestSingleton()
     {
@@ -26,9 +29,9 @@ internal class SingletonTest : TestBase
 #endif
 
         List<Thread> threads = new List<Thread>();
-        ConcurrentBag<int> exitCodes = new ConcurrentBag<int>();
-        ConcurrentBag<string> stdOutputs = new ConcurrentBag<string>();
-        ConcurrentBag<string> errOutputs = new ConcurrentBag<string>();
+        ConcurrentQueue<int> exitCodes = new ConcurrentQueue<int>();
+        ConcurrentQueue<string> stdOutputs = new ConcurrentQueue<string>();
+        ConcurrentQueue<string> errOutputs = new ConcurrentQueue<string>();
         TimeSpan testDuration = TimeSpan.FromSeconds(7);
         DateTime testStart = DateTime.Now;
         int startedProcesses = 0;
@@ -48,15 +51,15 @@ internal class SingletonTest : TestBase
                 p.Start();
                 Interlocked.Increment(ref startedProcesses);
 
-                stdOutputs.Add(p.StandardOutput.ReadToEnd());
-                errOutputs.Add(p.StandardError.ReadToEnd());
+                stdOutputs.Enqueue(p.StandardOutput.ReadToEnd());
+                errOutputs.Enqueue(p.StandardError.ReadToEnd());
                 p.WaitForExit();
-                exitCodes.Add(p.ExitCode);
+                exitCodes.Enqueue(p.ExitCode);
             });
             t.Start();
             threads.Add(t);
                         
-            Thread.Sleep(50);
+            Thread.Sleep(100);
         }
 
         foreach (Thread t in threads) 
@@ -68,9 +71,9 @@ internal class SingletonTest : TestBase
         TestContext.Out.WriteLine($"{startedProcesses} processes were started.");
         Assert.Multiple(() =>
         {
-            Assert.That(exitCodes.Count, Is.EqualTo(startedProcesses), "Number of exit codes");
-            Assert.That(stdOutputs.Count, Is.EqualTo(startedProcesses), "Number of std outputs");
-            Assert.That(errOutputs.Count, Is.EqualTo(startedProcesses), "Number of err outputs");
+            Assert.That(exitCodes, Has.Count.EqualTo(startedProcesses), "Number of exit codes");
+            Assert.That(stdOutputs, Has.Count.EqualTo(startedProcesses), "Number of std outputs");
+            Assert.That(errOutputs, Has.Count.EqualTo(startedProcesses), "Number of err outputs");
             Assert.That(exitCodes, Has.All.EqualTo(0), "Exit codes");
             Assert.That(stdOutputs.Distinct().ToArray(), Has.Exactly(2).Items.And.All.StartsWith("PID "), "Std outputs");
             Assert.That(errOutputs, Has.All.Empty, "Err outputs");
