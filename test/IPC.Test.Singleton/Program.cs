@@ -14,7 +14,11 @@ internal class Program
 {
     private static string AssemblyDir => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
 
+#if NET6_0_OR_GREATER
+    private static int Port => 65048;
+#else
     private static int Port => 65049;
+#endif
 
     private const int HostAliveTime_Seconds = 5;
 
