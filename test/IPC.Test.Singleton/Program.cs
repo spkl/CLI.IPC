@@ -14,12 +14,6 @@ internal class Program
 {
     private static string AssemblyDir => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
 
-#if NET6_0_OR_GREATER
-    private static int Port => 65048;
-#else
-    private static int Port => 65049;
-#endif
-
     private const int HostAliveTime_Seconds = 5;
 
     private const int PollingPeriod_Milliseconds = 250;
@@ -32,6 +26,13 @@ internal class Program
 
     static void Main(string[] args)
     {
+        ITransport transport;
+#if NET6_0_OR_GREATER
+        transport = new UdsTransport(Path.Combine(Program.AssemblyDir, "sock"));
+#else
+        transport = new TcpLoopbackTransport(65049);
+#endif
+
         StartupBehavior b = new();
         SingletonApplication s = new(b);
 
@@ -39,7 +40,7 @@ internal class Program
         {
             Thread.Sleep(TimeSpan.FromSeconds(HostStartupDelay_Seconds));
 
-            Host h = Host.Start(new TcpLoopbackTransport(Program.Port), new ClientConnectionHandler());
+            Host h = Host.Start(transport, new ClientConnectionHandler());
             s.ReportInstanceRunning();
 
             Thread.Sleep(TimeSpan.FromSeconds(Program.HostAliveTime_Seconds));
@@ -51,7 +52,7 @@ internal class Program
         else
         {
             s.RequestInstance();
-            Client.Attach(new TcpLoopbackTransport(Program.Port), new DefaultHostConnectionHandler());
+            Client.Attach(transport, new DefaultHostConnectionHandler());
         }
     }
 
