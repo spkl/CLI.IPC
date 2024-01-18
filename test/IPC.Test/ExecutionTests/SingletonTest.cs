@@ -76,4 +76,13 @@ internal class SingletonTest : TestBase
             Assert.That(errOutputs, Has.All.Empty, "Err outputs");
         });
     }
+
+    [TearDown]
+    public void TearDown()
+    {
+        foreach (Process process in Process.GetProcessesByName("spkl.IPC.Test.Singleton"))
+        {
+            process.Kill();
+        }
+    }
 }
