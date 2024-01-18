@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -60,8 +61,16 @@ internal class Program
 
         public void StartInstance()
         {
+            string executablePath = "spkl.IPC.Test.Singleton.exe";
+#if NET6_0_OR_GREATER
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                executablePath = executablePath.Substring(0, executablePath.Length - ".exe".Length);
+            }
+#endif
+
             Process p = new Process();
-            p.StartInfo = new ProcessStartInfo(Path.Combine(Program.AssemblyDir, "spkl.IPC.Test.Singleton.exe"), "host");
+            p.StartInfo = new ProcessStartInfo(Path.Combine(Program.AssemblyDir, executablePath), "host");
             p.StartInfo.UseShellExecute = false;
             p.Start();
         }
