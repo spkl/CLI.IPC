@@ -4,10 +4,10 @@ using System.Threading.Tasks;
 namespace spkl.IPC.Test.ExecutionTests;
 
 [TestFixture]
-internal class HostShutdownTest : ExecutionTest
+internal class HostShutdownTest : DynamicExecutionTest
 {
     [Test]
-    public void Test()
+    public void TestHostShutdown()
     {
         // act
         this.RunHostAndClient<ClientConnectionHandler, DefaultHostConnectionHandler>();

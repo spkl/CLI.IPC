@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 namespace spkl.IPC.Test.ExecutionTests;
 
 [TestFixture]
-internal class DefaultHostConnectionHandlerTest : ExecutionTest
+internal class DefaultHostConnectionHandlerTest : DynamicExecutionTest
 {
     [Test]
-    public void Test()
+    public void TestDefaultHostConnectionHandler()
     {
         // act
         this.RunHostAndClient<ClientConnectionHandler, DefaultHostConnectionHandler>();

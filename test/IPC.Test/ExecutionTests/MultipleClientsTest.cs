@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 namespace spkl.IPC.Test.ExecutionTests;
 
 [TestFixture]
-internal class MultipleClientsTest : ExecutionTest
+internal class MultipleClientsTest : DynamicExecutionTest
 {
     [Test]
-    public void Test()
+    public void TestMultipleClients()
     {
         // act
         this.StartHost<ClientConnectionHandler>();
