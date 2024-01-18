@@ -18,7 +18,7 @@ internal class Program
 
     private const int HostAliveTime_Seconds = 5;
 
-    private const int PollingPeriod_Milliseconds = 10;
+    private const int PollingPeriod_Milliseconds = 250;
 
     private const int TimeoutThreshold_Seconds = 10;
 
