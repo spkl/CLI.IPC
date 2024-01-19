@@ -8,6 +8,9 @@ using System.Runtime.InteropServices;
 
 namespace spkl.IPC.Test.ExecutionTests;
 
+#if !NET6_0_OR_GREATER
+[Platform(Exclude = "Linux")]
+#endif
 internal abstract class DynamicExecutionTest : TestBase
 {
 #if NET6_0_OR_GREATER

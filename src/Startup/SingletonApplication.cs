@@ -21,9 +21,22 @@ public class SingletonApplication
 
     private FileStream? runningLockStream;
 
+    private bool isThisInstanceStarting;
+
+    private readonly Random random;
+
+    private readonly int pollingPeriodMin, pollingPeriodMax;
+
     public SingletonApplication(IStartupBehavior behavior)
     {
         this.behavior = behavior;
+
+        this.random = new Random();
+
+        int pollingPeriod = (int)this.behavior.PollingPeriod.TotalMilliseconds;
+        const double pollingPeriodVariability = 0.25;
+        this.pollingPeriodMin = (int)(pollingPeriod * (1.0 - pollingPeriodVariability));
+        this.pollingPeriodMax = (int)(pollingPeriod * (1.0 + pollingPeriodVariability));
     }
 
     /// <summary>
@@ -42,10 +55,11 @@ public class SingletonApplication
 
             if (!this.IsStarting())
             {
-                this.behavior.StartInstance();
+                this.TryToStart();
             }
 
-            Thread.Sleep(this.behavior.PollingPeriod);
+            int millisecondsTimeout = this.random.Next(this.pollingPeriodMin, this.pollingPeriodMax);
+            Thread.Sleep(millisecondsTimeout);
         }
 
         if (!this.IsRunning())
@@ -65,7 +79,7 @@ public class SingletonApplication
         {
             try
             {
-                this.runningLockStream = this.OpenStream(this.RunningLockPath);
+                this.runningLockStream = this.OpenStreamForLocking(this.RunningLockPath);
             }
             catch (IOException)
             {
@@ -100,7 +114,7 @@ public class SingletonApplication
     {
         try
         {
-            using FileStream _ = this.OpenStream(this.RunningLockPath);
+            this.OpenStreamForChecking(this.RunningLockPath);
             return false;
         }
         catch (IOException)
@@ -111,14 +125,14 @@ public class SingletonApplication
 
     private bool IsStarting()
     {
-        if (this.startupLockStream != null)
+        if (this.isThisInstanceStarting)
         {
             return true;
         }
 
         try
         {
-            this.startupLockStream = this.OpenStream(this.StartupLockPath);
+            this.OpenStreamForChecking(this.StartupLockPath);
             return false;
         }
         catch (IOException)
@@ -127,7 +141,27 @@ public class SingletonApplication
         }
     }
 
-    private FileStream OpenStream(string path)
+    private void TryToStart()
+    {
+        try
+        {
+            this.startupLockStream = this.OpenStreamForLocking(this.StartupLockPath);
+        }
+        catch (IOException)
+        {
+            return;
+        }
+
+        this.isThisInstanceStarting = true;
+        this.behavior.StartInstance();
+    }
+
+    private void OpenStreamForChecking(string path)
+    {
+        new FileStream(path, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite | FileShare.Delete, 4096, FileOptions.DeleteOnClose).Dispose();
+    }
+
+    private FileStream OpenStreamForLocking(string path)
     {
         return new FileStream(path, FileMode.Create, FileAccess.ReadWrite, FileShare.None, 4096, FileOptions.DeleteOnClose);
     }

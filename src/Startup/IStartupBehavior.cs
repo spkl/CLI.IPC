@@ -22,6 +22,7 @@ public interface IStartupBehavior
 
     /// <summary>
     /// Gets the period that is used for polling whether a hosting application is running (<see cref="SingletonApplication.RequestInstance"/>).
+    /// The actually used period is randomized within +/- 25% from this value.
     /// </summary>
     TimeSpan PollingPeriod { get; }
 
