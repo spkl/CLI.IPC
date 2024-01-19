@@ -74,7 +74,7 @@ internal class HostTest : TestBase
 
     private void WaitForHostStartUp()
     {
-        Thread.Sleep(100);
+        Thread.Sleep(200);
     }
 
     private class ClientConnectionHandler : IClientConnectionHandler
