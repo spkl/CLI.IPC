@@ -92,6 +92,8 @@ internal class HostTest : TestBase
             this.ReceivedClientProperties = connection.Properties;
 
             connection.Out.Write(nameof(HostConnectionHandler.BeforeExit));
+            Thread.Sleep(200);
+
             connection.Out.Write('O');
             connection.Out.Write("ut1");
             connection.Error.Write('E');
