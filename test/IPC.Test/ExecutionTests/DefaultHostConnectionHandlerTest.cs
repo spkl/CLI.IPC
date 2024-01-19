@@ -4,7 +4,9 @@ using System.Threading.Tasks;
 
 namespace spkl.IPC.Test.ExecutionTests;
 
-[TestFixture]
+#if !NET6_0_OR_GREATER
+[Platform(Exclude = "Linux")]
+#endif
 internal class DefaultHostConnectionHandlerTest : DynamicExecutionTest
 {
     [Test]
