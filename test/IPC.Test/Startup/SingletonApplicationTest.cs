@@ -40,6 +40,10 @@ internal class SingletonApplicationTest : TestBase
         }
 
         this.disposables.Clear();
+
+        // Ensure that the relevant files are not locked.
+        File.Open(this.negotiationFile + ".lock0", FileMode.Create).Dispose();
+        File.Open(this.negotiationFile + ".lock1", FileMode.Create).Dispose();
     }
 
     [Test]
