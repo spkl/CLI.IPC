@@ -64,6 +64,7 @@ internal class Program
                 }
                 catch (ConnectionException)
                 {
+                    Thread.Sleep(100);
                     if (tries == 0)
                     {
                         throw;
