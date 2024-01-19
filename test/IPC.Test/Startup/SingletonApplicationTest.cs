@@ -64,12 +64,7 @@ internal class SingletonApplicationTest : TestBase
     {
         // arrange
         this.disposables.Add(File.Open(this.negotiationFile + ".lock0", FileMode.Create));
-        new Thread(
-            () =>
-            {
-                Thread.Sleep(100);
-                this.disposables.Add(File.Open(this.negotiationFile + ".lock1", FileMode.Create));
-            }).Start();
+        this.singletonApplication!.BeforeRequestingInstance += (_, _) => this.disposables.Add(File.Open(this.negotiationFile + ".lock1", FileMode.Create));
 
         // act
         this.singletonApplication!.RequestInstance();

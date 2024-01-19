@@ -11,6 +11,8 @@ namespace spkl.IPC.Startup;
 /// </summary>
 public sealed class SingletonApplication : IDisposable
 {
+    public EventHandler? BeforeRequestingInstance;
+
     private readonly IStartupBehavior behavior;
 
     private string StartupLockPath => this.behavior.NegotiationFileBasePath + ".lock0";
@@ -48,6 +50,8 @@ public sealed class SingletonApplication : IDisposable
         DateTime startTime = DateTime.Now;
         while ((DateTime.Now - startTime) < this.behavior.TimeoutThreshold)
         {
+            this.BeforeRequestingInstance?.Invoke(this, EventArgs.Empty);
+
             if (this.IsRunning())
             {
                 return;
