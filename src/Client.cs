@@ -25,7 +25,7 @@ public class Client
         }
         catch (SocketException e)
         {
-            throw new ConnectionException($"Could not connect. Reason: {e.Message}");
+            throw new ConnectionException($"Could not connect. Reason: {e.Message}. Error code: {e.ErrorCode}.");
         }
 
         Client client = new(channel, handler);

@@ -20,6 +20,8 @@ public class DefaultHostConnectionHandler : IHostConnectionHandler
 
     public virtual void HandleExit(int exitCode)
     {
+        Console.Out.Flush();
+        Console.Error.Flush();
         Environment.Exit(exitCode);
     }
 }

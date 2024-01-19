@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 
 namespace spkl.IPC.Test.ExecutionTests;
 
-[TestFixture]
-internal class MultipleClientsTest : ExecutionTest
+#if !NET6_0_OR_GREATER
+[Platform(Exclude = "Linux")]
+#endif
+internal class MultipleClientsTest : DynamicExecutionTest
 {
     [Test]
-    public void Test()
+    public void TestMultipleClients()
     {
         // act
         this.StartHost<ClientConnectionHandler>();

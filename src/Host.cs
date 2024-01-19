@@ -1,6 +1,7 @@
 ﻿using spkl.IPC.Messaging;
 using System;
 using System.Net.Sockets;
+using System.Threading;
 
 namespace spkl.IPC;
 
@@ -11,6 +12,12 @@ public class Host
     public IClientConnectionHandler Handler { get; }
 
     private MessageChannelHost? MessageChannelHost { get; set; }
+
+    private int connectedClients;
+
+    public int ConnectedClients => Interlocked.CompareExchange(ref this.connectedClients, 0, 0);
+
+    private CountdownEvent clientCountdown = new CountdownEvent(1);
 
     private Host(ITransport transport, IClientConnectionHandler handler)
     {
@@ -35,26 +42,38 @@ public class Host
 
     private void HandleNewMessageChannel(MessageChannel channel)
     {
-        ClientProperties properties;
-        try
-        {
-            properties = this.ReceiveClientProperties(channel);
-        }
-        catch (SocketException e)
-        {
-            this.Handler.HandleListenerError(new ListenerError(e, false));
-            return;
-        }
+        Interlocked.Increment(ref this.connectedClients);
+        this.clientCountdown.AddCount();
 
         try
         {
-            this.Handler.HandleCall(new ClientConnection(properties, channel));
+            ClientProperties properties;
+            try
+            {
+                properties = this.ReceiveClientProperties(channel);
+            }
+            catch (SocketException e)
+            {
+                this.Handler.HandleListenerError(new ListenerError(e, false));
+                return;
+            }
+
+            try
+            {
+                this.Handler.HandleCall(new ClientConnection(properties, channel));
+            }
+            catch
+            {
+                channel.Close();
+                throw;
+            }
         }
-        catch
+        finally
         {
-            channel.Close();
-            throw;
+            Interlocked.Decrement(ref this.connectedClients);
+            this.clientCountdown.Signal();
         }
+        
     }
 
     private void HandleListenerException(Exception exception)
@@ -77,7 +96,19 @@ public class Host
 
     public void Shutdown()
     {
-        this.MessageChannelHost?.Shutdown();
-        this.Transport.AfterHostShutdown();
+        if (this.MessageChannelHost != null)
+        {
+            this.MessageChannelHost?.Shutdown();
+            this.Transport.AfterHostShutdown();
+
+            this.MessageChannelHost = null;
+        }
+    }
+
+    public void WaitUntilAllClientsDisconnected()
+    {
+        this.clientCountdown.Signal();
+        this.clientCountdown.Wait();
+        this.clientCountdown = new CountdownEvent(1);
     }
 }

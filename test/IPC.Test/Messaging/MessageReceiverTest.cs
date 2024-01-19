@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 
-namespace spkl.IPC.Test;
+namespace spkl.IPC.Test.Messaging;
 internal class MessageReceiverTest : TestBase
 {
     public static IEnumerable<TestCaseData> ReceiveMethods
@@ -28,7 +28,7 @@ internal class MessageReceiverTest : TestBase
 
         // act & assert
         Assert.That(() => callReceiveMethod(messageReceiver), Throws.InstanceOf<ConnectionException>());
-    }  
+    }
 
     [Test]
     public void ExpectStringCanReceiveZeroLengthString()

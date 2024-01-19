@@ -1,7 +1,7 @@
 ﻿using spkl.IPC.Internal;
 using System.Text;
 
-namespace spkl.IPC.Test;
+namespace spkl.IPC.Test.Internal;
 internal class DelegateTextWriterTest : TestBase
 {
     [Test]

@@ -7,7 +7,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace spkl.IPC.Test;
+namespace spkl.IPC.Test.Messaging;
 internal class MessageChannelHostTest : TestBase
 {
     [Test]
@@ -31,7 +31,7 @@ internal class MessageChannelHostTest : TestBase
         messageChannelHost.AcceptConnections();
         new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp).Connect(new IPEndPoint(IPAddress.Loopback, port));
         Thread.Sleep(100);
-        
+
         // assert
         Assert.That(receivedException, Is.EqualTo(exception));
     }
