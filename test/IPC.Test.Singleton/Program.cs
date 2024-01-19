@@ -52,25 +52,7 @@ internal class Program
         else
         {
             s.RequestInstance();
-
-            int tries = 10;
-            while (tries > 0)
-            {
-                tries--;
-                try
-                {
-                    Client.Attach(transport, new DefaultHostConnectionHandler());
-                    break;
-                }
-                catch (ConnectionException)
-                {
-                    Thread.Sleep(50);
-                    if (tries == 0)
-                    {
-                        throw;
-                    }
-                }
-            }
+            Client.Attach(transport, new DefaultHostConnectionHandler());
         }
     }
 

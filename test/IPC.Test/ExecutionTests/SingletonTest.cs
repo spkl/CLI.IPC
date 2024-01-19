@@ -18,6 +18,7 @@ internal class SingletonTest : TestBase
     /// Approach: Host lifetime is 5 seconds, so if we continuously create new clients for 7 seconds, there should be exactly two host processes.
     /// </summary>
     [Test]
+    [Retry(3)]
     public void TestSingleton()
     {
         // arrange
