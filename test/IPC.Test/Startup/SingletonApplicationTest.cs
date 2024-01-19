@@ -2,10 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace spkl.IPC.Test.Startup;
 
@@ -107,7 +104,7 @@ internal class SingletonApplicationTest : TestBase
 
         // assert
         Assert.That(
-            () => File.Open(this.negotiationFile + ".lock1", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite | FileShare.Delete),
+            () => this.disposables.Add(File.Open(this.negotiationFile + ".lock1", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite | FileShare.Delete)),
             Throws.InstanceOf<IOException>());
     }
 
@@ -138,6 +135,6 @@ internal class SingletonApplicationTest : TestBase
         this.singletonApplication!.ShutdownInstance();
 
         // assert
-        Assert.That(() => File.Open(this.negotiationFile + ".lock1", FileMode.Create), Throws.Nothing);
+        Assert.That(() => this.disposables.Add(File.Open(this.negotiationFile + ".lock1", FileMode.Create)), Throws.Nothing);
     }
 }
