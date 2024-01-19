@@ -8,7 +8,10 @@ using System.Runtime.InteropServices;
 
 namespace spkl.IPC.Test.ExecutionTests;
 
-internal abstract class DynamicExecutionTest : ExecutionTest
+#if !NET6_0_OR_GREATER
+[Platform(Exclude = "Linux")]
+#endif
+internal abstract class DynamicExecutionTest : TestBase
 {
 #if NET6_0_OR_GREATER
     protected static string TransportArgument => Path.Combine(TestContext.CurrentContext.TestDirectory, "TestSocket");

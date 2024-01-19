@@ -9,7 +9,10 @@ using System.Threading;
 
 namespace spkl.IPC.Test.ExecutionTests;
 
-internal class SingletonTest : ExecutionTest
+#if !NET6_0_OR_GREATER
+[Platform(Exclude = "Linux")]
+#endif
+internal class SingletonTest : TestBase
 {
     /// <summary>
     /// Approach: Host lifetime is 5 seconds, so if we continuously create new clients for 7 seconds, there should be exactly two host processes.
