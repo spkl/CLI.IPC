@@ -53,7 +53,7 @@ internal class Program
         {
             s.RequestInstance();
 
-            int tries = 3;
+            int tries = 10;
             while (tries > 0)
             {
                 tries--;
@@ -64,7 +64,7 @@ internal class Program
                 }
                 catch (ConnectionException)
                 {
-                    Thread.Sleep(100);
+                    Thread.Sleep(50);
                     if (tries == 0)
                     {
                         throw;
@@ -113,7 +113,7 @@ internal class Program
             processId = p.Id;
 #endif
 
-            connection.Out.WriteLine("PID " + processId);
+            connection.Out.Write("PID " + processId);
 
             Thread.Sleep(TimeSpan.FromSeconds(Program.ClientConnectionDuration_Seconds));
 
