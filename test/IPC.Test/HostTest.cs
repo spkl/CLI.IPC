@@ -59,6 +59,7 @@ internal class HostTest : TestBase
         // act
         Client.Attach(transport, hostConnectionHandler);
         this.host.Shutdown();
+        this.host = null;
 
         // assert
         Assert.That(clientConnectionHandler.ReceivedClientProperties, Is.Not.Null);
