@@ -13,7 +13,7 @@ public class Host
 
     private MessageChannelHost? MessageChannelHost { get; set; }
 
-    private int connectedClients = 0;
+    private int connectedClients;
 
     public int ConnectedClients => Interlocked.CompareExchange(ref this.connectedClients, 0, 0);
 

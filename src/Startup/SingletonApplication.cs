@@ -9,7 +9,7 @@ namespace spkl.IPC.Startup;
 /// Usage as a client application: Call <see cref="RequestInstance"/> to ensure that an application instance is running before connecting to it.
 /// Usage as the hosting application: Call <see cref="ReportInstanceRunning"/> when ready for incoming connections. Call <see cref="ShutdownInstance"/> before exit.
 /// </summary>
-public class SingletonApplication
+public sealed class SingletonApplication : IDisposable
 {
     private readonly IStartupBehavior behavior;
 
@@ -164,5 +164,12 @@ public class SingletonApplication
     private FileStream OpenStreamForLocking(string path)
     {
         return new FileStream(path, FileMode.Create, FileAccess.ReadWrite, FileShare.None, 4096, FileOptions.DeleteOnClose);
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        this.startupLockStream?.Dispose();
+        this.runningLockStream?.Dispose();
     }
 }
