@@ -55,11 +55,14 @@ internal class HostTest : TestBase
         HostConnectionHandler hostConnectionHandler = new();
         this.host = Host.Start(transport, clientConnectionHandler);
         this.WaitForHostStartUp();
+        int connectedClientsBefore = this.host.ConnectedClients;
+        int connectedClientsDuring = -1;
+        hostConnectionHandler.BeforeExit += (_, _) => connectedClientsDuring = this.host.ConnectedClients;
 
         // act
         Client.Attach(transport, hostConnectionHandler);
         this.host.Shutdown();
-        this.host = null;
+        this.host.WaitUntilAllClientsDisconnected();
 
         // assert
         Assert.That(clientConnectionHandler.ReceivedClientProperties, Is.Not.Null);
@@ -70,6 +73,9 @@ internal class HostTest : TestBase
         Assert.That(hostConnectionHandler.ReceivedErrorString, Is.EqualTo("Error1Error2" + Environment.NewLine));
         Assert.That(hostConnectionHandler.ReceivedExitCode, Is.EqualTo(42));
 
+        Assert.That(connectedClientsBefore, Is.EqualTo(0), "Number of connected clients before connecting");
+        Assert.That(connectedClientsDuring, Is.EqualTo(1), "Number of connected clients during connection");
+        Assert.That(this.host.ConnectedClients, Is.EqualTo(0), "Number of connected clients after shutdown");
     }
 
     private void WaitForHostStartUp()
@@ -85,6 +91,7 @@ internal class HostTest : TestBase
         {
             this.ReceivedClientProperties = connection.Properties;
 
+            connection.Out.Write(nameof(HostConnectionHandler.BeforeExit));
             connection.Out.Write('O');
             connection.Out.Write("ut1");
             connection.Error.Write('E');
@@ -110,6 +117,12 @@ internal class HostTest : TestBase
 
         public void HandleOutString(string text)
         {
+            if (text == nameof(HostConnectionHandler.BeforeExit))
+            {
+                this.BeforeExit?.Invoke(this, EventArgs.Empty);
+                return;
+            }
+
             this.ReceivedOutString += text;
         }
 
@@ -128,5 +141,7 @@ internal class HostTest : TestBase
         public string ReceivedErrorString { get; private set; } = "";
 
         public int? ReceivedExitCode { get; private set; }
+
+        public event EventHandler? BeforeExit;
     }
 }

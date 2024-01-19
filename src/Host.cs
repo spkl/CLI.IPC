@@ -96,13 +96,19 @@ public class Host
 
     public void Shutdown()
     {
-        this.MessageChannelHost?.Shutdown();
-        this.Transport.AfterHostShutdown();
+        if (this.MessageChannelHost != null)
+        {
+            this.MessageChannelHost?.Shutdown();
+            this.Transport.AfterHostShutdown();
+
+            this.MessageChannelHost = null;
+        }
     }
 
     public void WaitUntilAllClientsDisconnected()
     {
         this.clientCountdown.Signal();
         this.clientCountdown.Wait();
+        this.clientCountdown = new CountdownEvent(1);
     }
 }
