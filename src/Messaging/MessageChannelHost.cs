@@ -42,9 +42,14 @@ public class MessageChannelHost
 #else
         this.Socket.Listen(MessageChannelHost.SocketBacklog);
 #endif
-        this.listenerThread = new Thread(new ThreadStart(this.Accept));
+
+        using EventWaitHandle waitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
+
+        this.listenerThread = new Thread(this.Accept);
         this.listenerThread.Name = $"{nameof(MessageChannelHost)} listener for {this.Socket.LocalEndPoint}";
-        this.listenerThread.Start();
+        this.listenerThread.Start(waitHandle);
+
+        waitHandle.WaitOne();
     }
 
     public void Shutdown()
@@ -52,8 +57,9 @@ public class MessageChannelHost
         this.Socket.Close();
     }
 
-    private void Accept()
+    private void Accept(object? waitHandle)
     {
+        ((EventWaitHandle)waitHandle!).Set();
         try
         {
             while (true)
