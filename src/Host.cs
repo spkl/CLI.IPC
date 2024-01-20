@@ -54,7 +54,7 @@ public class Host
             }
             catch (SocketException e)
             {
-                this.Handler.HandleListenerError(new ListenerError(e, false));
+                this.HandleListenerException(e, ListenerErrorPoint.ReceiveClientProperties);
                 return;
             }
 
@@ -76,9 +76,9 @@ public class Host
         
     }
 
-    private void HandleListenerException(Exception exception)
+    private void HandleListenerException(Exception exception, ListenerErrorPoint errorPoint)
     {
-        this.Handler.HandleListenerError(new ListenerError(exception, true));
+        this.Handler.HandleListenerError(new ListenerError(exception, errorPoint));
     }
 
     private ClientProperties ReceiveClientProperties(MessageChannel channel)
