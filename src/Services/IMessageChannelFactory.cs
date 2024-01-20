@@ -1,4 +1,7 @@
-﻿using spkl.IPC.Messaging;
+﻿// Copyright (c) Sebastian Fischer. All Rights Reserved.
+// Licensed under the MIT License.
+
+using spkl.IPC.Messaging;
 using System.Net.Sockets;
 
 namespace spkl.IPC.Services;

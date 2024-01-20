@@ -1,4 +1,7 @@
-﻿#if NET6_0_OR_GREATER
+﻿// Copyright (c) Sebastian Fischer. All Rights Reserved.
+// Licensed under the MIT License.
+
+#if NET6_0_OR_GREATER
 using System.IO;
 using System.Net;
 using System.Net.Sockets;

@@ -1,4 +1,7 @@
-﻿using spkl.IPC.Services;
+﻿// Copyright (c) Sebastian Fischer. All Rights Reserved.
+// Licensed under the MIT License.
+
+using spkl.IPC.Services;
 using System;
 using System.Net.Sockets;
 using System.Threading;

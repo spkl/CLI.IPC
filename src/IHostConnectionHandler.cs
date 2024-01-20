@@ -1,4 +1,7 @@
-﻿namespace spkl.IPC;
+﻿// Copyright (c) Sebastian Fischer. All Rights Reserved.
+// Licensed under the MIT License.
+
+namespace spkl.IPC;
 
 public interface IHostConnectionHandler
 {
