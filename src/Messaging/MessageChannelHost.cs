@@ -1,4 +1,7 @@
-﻿using spkl.IPC.Services;
+﻿// Copyright (c) Sebastian Fischer. All Rights Reserved.
+// Licensed under the MIT License.
+
+using spkl.IPC.Services;
 using System;
 using System.Net.Sockets;
 using System.Threading;
@@ -21,11 +24,11 @@ public class MessageChannelHost
 
     private readonly Action<MessageChannel> handleNewConnection;
 
-    private readonly Action<Exception> handleListenerException;
+    private readonly Action<Exception, ListenerErrorPoint> handleListenerException;
 
     private Thread? listenerThread;
 
-    public MessageChannelHost(ITransport transport, TaskFactory taskFactory, Action<MessageChannel> handleNewConnection, Action<Exception> handleListenerException)
+    public MessageChannelHost(ITransport transport, TaskFactory taskFactory, Action<MessageChannel> handleNewConnection, Action<Exception, ListenerErrorPoint> handleListenerException)
     {
         this.Socket = transport.Socket;
         this.Socket.Bind(transport.EndPoint);
@@ -42,9 +45,14 @@ public class MessageChannelHost
 #else
         this.Socket.Listen(MessageChannelHost.SocketBacklog);
 #endif
-        this.listenerThread = new Thread(new ThreadStart(this.Accept));
+
+        using EventWaitHandle waitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
+
+        this.listenerThread = new Thread(this.Accept);
         this.listenerThread.Name = $"{nameof(MessageChannelHost)} listener for {this.Socket.LocalEndPoint}";
-        this.listenerThread.Start();
+        this.listenerThread.Start(waitHandle);
+
+        waitHandle.WaitOne();
     }
 
     public void Shutdown()
@@ -52,16 +60,26 @@ public class MessageChannelHost
         this.Socket.Close();
     }
 
-    private void Accept()
+    private void Accept(object? waitHandle)
     {
+        ((EventWaitHandle)waitHandle!).Set();
         try
         {
             while (true)
             {
                 Socket incoming = this.Socket.Accept();
                 MessageChannel messageChannel = ServiceProvider.MessageChannelFactory.CreateForIncoming(incoming);
-                // TODO does this need to do some kind of exception passing, because the exception in the task would be hidden?
-                this.taskFactory.StartNew(() => this.handleNewConnection(messageChannel));
+                this.taskFactory.StartNew(() =>
+                {
+                    try
+                    {
+                        this.handleNewConnection(messageChannel);
+                    }
+                    catch (Exception e)
+                    {
+                        this.handleListenerException(e, ListenerErrorPoint.ClientConnectionHandler);
+                    }
+                });
             }
         }
         catch (SocketException e) when (e.SocketErrorCode == SocketError.Interrupted)
@@ -70,7 +88,7 @@ public class MessageChannelHost
         }
         catch (Exception e)
         {
-            this.handleListenerException(e);
+            this.handleListenerException(e, ListenerErrorPoint.ConnectionAccept);
         }
         finally
         {

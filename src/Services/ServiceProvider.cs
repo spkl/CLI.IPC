@@ -1,4 +1,7 @@
-﻿namespace spkl.IPC.Services;
+﻿// Copyright (c) Sebastian Fischer. All Rights Reserved.
+// Licensed under the MIT License.
+
+namespace spkl.IPC.Services;
 internal static class ServiceProvider
 {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.

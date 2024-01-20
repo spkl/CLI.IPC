@@ -18,16 +18,32 @@ internal class ListenerErrorTest : TestBase
     }
 
     [Theory]
-    public void HostWasShutDown(bool value)
+    public void ErrorPoint(ListenerErrorPoint value)
     {
         // arrange
         ListenerError error = new(new Exception(), value);
 
         // act
-        bool result = error.HostWasShutDown;
+        ListenerErrorPoint result = error.ErrorPoint;
 
         // assert
         Assert.That(result, Is.EqualTo(value));
+    }
+
+    [Test]
+    [TestCase(ListenerErrorPoint.ConnectionAccept, true)]
+    [TestCase(ListenerErrorPoint.ReceiveClientProperties, false)]
+    [TestCase(ListenerErrorPoint.ClientConnectionHandler, false)]
+    public void IsHostInterrupted(ListenerErrorPoint errorPoint, bool expected)
+    {
+        // arrange
+        ListenerError error = new(new Exception(), errorPoint);
+
+        // act
+        bool result = error.IsHostInterrupted;
+
+        // assert
+        Assert.That(result, Is.EqualTo(expected));
     }
 
     [Test]

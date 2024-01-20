@@ -10,8 +10,16 @@ using System.Threading.Tasks;
 namespace spkl.IPC.Test.Messaging;
 internal class MessageChannelHostTest : TestBase
 {
+    private MessageChannelHost messageChannelHost;
+
+    [TearDown]
+    public void TearDown()
+    {
+        this.messageChannelHost?.Shutdown();
+    }
+
     [Test]
-    public void CallsHandleListenerException()
+    public void CallsHandleListenerExceptionForConnectionAccept()
     {
         // arrange
         int port = TestBase.GetUnusedPort();
@@ -23,16 +31,65 @@ internal class MessageChannelHostTest : TestBase
         ServiceProvider.MessageChannelFactory = Substitute.For<IMessageChannelFactory>();
         ServiceProvider.MessageChannelFactory.CreateForIncoming(Arg.Any<Socket>()).Throws(exception);
 
-        MessageChannelHost messageChannelHost = new(transport, Task.Factory, messageChannel => { }, HandleListenerException);
+        EventWaitHandle waitHandle = new(false, EventResetMode.ManualReset);
+
+        this.messageChannelHost = new(transport, Task.Factory, messageChannel => { }, HandleListenerException);
         Exception? receivedException = null;
-        void HandleListenerException(Exception exception) => receivedException = exception;
+        ListenerErrorPoint? receivedErrorPoint = null;
+        void HandleListenerException(Exception exception, ListenerErrorPoint errorPoint)
+        {
+            receivedException = exception;
+            receivedErrorPoint = errorPoint;
+            waitHandle.Set();
+        }
 
         // act
-        messageChannelHost.AcceptConnections();
+        this.messageChannelHost.AcceptConnections();
         new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp).Connect(new IPEndPoint(IPAddress.Loopback, port));
-        Thread.Sleep(100);
+        bool timeout = !waitHandle.WaitOne(TimeSpan.FromSeconds(5));
 
         // assert
+        Assert.That(timeout, Is.False, "Timeout");
         Assert.That(receivedException, Is.EqualTo(exception));
+        Assert.That(receivedErrorPoint, Is.EqualTo(ListenerErrorPoint.ConnectionAccept));
+    }
+
+    [Test]
+    public void CallsHandleListenerExceptionForClientConnectionHandler()
+    {
+        // arrange
+        int port = TestBase.GetUnusedPort();
+        ITransport transport = Substitute.For<ITransport>();
+        transport.Socket.Returns(new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp));
+        transport.EndPoint.Returns(new IPEndPoint(IPAddress.Loopback, port));
+
+        EventWaitHandle waitHandle = new(false, EventResetMode.ManualReset);
+
+        Exception exception = new("Foo");
+        this.messageChannelHost = new(transport, Task.Factory, HandleNewConnection, HandleListenerException);
+                
+        void HandleNewConnection(MessageChannel channel)
+        {
+            throw exception;
+        }
+        
+        Exception? receivedException = null;
+        ListenerErrorPoint? receivedErrorPoint = null;
+        void HandleListenerException(Exception exception, ListenerErrorPoint errorPoint)
+        {
+            receivedException = exception;
+            receivedErrorPoint = errorPoint;
+            waitHandle.Set();
+        }
+
+        // act
+        this.messageChannelHost.AcceptConnections();
+        new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp).Connect(new IPEndPoint(IPAddress.Loopback, port));
+        bool timeout = !waitHandle.WaitOne(TimeSpan.FromSeconds(5));
+
+        // assert
+        Assert.That(timeout, Is.False, "Timeout");
+        Assert.That(receivedException, Is.EqualTo(exception));
+        Assert.That(receivedErrorPoint, Is.EqualTo(ListenerErrorPoint.ClientConnectionHandler));
     }
 }

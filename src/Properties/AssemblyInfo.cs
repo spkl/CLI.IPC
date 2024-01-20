@@ -1,3 +1,6 @@
-﻿using System.Runtime.CompilerServices;
+﻿// Copyright (c) Sebastian Fischer. All Rights Reserved.
+// Licensed under the MIT License.
+
+using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("spkl.IPC.Test, PublicKey=00240000048000009400000006020000002400005253413100040000010001005d8c189ddc1ca9d7ec3a170108d9d37767efe8af91960cd090efd9c1c96d967e2f168801002df9a476e571d9ece4fc94d027e259a8533954b8c58acf5e0b534b3bb6c886a03d051a4b91a4da84ebfe1b21645cf0d95841af901377f155466de558e2748538d07982f36fe1b5ef60775ee5c5dfc6b34ba377fb894a9fe56330d4")]

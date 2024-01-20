@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Sebastian Fischer. All Rights Reserved.
+// Licensed under the MIT License.
+
+using System;
 
 namespace spkl.IPC;
 
@@ -10,14 +13,19 @@ public class ListenerError
     public Exception Exception { get; }
 
     /// <summary>
-    /// If this is true, the <see cref="Host"/> is no longer accepting new connections and should be shut down.
+    /// Indicates at which point in the connection process the error occured.
     /// </summary>
-    public bool HostWasShutDown { get; }
+    public ListenerErrorPoint ErrorPoint { get; }
 
-    public ListenerError(Exception exception, bool hostWasShutDown)
+    /// <summary>
+    /// If this is true, the <see cref="Host"/> is no longer accepts connections and should be shut down.
+    /// </summary>
+    public bool IsHostInterrupted => this.ErrorPoint == ListenerErrorPoint.ConnectionAccept;
+
+    public ListenerError(Exception exception, ListenerErrorPoint errorPoint)
     {
         this.Exception = exception;
-        this.HostWasShutDown = hostWasShutDown;
+        this.ErrorPoint = errorPoint;
     }
 
     public override string ToString()

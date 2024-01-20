@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Sebastian Fischer. All Rights Reserved.
+// Licensed under the MIT License.
+
+using System;
 using System.Net.Sockets;
 using System.Text;
 #if NET6_0_OR_GREATER

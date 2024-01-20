@@ -1,4 +1,7 @@
-﻿using spkl.IPC;
+﻿// Copyright (c) Sebastian Fischer. All Rights Reserved.
+// Licensed under the MIT License.
+
+using spkl.IPC;
 using System;
 using System.Linq;
 using System.Threading;
@@ -12,7 +15,7 @@ internal class Program
     {
         ITransport transport;
 #if NET6_0_OR_GREATER
-        transport = new UdsTransport(@"C:\Users\Sebastian\Documents\Projects\StreamTest\Server\bin\Debug\net6.0\socket");
+        transport = new UdsTransport(@"C:\Users\Sebastian\Documents\Projects\StreamTest\playground\Server\bin\Debug\net6.0\socket");
 #else
         transport = new TcpLoopbackTransport(65058);
 #endif

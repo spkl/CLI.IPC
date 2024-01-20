@@ -1,4 +1,7 @@
-﻿using spkl.IPC.Internal;
+﻿// Copyright (c) Sebastian Fischer. All Rights Reserved.
+// Licensed under the MIT License.
+
+using spkl.IPC.Internal;
 using spkl.IPC.Messaging;
 using System.IO;
 
