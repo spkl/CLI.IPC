@@ -3,6 +3,9 @@
 
 namespace spkl.CLI.IPC;
 
+/// <summary>
+/// Specifies where a <see cref="ListenerError"/> occurred.
+/// </summary>
 public enum ListenerErrorPoint
 {
     /// <summary>

@@ -5,9 +5,12 @@ using System;
 
 namespace spkl.CLI.IPC.Startup;
 
+/// <summary>
+/// Exception type used when a problem occurs in <see cref="SingletonApplication"/>.
+/// </summary>
 public class SingletonApplicationException : Exception
 {
-    public SingletonApplicationException(string? message) : base(message)
+    internal SingletonApplicationException(string? message) : base(message)
     {
     }
 }

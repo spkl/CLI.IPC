@@ -7,11 +7,14 @@ using System.Net.Sockets;
 
 namespace spkl.CLI.IPC;
 
+/// <summary>
+/// The client.
+/// </summary>
 public class Client
 {
     private MessageChannel Channel { get; }
 
-    public IHostConnectionHandler Handler { get; }
+    internal IHostConnectionHandler Handler { get; }
 
     private Client(MessageChannel channel, IHostConnectionHandler handler)
     {
@@ -19,6 +22,11 @@ public class Client
         this.Handler = handler;
     }
 
+    /// <summary>
+    /// Connects to a host using the specified <paramref name="transport"/> and <paramref name="handler"/>.
+    /// This method blocks until the connection is closed.
+    /// </summary>
+    /// <exception cref="ConnectionException">The connection could not be established. See inner exception for details.</exception>
     public static void Attach(ITransport transport, IHostConnectionHandler handler)
     {
         MessageChannel channel;
@@ -28,7 +36,7 @@ public class Client
         }
         catch (SocketException e)
         {
-            throw new ConnectionException($"Could not connect. Reason: {e.Message}. Error code: {e.ErrorCode}.");
+            throw new ConnectionException($"Could not connect. Reason: {e.Message}. Error code: {e.ErrorCode}.", e);
         }
 
         Client client = new(channel, handler);

@@ -5,7 +5,7 @@ using System.Net.Sockets;
 
 namespace spkl.CLI.IPC.Messaging;
 
-public class MessageChannel
+internal class MessageChannel
 {
     public Socket Socket { get; }
 

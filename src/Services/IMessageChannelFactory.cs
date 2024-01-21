@@ -5,7 +5,7 @@ using spkl.CLI.IPC.Messaging;
 using System.Net.Sockets;
 
 namespace spkl.CLI.IPC.Services;
-public interface IMessageChannelFactory
+internal interface IMessageChannelFactory
 {
     MessageChannel CreateForIncoming(Socket socket);
 

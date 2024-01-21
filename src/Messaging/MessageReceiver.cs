@@ -12,7 +12,7 @@ using Bytes = System.ArraySegment<byte>;
 
 namespace spkl.CLI.IPC.Messaging;
 
-public class MessageReceiver
+internal class MessageReceiver
 {
     public Socket Socket { get; }
 

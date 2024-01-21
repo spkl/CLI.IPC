@@ -3,7 +3,7 @@
 
 namespace spkl.CLI.IPC.Messaging;
 
-public enum MessageType : byte
+internal enum MessageType : byte
 {
     /// <summary>
     /// Indicates that the connection has been closed.

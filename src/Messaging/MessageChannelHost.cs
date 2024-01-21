@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace spkl.CLI.IPC.Messaging;
 
+/// <summary>
+/// Implements client connection handling on a host.
+/// </summary>
 public class MessageChannelHost
 {
 #if !NET6_0_OR_GREATER
@@ -18,7 +21,7 @@ public class MessageChannelHost
     public static int SocketBacklog = 5;
 #endif
 
-    public Socket Socket { get; }
+    internal Socket Socket { get; }
 
     private readonly TaskFactory taskFactory;
 
@@ -28,7 +31,7 @@ public class MessageChannelHost
 
     private Thread? listenerThread;
 
-    public MessageChannelHost(ITransport transport, TaskFactory taskFactory, Action<MessageChannel> handleNewConnection, Action<Exception, ListenerErrorPoint> handleListenerException)
+    internal MessageChannelHost(ITransport transport, TaskFactory taskFactory, Action<MessageChannel> handleNewConnection, Action<Exception, ListenerErrorPoint> handleListenerException)
     {
         this.Socket = transport.Socket;
         this.Socket.Bind(transport.EndPoint);
@@ -38,7 +41,7 @@ public class MessageChannelHost
         this.handleListenerException = handleListenerException;
     }
 
-    public void AcceptConnections()
+    internal void AcceptConnections()
     {
 #if NET6_0_OR_GREATER
         this.Socket.Listen();
@@ -55,7 +58,7 @@ public class MessageChannelHost
         waitHandle.WaitOne();
     }
 
-    public void Shutdown()
+    internal void Shutdown()
     {
         this.Socket.Close();
     }
