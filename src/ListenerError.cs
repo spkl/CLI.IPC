@@ -5,6 +5,10 @@ using System;
 
 namespace spkl.CLI.IPC;
 
+/// <summary>
+/// Encapsulates an <see cref="Exception"/> that happened while processing client requests.
+/// Check <see cref="IsHostInterrupted"/> to see whether the host needs to be restarted.
+/// </summary>
 public class ListenerError
 {
     /// <summary>
@@ -22,12 +26,13 @@ public class ListenerError
     /// </summary>
     public bool IsHostInterrupted => this.ErrorPoint == ListenerErrorPoint.ConnectionAccept;
 
-    public ListenerError(Exception exception, ListenerErrorPoint errorPoint)
+    internal ListenerError(Exception exception, ListenerErrorPoint errorPoint)
     {
         this.Exception = exception;
         this.ErrorPoint = errorPoint;
     }
 
+    /// <inheritdoc/>
     public override string ToString()
     {
         return this.Exception.ToString();

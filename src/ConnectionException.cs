@@ -5,13 +5,16 @@ using System;
 
 namespace spkl.CLI.IPC;
 
+/// <summary>
+/// Exception type used when a connection cannot be established or is interrupted.
+/// </summary>
 public class ConnectionException : Exception
 {
-    public ConnectionException(string message) : base(message)
+    internal ConnectionException(string message) : base(message)
     {
     }
 
-    public ConnectionException(string message, Exception innerException) : base(message, innerException)
+    internal ConnectionException(string message, Exception innerException) : base(message, innerException)
     {
     }
 }

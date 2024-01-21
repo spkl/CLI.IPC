@@ -8,16 +8,22 @@ using System.Threading;
 
 namespace spkl.CLI.IPC;
 
+/// <summary>
+/// The host (or server).
+/// </summary>
 public class Host
 {
-    public ITransport Transport { get; }
+    internal ITransport Transport { get; }
 
-    public IClientConnectionHandler Handler { get; }
+    internal IClientConnectionHandler Handler { get; }
 
     private MessageChannelHost? MessageChannelHost { get; set; }
 
     private int connectedClients;
 
+    /// <summary>
+    /// Gets the number of currently connected clients.
+    /// </summary>
     public int ConnectedClients => Interlocked.CompareExchange(ref this.connectedClients, 0, 0);
 
     private CountdownEvent clientCountdown = new CountdownEvent(1);
@@ -28,6 +34,10 @@ public class Host
         this.Handler = handler;
     }
 
+    /// <summary>
+    /// Stars a new host using the specified <paramref name="transport"/> and <paramref name="handler"/>.
+    /// This method does not block - client connections are accepted on a new thread.
+    /// </summary>
     public static Host Start(ITransport transport, IClientConnectionHandler handler)
     {
         transport.BeforeHostStart();
@@ -97,6 +107,9 @@ public class Host
         return properties;
     }
 
+    /// <summary>
+    /// Stops listening for incoming connections.
+    /// </summary>
     public void Shutdown()
     {
         if (this.MessageChannelHost != null)
@@ -108,6 +121,9 @@ public class Host
         }
     }
 
+    /// <summary>
+    /// Returns only when no client is connected anymore.
+    /// </summary>
     public void WaitUntilAllClientsDisconnected()
     {
         this.clientCountdown.Signal();

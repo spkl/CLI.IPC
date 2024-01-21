@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace spkl.CLI.IPC;
 
+/// <summary>
+/// Specifies how a host handles client connections and errors.
+/// </summary>
 public interface IClientConnectionHandler
 {
     /// <summary>
@@ -29,7 +32,7 @@ public interface IClientConnectionHandler
     void HandleCall(ClientConnection connection);
 
     /// <summary>
-    /// Handles an error that occurs while listening for client connections.
+    /// Handles an error that occurs while listening for, accepting, or processing client connections.
     /// </summary>
     void HandleListenerError(ListenerError error);
 }

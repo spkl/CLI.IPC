@@ -14,6 +14,9 @@ namespace spkl.CLI.IPC.Startup;
 /// </summary>
 public sealed class SingletonApplication : IDisposable
 {
+    /// <summary>
+    /// Occurs before polling for a running or starting instance.
+    /// </summary>
     public EventHandler? BeforeRequestingInstance;
 
     private readonly IStartupBehavior behavior;
@@ -32,6 +35,8 @@ public sealed class SingletonApplication : IDisposable
 
     private readonly int pollingPeriodMin, pollingPeriodMax;
 
+    /// <summary>
+    /// </summary>
     public SingletonApplication(IStartupBehavior behavior)
     {
         this.behavior = behavior;
