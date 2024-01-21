@@ -10,7 +10,7 @@ using Bytes = System.Span<byte>;
 using Bytes = System.ArraySegment<byte>;
 #endif
 
-namespace spkl.IPC.Messaging;
+namespace spkl.CLI.IPC.Messaging;
 
 public class MessageSender
 {

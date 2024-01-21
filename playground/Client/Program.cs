@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Sebastian Fischer. All Rights Reserved.
 // Licensed under the MIT License.
 
-using spkl.IPC;
+using spkl.CLI.IPC;
 
 namespace Client;
 
@@ -16,7 +16,7 @@ internal class Program
         transport = new TcpLoopbackTransport(65058);
 #endif
 
-        spkl.IPC.Client.Attach(
+        spkl.CLI.IPC.Client.Attach(
             transport,
             new DefaultHostConnectionHandler());
     }

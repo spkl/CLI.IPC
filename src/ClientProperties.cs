@@ -3,7 +3,7 @@
 
 using System;
 
-namespace spkl.IPC;
+namespace spkl.CLI.IPC;
 
 public class ClientProperties
 {

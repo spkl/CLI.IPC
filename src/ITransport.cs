@@ -4,7 +4,7 @@
 using System.Net;
 using System.Net.Sockets;
 
-namespace spkl.IPC;
+namespace spkl.CLI.IPC;
 
 /// <summary>
 /// Controls the specifics of how the connection between host and client is established (i.e. protocol and address).

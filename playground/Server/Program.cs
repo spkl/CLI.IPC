@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Sebastian Fischer. All Rights Reserved.
 // Licensed under the MIT License.
 
-using spkl.IPC;
+using spkl.CLI.IPC;
 using System;
 using System.Linq;
 using System.Threading;

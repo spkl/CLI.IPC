@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Sebastian Fischer. All Rights Reserved.
 // Licensed under the MIT License.
 
-namespace spkl.IPC.Messaging;
+namespace spkl.CLI.IPC.Messaging;
 
 public enum MessageType : byte
 {

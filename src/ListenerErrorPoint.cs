@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Sebastian Fischer. All Rights Reserved.
 // Licensed under the MIT License.
 
-namespace spkl.IPC;
+namespace spkl.CLI.IPC;
 
 public enum ListenerErrorPoint
 {

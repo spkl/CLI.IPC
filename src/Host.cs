@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Sebastian Fischer. All Rights Reserved.
 // Licensed under the MIT License.
 
-using spkl.IPC.Messaging;
+using spkl.CLI.IPC.Messaging;
 using System;
 using System.Net.Sockets;
 using System.Threading;
 
-namespace spkl.IPC;
+namespace spkl.CLI.IPC;
 
 public class Host
 {

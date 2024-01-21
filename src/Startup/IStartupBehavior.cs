@@ -3,7 +3,7 @@
 
 using System;
 
-namespace spkl.IPC.Startup;
+namespace spkl.CLI.IPC.Startup;
 
 /// <summary>
 /// Controls behavior and parameters for <see cref="SingletonApplication"/>s.
