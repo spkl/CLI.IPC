@@ -1,13 +1,38 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFrameworks>net6.0;netstandard2.0</TargetFrameworks>
-	<RootNamespace>spkl.CLI.IPC</RootNamespace>
-	<AssemblyName>spkl.CLI.IPC</AssemblyName>
-	<Nullable>enable</Nullable>
-	<LangVersion>10.0</LangVersion>
-	<SignAssembly>True</SignAssembly>
-	<AssemblyOriginatorKeyFile>..\keys\spkl.CLI.IPC.snk</AssemblyOriginatorKeyFile>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>net6.0;netstandard2.0</TargetFrameworks>
+		<RootNamespace>spkl.CLI.IPC</RootNamespace>
+		<AssemblyName>spkl.CLI.IPC</AssemblyName>
+		<Nullable>enable</Nullable>
+		<LangVersion>10.0</LangVersion>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<SignAssembly>True</SignAssembly>
+		<AssemblyOriginatorKeyFile>..\keys\spkl.CLI.IPC.snk</AssemblyOriginatorKeyFile>
+		<DelaySign>false</DelaySign>
+		
+		<Authors>Sebastian Fischer</Authors>
+		<Company>Sebastian Fischer</Company>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<Copyright>Copyright (c) 2024 Sebastian Fischer</Copyright>
+		<RepositoryUrl>https://github.com/spkl/CLI.IPC</RepositoryUrl>
+		<AssemblyVersion>1.0.0.0</AssemblyVersion>
+		<FileVersion>1.0.0.0</FileVersion>
+		<Version>1.0.0</Version>
+		<PackageProjectUrl>https://github.com/spkl/CLI.IPC</PackageProjectUrl>
+		<Description>A .NET library that helps you implement a client/server architecture for command line interface applications.
+
+This project uses Semantic Versioning (https://semver.org/).
+		</Description>
+		<PackageTags>dotnet cli command-line command-line-interface client server client-server ipc interprocess communication interprocess-communication network-programming network-communication client-server-architecture client-server-communication client-server-application</PackageTags>
+		<PackageReleaseNotes></PackageReleaseNotes>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="..\LICENSE" Pack="true" PackagePath="\" />
+		<None Include="..\README.md" Link="README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
 
 </Project>
