@@ -1,13 +1,13 @@
 ﻿// Copyright (c) Sebastian Fischer. All Rights Reserved.
 // Licensed under the MIT License.
 
-using spkl.IPC.Services;
+using spkl.CLI.IPC.Services;
 using System;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace spkl.IPC.Messaging;
+namespace spkl.CLI.IPC.Messaging;
 
 public class MessageChannelHost
 {

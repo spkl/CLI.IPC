@@ -3,7 +3,7 @@
 
 using System;
 
-namespace spkl.IPC.Startup;
+namespace spkl.CLI.IPC.Startup;
 
 public class SingletonApplicationException : Exception
 {

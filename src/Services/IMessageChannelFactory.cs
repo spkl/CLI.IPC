@@ -1,10 +1,10 @@
 ﻿// Copyright (c) Sebastian Fischer. All Rights Reserved.
 // Licensed under the MIT License.
 
-using spkl.IPC.Messaging;
+using spkl.CLI.IPC.Messaging;
 using System.Net.Sockets;
 
-namespace spkl.IPC.Services;
+namespace spkl.CLI.IPC.Services;
 public interface IMessageChannelFactory
 {
     MessageChannel CreateForIncoming(Socket socket);

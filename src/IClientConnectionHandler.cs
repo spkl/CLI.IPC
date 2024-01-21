@@ -3,7 +3,7 @@
 
 using System.Threading.Tasks;
 
-namespace spkl.IPC;
+namespace spkl.CLI.IPC;
 
 public interface IClientConnectionHandler
 {

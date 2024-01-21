@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Sebastian Fischer. All Rights Reserved.
 // Licensed under the MIT License.
 
-using spkl.IPC.Messaging;
-using spkl.IPC.Services;
+using spkl.CLI.IPC.Messaging;
+using spkl.CLI.IPC.Services;
 using System.Net.Sockets;
 
-namespace spkl.IPC;
+namespace spkl.CLI.IPC;
 
 public class Client
 {

@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFrameworks>net6.0;net48</TargetFrameworks>
+	<AssemblyName>spkl.CLI.IPC.Test.DynamicClient</AssemblyName>
+	<RootNamespace>spkl.CLI.IPC.Test.DynamicClient</RootNamespace>
+    <Nullable>enable</Nullable>
+	<LangVersion>10.0</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\CLI.IPC.csproj" />
+  </ItemGroup>
+
+</Project>

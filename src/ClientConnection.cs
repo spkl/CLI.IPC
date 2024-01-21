@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Sebastian Fischer. All Rights Reserved.
 // Licensed under the MIT License.
 
-using spkl.IPC.Internal;
-using spkl.IPC.Messaging;
+using spkl.CLI.IPC.Internal;
+using spkl.CLI.IPC.Messaging;
 using System.IO;
 
-namespace spkl.IPC;
+namespace spkl.CLI.IPC;
 
 public class ClientConnection
 {

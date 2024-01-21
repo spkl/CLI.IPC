@@ -4,7 +4,7 @@
 using System.Net;
 using System.Net.Sockets;
 
-namespace spkl.IPC;
+namespace spkl.CLI.IPC;
 
 /// <summary>
 /// Establishes a local connection using TCP on an IPv4 loopback.

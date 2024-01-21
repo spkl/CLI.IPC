@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net6.0;netstandard2.0</TargetFrameworks>
+	<RootNamespace>spkl.CLI.IPC</RootNamespace>
+	<AssemblyName>spkl.CLI.IPC</AssemblyName>
+	<Nullable>enable</Nullable>
+	<LangVersion>10.0</LangVersion>
+	<SignAssembly>True</SignAssembly>
+	<AssemblyOriginatorKeyFile>..\keys\spkl.CLI.IPC.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+
+</Project>

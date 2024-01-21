@@ -5,7 +5,7 @@ using System;
 using System.IO;
 using System.Text;
 
-namespace spkl.IPC.Internal;
+namespace spkl.CLI.IPC.Internal;
 
 internal class DelegateTextWriter : TextWriter
 {

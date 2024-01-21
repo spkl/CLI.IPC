@@ -3,7 +3,7 @@
 
 using System.Net.Sockets;
 
-namespace spkl.IPC.Messaging;
+namespace spkl.CLI.IPC.Messaging;
 
 public class MessageChannel
 {

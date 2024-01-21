@@ -6,7 +6,7 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 
-namespace spkl.IPC;
+namespace spkl.CLI.IPC;
 
 /// <summary>
 /// Establishes a local connection using a Unix Domain Socket.

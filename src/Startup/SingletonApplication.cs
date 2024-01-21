@@ -5,7 +5,7 @@ using System;
 using System.IO;
 using System.Threading;
 
-namespace spkl.IPC.Startup;
+namespace spkl.CLI.IPC.Startup;
 
 /// <summary>
 /// Ensures that an application is only started once.
