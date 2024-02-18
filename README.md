@@ -3,7 +3,7 @@
 A .NET library that helps you implement a client/server architecture for command line interface applications. Using _spkl.CLI.IPC_, you can let your CLI application delegate its workload to a separate server process.
 
 __How does it work?__
-When a user starts your client application, it sends its working directory and command line arguments to the server application. While processing the request, the server application can send console outputs (standard and error) back to the client. At the end, the server sends an exit code and closes the connection.
+When a user starts your client application, it sends its working directory, command line arguments and process ID to the server application. While processing the request, the server application can send console outputs (standard and error) back to the client. At the end, the server sends an exit code and closes the connection.
 
 _spkl.CLI.IPC_ was designed for clients and servers that run on the same machine, but because it is based on sockets, network communication between different machines can also be used.
 
@@ -55,7 +55,7 @@ Client.Attach(
     new DefaultHostConnectionHandler());
 ```
 
-Just like for the server, you need to specify connection and behavior information (`ITransport`, `IHostConnectionHandler`).
+Just like for the server, you need to specify connection and behavior information (`ITransport`, `IHostConnectionHandler2`).
 
 For most scenarios, the built-in `DefaultHostConnectionHandler` can be used. It writes the received outputs to the console and exits the application with the received exit code when the server closes the connection.
 

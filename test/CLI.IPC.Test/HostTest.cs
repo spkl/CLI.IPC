@@ -20,14 +20,16 @@ internal class HostTest : TestBase
         }
     }
 
-    public static IEnumerable<TestCaseData> Transports
+    public static IEnumerable<TestCaseData> HostCanBeInSameProcessAsClientTestCases
     {
         get
         {
 #if NET6_0_OR_GREATER
-            yield return new TestCaseData(() => new UdsTransport("someFile")).SetArgDisplayNames(nameof(UdsTransport));
+            yield return new TestCaseData(() => new UdsTransport("someFile"), new HostConnectionHandler()).SetArgDisplayNames(nameof(UdsTransport), nameof(HostConnectionHandler));
+            yield return new TestCaseData(() => new UdsTransport("someFile"), new HostConnectionHandler2()).SetArgDisplayNames(nameof(UdsTransport), nameof(HostConnectionHandler2));
 #endif
-            yield return new TestCaseData(() => new TcpLoopbackTransport(TestBase.GetUnusedPort())).SetArgDisplayNames(nameof(TcpLoopbackTransport));
+            yield return new TestCaseData(() => new TcpLoopbackTransport(TestBase.GetUnusedPort()), new HostConnectionHandler()).SetArgDisplayNames(nameof(TcpLoopbackTransport), nameof(HostConnectionHandler));
+            yield return new TestCaseData(() => new TcpLoopbackTransport(TestBase.GetUnusedPort()), new HostConnectionHandler2()).SetArgDisplayNames(nameof(TcpLoopbackTransport), nameof(HostConnectionHandler2));
         }
     }
 
@@ -46,13 +48,12 @@ internal class HostTest : TestBase
 #endif
 
     [Test]
-    [TestCaseSource(nameof(HostTest.Transports))]
-    public void HostCanBeInSameProcessAsClient(Func<ITransport> createTransport)
+    [TestCaseSource(nameof(HostTest.HostCanBeInSameProcessAsClientTestCases))]
+    public void HostCanBeInSameProcessAsClient(Func<ITransport> createTransport, HostConnectionHandler hostConnectionHandler)
     {
         // arrange
         ITransport transport = createTransport();
         ClientConnectionHandler clientConnectionHandler = new();
-        HostConnectionHandler hostConnectionHandler = new();
         this.host = Host.Start(transport, clientConnectionHandler);
         this.WaitForHostStartUp();
         int connectedClientsBefore = this.host.ConnectedClients;
@@ -68,6 +69,7 @@ internal class HostTest : TestBase
         Assert.That(clientConnectionHandler.ReceivedClientProperties, Is.Not.Null);
         Assert.That(clientConnectionHandler.ReceivedClientProperties.Arguments, Is.EqualTo(hostConnectionHandler.Arguments));
         Assert.That(clientConnectionHandler.ReceivedClientProperties.CurrentDirectory, Is.EqualTo(hostConnectionHandler.CurrentDirectory));
+        Assert.That(clientConnectionHandler.ReceivedClientProperties.ProcessID, Is.EqualTo(hostConnectionHandler.ExpectedProcessID));
 
         Assert.That(hostConnectionHandler.ReceivedOutString, Is.EqualTo("Out1Out2" + Environment.NewLine));
         Assert.That(hostConnectionHandler.ReceivedErrorString, Is.EqualTo("Error1Error2" + Environment.NewLine));
@@ -111,7 +113,7 @@ internal class HostTest : TestBase
         public ClientProperties? ReceivedClientProperties { get; private set; }
     }
 
-    private class HostConnectionHandler : IHostConnectionHandler
+    public class HostConnectionHandler : IHostConnectionHandler
     {
         public string[] Arguments => new[] { "Foo", "Bar" };
 
@@ -145,5 +147,14 @@ internal class HostTest : TestBase
         public int? ReceivedExitCode { get; private set; }
 
         public event EventHandler? BeforeExit;
+
+        public virtual int ExpectedProcessID => -1;
+    }
+
+    public class HostConnectionHandler2 : HostConnectionHandler, IHostConnectionHandler2
+    {
+        public int ProcessID => 42;
+
+        public override int ExpectedProcessID => this.ProcessID;
     }
 }

@@ -13,8 +13,10 @@ internal class MessageReceiverTest : TestBase
         {
             yield return new TestCaseData(new Action<MessageReceiver>(o => o.ReceiveReqArgs())).SetArgDisplayNames(nameof(MessageReceiver.ReceiveReqArgs));
             yield return new TestCaseData(new Action<MessageReceiver>(o => o.ReceiveReqCurrentDir())).SetArgDisplayNames(nameof(MessageReceiver.ReceiveReqCurrentDir));
+            yield return new TestCaseData(new Action<MessageReceiver>(o => o.ReceiveReqProcessID())).SetArgDisplayNames(nameof(MessageReceiver.ReceiveReqProcessID));
             yield return new TestCaseData(new Action<MessageReceiver>(o => o.ReceiveArgs())).SetArgDisplayNames(nameof(MessageReceiver.ReceiveArgs));
             yield return new TestCaseData(new Action<MessageReceiver>(o => o.ReceiveCurrentDir())).SetArgDisplayNames(nameof(MessageReceiver.ReceiveCurrentDir));
+            yield return new TestCaseData(new Action<MessageReceiver>(o => o.ReceiveProcessID())).SetArgDisplayNames(nameof(MessageReceiver.ReceiveProcessID));
         }
     }
 

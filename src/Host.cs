@@ -104,6 +104,9 @@ public class Host
         channel.Sender.SendReqCurrentDir();
         properties.CurrentDirectory = channel.Receiver.ReceiveCurrentDir();
 
+        channel.Sender.SendReqProcessID();
+        properties.ProcessID = channel.Receiver.ReceiveProcessID();
+
         return properties;
     }
 
