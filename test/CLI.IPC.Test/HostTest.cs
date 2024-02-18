@@ -63,6 +63,7 @@ internal class HostTest : TestBase
         // act
         Client.Attach(transport, hostConnectionHandler);
         this.host.Shutdown();
+        this.host.WaitUntilAllClientsDisconnected(TimeSpan.FromMilliseconds(1));
         this.host.WaitUntilAllClientsDisconnected();
 
         // assert
