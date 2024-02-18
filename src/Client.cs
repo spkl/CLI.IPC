@@ -26,7 +26,7 @@ public class Client
     /// Connects to a host using the specified <paramref name="transport"/> and <paramref name="handler"/>.
     /// This method blocks until the connection is closed.
     /// </summary>
-    /// <exception cref="ConnectionException">The connection could not be established. See inner exception for details.</exception>
+    /// <exception cref="ConnectionException">The connection could not be established or the server closed the connection unexpectedly. See inner exception for details.</exception>
     public static void Attach(ITransport transport, IHostConnectionHandler handler)
     {
         MessageChannel channel;
