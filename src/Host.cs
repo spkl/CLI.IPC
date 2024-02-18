@@ -137,4 +137,14 @@ public class Host
         this.clientCountdown.Wait();
         this.clientCountdown = new CountdownEvent(1);
     }
+
+    /// <summary>
+    /// Returns when no client is connected anymore or the <paramref name="timeout"/> has been reached.
+    /// </summary>
+    public void WaitUntilAllClientsDisconnected(TimeSpan timeout)
+    {
+        this.clientCountdown.Signal();
+        this.clientCountdown.Wait(timeout);
+        this.clientCountdown = new CountdownEvent(1);
+    }
 }
