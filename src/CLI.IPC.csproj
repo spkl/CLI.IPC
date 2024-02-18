@@ -19,15 +19,17 @@
 		<Copyright>Copyright (c) 2024 Sebastian Fischer</Copyright>
 		<RepositoryUrl>https://github.com/spkl/CLI.IPC</RepositoryUrl>
 		<AssemblyVersion>1.0.0.0</AssemblyVersion>
-		<FileVersion>1.0.0.0</FileVersion>
-		<Version>1.0.0</Version>
+		<FileVersion>1.1.0.0</FileVersion>
+		<Version>1.1.0</Version>
 		<PackageProjectUrl>https://github.com/spkl/CLI.IPC</PackageProjectUrl>
 		<Description>A .NET library that helps you implement a client/server architecture for command line interface applications.
 
 This project uses Semantic Versioning (https://semver.org/).
 		</Description>
 		<PackageTags>dotnet cli command-line command-line-interface client server client-server ipc interprocess communication interprocess-communication network-programming network-communication client-server-architecture client-server-communication client-server-application</PackageTags>
-		<PackageReleaseNotes></PackageReleaseNotes>
+		<PackageReleaseNotes>- Clients can now send their process ID by implementing IHostConnectionHandler2 (or by using DefaultHostConnectionHandler).
+- A new overload for Host.WaitUntilAllClientsDisconnected accepting a timeout was added.
+- Clarified the documentation for Host.Start and Client.Attach.</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>
