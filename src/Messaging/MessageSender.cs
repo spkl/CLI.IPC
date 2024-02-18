@@ -42,6 +42,11 @@ internal class MessageSender
         this.SendMessageType(MessageType.ReqCurrentDir);
     }
 
+    public void SendReqProcessID()
+    {
+        this.SendMessageType(MessageType.ReqProcessID);
+    }
+
     public void SendArgs(string[] args)
     {
         this.SendMessageType(MessageType.Args);
@@ -56,6 +61,12 @@ internal class MessageSender
     {
         this.SendMessageType(MessageType.CurrentDir);
         this.SendString(currentDir);
+    }
+
+    public void SendProcessID(int processId)
+    {
+        this.SendMessageType(MessageType.ProcessID);
+        this.SendInt(processId);
     }
 
     public void SendOutStr(string str)

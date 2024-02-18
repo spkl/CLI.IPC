@@ -21,10 +21,19 @@ public class ClientProperties
     public string CurrentDirectory { get; set; }
 
     /// <summary>
+    /// Gets the process ID.
+    /// </summary>
+    /// <remarks>
+    /// If the client does not support this property, -1 is returned.
+    /// </remarks>
+    public int ProcessID { get; set; }
+
+    /// <summary>
     /// </summary>
     public ClientProperties()
     {
         this.Arguments = Array.Empty<string>();
         this.CurrentDirectory = string.Empty;
+        this.ProcessID = -1;
     }
 }

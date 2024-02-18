@@ -63,6 +63,9 @@ public class Client
 
         this.Channel.Receiver.ReceiveReqCurrentDir();
         this.Channel.Sender.SendCurrentDir(this.Handler.CurrentDirectory);
+
+        this.Channel.Receiver.ReceiveReqProcessID();
+        this.Channel.Sender.SendProcessID(this.Handler is IHostConnectionHandler2 connectionHandler2 ? connectionHandler2.ProcessID : -1);
     }
 
     private void RunReceiveLoop()

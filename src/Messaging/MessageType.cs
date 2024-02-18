@@ -35,6 +35,17 @@ internal enum MessageType : byte
     CurrentDir = 0x33,
 
     /// <summary>
+    /// Request to send process ID.
+    /// Layout: Empty.
+    /// </summary>
+    ReqProcessID = 0x34,
+    /// <summary>
+    /// Process ID.
+    /// Layout: Process ID (int).
+    /// </summary>
+    ProcessID = 0x35,
+
+    /// <summary>
     /// Message to write to the standard output of the client.
     /// Layout: Length of Message in bytes (int); Message (string).
     /// </summary>

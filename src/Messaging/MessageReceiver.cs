@@ -45,29 +45,22 @@ internal class MessageReceiver
 
     public void ReceiveReqArgs()
     {
-        MessageType messageType = this.ReceiveMessage();
-        if (messageType != MessageType.ReqArgs)
-        {
-            throw new ConnectionException($"Received unexpected message type '{messageType}' when trying to establish the connection. Expected {MessageType.ReqArgs}.");
-        }
+        this.ExpectMessageType(MessageType.ReqArgs);
     }
 
     public void ReceiveReqCurrentDir()
     {
-        MessageType messageType = this.ReceiveMessage();
-        if (messageType != MessageType.ReqCurrentDir)
-        {
-            throw new ConnectionException($"Received unexpected message type '{messageType}' when trying to establish the connection. Expected {MessageType.ReqCurrentDir}.");
-        }
+        this.ExpectMessageType(MessageType.ReqCurrentDir);
+    }
+
+    public void ReceiveReqProcessID()
+    {
+        this.ExpectMessageType(MessageType.ReqProcessID);
     }
 
     public string[] ReceiveArgs()
     {
-        MessageType messageType = this.ReceiveMessage();
-        if (messageType != MessageType.Args)
-        {
-            throw new ConnectionException($"Received unexpected message type '{messageType}' when trying to establish the connection. Expected {MessageType.Args}.");
-        }
+        this.ExpectMessageType(MessageType.Args);
 
         int nArgs = this.ExpectInt();
         string[] args = new string[nArgs];
@@ -81,13 +74,24 @@ internal class MessageReceiver
 
     public string ReceiveCurrentDir()
     {
-        MessageType messageType = this.ReceiveMessage();
-        if (messageType != MessageType.CurrentDir)
-        {
-            throw new ConnectionException($"Received unexpected message type '{messageType}' when trying to establish the connection. Expected {MessageType.CurrentDir}.");
-        }
-
+        this.ExpectMessageType(MessageType.CurrentDir);
         return this.ExpectString();
+    }
+
+
+    public int ReceiveProcessID()
+    {
+        this.ExpectMessageType(MessageType.ProcessID);
+        return this.ExpectInt();
+    }
+
+    private void ExpectMessageType(MessageType expectedType)
+    {
+        MessageType messageType = this.ReceiveMessage();
+        if (messageType != expectedType)
+        {
+            throw new ConnectionException($"Received unexpected message type '{messageType}' when trying to establish the connection. Expected {expectedType}.");
+        }
     }
 
     public string ExpectString()

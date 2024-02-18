@@ -40,6 +40,9 @@ internal class Program
             string currentDir = connection.Properties.CurrentDirectory;
             Console.WriteLine($"CurrentDirectory: {currentDir}");
 
+            int processId = connection.Properties.ProcessID;
+            Console.WriteLine($"ProcessID: {processId}");
+
 
             for (int i = 0; i < 100; i++)
             {
