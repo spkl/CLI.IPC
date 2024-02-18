@@ -35,9 +35,13 @@ public class Host
     }
 
     /// <summary>
-    /// Stars a new host using the specified <paramref name="transport"/> and <paramref name="handler"/>.
-    /// This method does not block - client connections are accepted on a new thread.
+    /// Starts a new host using the specified <paramref name="transport"/> and <paramref name="handler"/>.
+    /// This method does not block - client connections are accepted on a separate thread.
     /// </summary>
+    /// <exception cref="SocketException">
+    /// Binding or listening on the socket failed.
+    /// Socket-related exceptions that occur during connection handling are not exposed through this method, but through <see cref="IClientConnectionHandler.HandleListenerError(ListenerError)"/>.
+    /// </exception>
     public static Host Start(ITransport transport, IClientConnectionHandler handler)
     {
         transport.BeforeHostStart();
