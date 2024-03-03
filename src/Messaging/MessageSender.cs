@@ -51,7 +51,7 @@ internal class MessageSender
     {
         this.SendMessageType(MessageType.Args);
         this.SendInt(args.Length);
-        foreach (string arg in args) 
+        foreach (string arg in args)
         {
             this.SendString(arg);
         }

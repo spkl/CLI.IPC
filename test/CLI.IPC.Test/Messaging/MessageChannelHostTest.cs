@@ -67,12 +67,12 @@ internal class MessageChannelHostTest : TestBase
 
         Exception exception = new("Foo");
         this.messageChannelHost = new(transport, Task.Factory, HandleNewConnection, HandleListenerException);
-                
+
         void HandleNewConnection(MessageChannel channel)
         {
             throw exception;
         }
-        
+
         Exception? receivedException = null;
         ListenerErrorPoint? receivedErrorPoint = null;
         void HandleListenerException(Exception exception, ListenerErrorPoint errorPoint)

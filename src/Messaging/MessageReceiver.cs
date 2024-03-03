@@ -116,7 +116,7 @@ internal class MessageReceiver
     }
 
     public Bytes ExpectBytes(int expectedBytes)
-    { 
+    {
         Bytes result = this.ExpectBytesOrConnectionEnd(expectedBytes);
         if (expectedBytes != 0 && MessageReceiver.IsZeroBytes(result))
         {

@@ -35,7 +35,7 @@ public class MessageChannelHost
     {
         this.Socket = transport.Socket;
         this.Socket.Bind(transport.EndPoint);
-        
+
         this.taskFactory = taskFactory;
         this.handleNewConnection = handleNewConnection;
         this.handleListenerException = handleListenerException;

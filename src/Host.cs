@@ -90,7 +90,7 @@ public class Host
             Interlocked.Decrement(ref this.connectedClients);
             this.clientCountdown.Signal();
         }
-        
+
     }
 
     private void HandleListenerException(Exception exception, ListenerErrorPoint errorPoint)

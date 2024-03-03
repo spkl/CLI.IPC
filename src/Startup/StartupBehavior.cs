@@ -22,7 +22,7 @@ public class StartupBehavior : IStartupBehavior
         this.TimeoutThreshold = timeoutThreshold;
         this.startInstanceAction = startInstanceAction;
     }
-    
+
     /// <inheritdoc/>
     public string NegotiationFileBasePath { get; }
 

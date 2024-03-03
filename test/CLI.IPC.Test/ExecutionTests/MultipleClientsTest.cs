@@ -30,7 +30,7 @@ internal class MultipleClientsTest : DynamicExecutionTest
         // assert
         Assert.Multiple(() =>
         {
-            foreach (Process client in clients) 
+            foreach (Process client in clients)
             {
                 Assert.That(client.ExitCode, Is.EqualTo(0));
                 Assert.That(client.StandardOutput.ReadToEnd(), Is.EqualTo("Done"));
