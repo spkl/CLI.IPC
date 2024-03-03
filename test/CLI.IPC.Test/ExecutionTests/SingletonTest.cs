@@ -60,11 +60,11 @@ internal class SingletonTest : TestBase
             });
             t.Start();
             threads.Add(t);
-                        
+
             Thread.Sleep(100);
         }
 
-        foreach (Thread t in threads) 
+        foreach (Thread t in threads)
         {
             t.Join();
         }

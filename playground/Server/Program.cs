@@ -20,7 +20,7 @@ internal class Program
         transport = new TcpLoopbackTransport(65058);
 #endif
 
-        var host = Host.Start(transport, new ClientConnectionHandler());
+        Host host = Host.Start(transport, new ClientConnectionHandler());
         Console.WriteLine("Press Enter to shutdown...");
         Console.ReadLine();
         host.Shutdown();

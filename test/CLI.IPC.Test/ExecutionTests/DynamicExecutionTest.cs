@@ -1,10 +1,10 @@
-﻿using System.Diagnostics;
-using System.IO;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Threading;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace spkl.CLI.IPC.Test.ExecutionTests;
 

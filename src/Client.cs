@@ -75,7 +75,7 @@ public class Client
         while ((messageType = this.Channel.Receiver.ReceiveMessage()) != MessageType.ConnClosed)
         {
             this.Receive(ref messageType, ref receivedExit);
-        }           
+        }
 
         if (!receivedExit)
         {
