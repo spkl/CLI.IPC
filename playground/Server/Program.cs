@@ -21,9 +21,14 @@ internal class Program
 #endif
 
         Host host = Host.Start(transport, new ClientConnectionHandler());
-        Console.WriteLine("Press Enter to shutdown...");
-        Console.ReadLine();
+
+        //Console.WriteLine("Press Enter to shutdown...");
+        //Console.ReadLine();
+        Console.WriteLine("Waiting until unused for 10 seconds...");
+        host.WaitUntilUnusedFor(TimeSpan.FromSeconds(10));
+
         host.Shutdown();
+        host.WaitUntilAllClientsDisconnected();
     }
 
     private class ClientConnectionHandler : IClientConnectionHandler

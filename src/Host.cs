@@ -28,6 +28,11 @@ public class Host
 
     private CountdownEvent clientCountdown = new CountdownEvent(1);
 
+    /// <summary>
+    /// Gets the time the last client disconnected, expressed as UTC.
+    /// </summary>
+    public DateTime? LastClientDisconnectTime { get; private set; }
+
     private Host(ITransport transport, IClientConnectionHandler handler)
     {
         this.Transport = transport;
@@ -93,6 +98,8 @@ public class Host
         }
         finally
         {
+            this.LastClientDisconnectTime = DateTime.UtcNow;
+
             Interlocked.Decrement(ref this.connectedClients);
             this.clientCountdown.Signal();
         }
@@ -152,5 +159,18 @@ public class Host
         this.clientCountdown.Signal();
         this.clientCountdown.Wait(timeout);
         this.clientCountdown = new CountdownEvent(1);
+    }
+
+    /// <summary>
+    /// Returns when no client was connected for a period of <paramref name="idleTime"/>.
+    /// Accuracy is ~1 second.
+    /// </summary>
+    public void WaitUntilUnusedFor(TimeSpan idleTime)
+    {
+        DateTime startWaitTime = DateTime.UtcNow;
+        while (this.ConnectedClients > 0 || DateTime.UtcNow < ((this.LastClientDisconnectTime ?? startWaitTime) + idleTime))
+        {
+            Thread.Sleep(TimeSpan.FromSeconds(1));
+        }
     }
 }

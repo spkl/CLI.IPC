@@ -15,11 +15,15 @@ namespace spkl.CLI.IPC.Test.ExecutionTests;
 internal class SingletonTest : TestBase
 {
     /// <summary>
-    /// Approach: Host lifetime is 5 seconds, so if we continuously create new clients for 7 seconds, there should be exactly two host processes.
+    /// Approach:
+    /// - staticTime: Host lifetime is 5 seconds, so if we continuously create new clients for 7 seconds, there should be exactly two host processes.
+    /// - untilUnused: Host lifetime is "last used time" plus 5 seconds, so there should be only one host process.
     /// </summary>
     [Test]
+    [TestCase("staticTime", 2)]
+    [TestCase("untilUnused", 1)]
     [Retry(5)]
-    public void TestSingleton()
+    public void TestSingleton(string timeoutBehavior, int expectedProcesses)
     {
         // arrange
         string singletonExe = Path.GetFullPath(Path.Combine(TestContext.CurrentContext.TestDirectory.Replace("IPC.Test", "IPC.Test.Singleton"), "spkl.CLI.IPC.Test.Singleton.exe"));
@@ -43,7 +47,7 @@ internal class SingletonTest : TestBase
         {
             Thread t = new Thread(() =>
             {
-                ProcessStartInfo psi = new ProcessStartInfo(singletonExe);
+                ProcessStartInfo psi = new ProcessStartInfo(singletonExe, timeoutBehavior);
                 psi.UseShellExecute = false;
                 psi.RedirectStandardError = true;
                 psi.RedirectStandardOutput = true;
@@ -69,6 +73,8 @@ internal class SingletonTest : TestBase
             t.Join();
         }
 
+        Thread.Sleep(TimeSpan.FromSeconds(3)); // Grace period for host shutdown.
+
         // assert
         TestContext.Out.WriteLine($"{startedProcesses} processes were started.");
         Assert.Multiple(() =>
@@ -77,8 +83,9 @@ internal class SingletonTest : TestBase
             Assert.That(stdOutputs, Has.Count.EqualTo(startedProcesses), "Number of std outputs");
             Assert.That(errOutputs, Has.Count.EqualTo(startedProcesses), "Number of err outputs");
             Assert.That(exitCodes, Has.All.EqualTo(0), "Exit codes");
-            Assert.That(stdOutputs.Distinct().ToArray(), Has.Exactly(2).Items.And.All.StartsWith("PID "), "Std outputs");
+            Assert.That(stdOutputs.Distinct().ToArray(), Has.Exactly(expectedProcesses).Items.And.All.StartsWith("PID "), "Std outputs");
             Assert.That(errOutputs, Has.All.Empty, "Err outputs");
+            Assert.That(Process.GetProcessesByName("spkl.CLI.IPC.Test.Singleton").Length, Is.EqualTo(0), "There should be no leftover process.");
         });
     }
 

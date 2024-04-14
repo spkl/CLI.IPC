@@ -24,6 +24,10 @@ internal class Program
 
     private const int ClientConnectionDuration_Seconds = 1;
 
+    private const string ARG_HOST = "host";
+    private const string ARG_STATIC_TIME = "staticTime";
+    private const string ARG_UNTIL_UNUSED = "untilUnused";
+
     static void Main(string[] args)
     {
         ITransport transport;
@@ -33,17 +37,40 @@ internal class Program
         transport = new TcpLoopbackTransport(65049);
 #endif
 
-        StartupBehavior b = new();
+        if (args.Length == 0 || args[0] is not (ARG_HOST or ARG_STATIC_TIME or ARG_UNTIL_UNUSED))
+        {
+            throw new Exception($"Specify either '{ARG_HOST}', '{ARG_STATIC_TIME}' or '{ARG_UNTIL_UNUSED}' as first argument.");
+        }
+
+        string timeoutBehavior = args[0];
+        if (args[0] == ARG_HOST)
+        {
+            if (args.Length < 2 || args[1] is not (ARG_STATIC_TIME or ARG_UNTIL_UNUSED))
+            {
+                throw new Exception($"Specify either '{ARG_STATIC_TIME}' or '{ARG_UNTIL_UNUSED}' as second argument.");
+            }
+
+            timeoutBehavior = args[1];
+        }
+
+        StartupBehavior b = new(timeoutBehavior);
         SingletonApplication s = new(b);
 
-        if (args.Length == 1 && args[0] == "host")
+        if (args[0] == ARG_HOST)
         {
             Thread.Sleep(TimeSpan.FromSeconds(HostStartupDelay_Seconds));
 
             Host h = Host.Start(transport, new ClientConnectionHandler());
             s.ReportInstanceRunning();
 
-            Thread.Sleep(TimeSpan.FromSeconds(Program.HostAliveTime_Seconds));
+            if (timeoutBehavior == ARG_STATIC_TIME)
+            {
+                Thread.Sleep(TimeSpan.FromSeconds(Program.HostAliveTime_Seconds));
+            }
+            else
+            {
+                h.WaitUntilUnusedFor(TimeSpan.FromSeconds(Program.HostAliveTime_Seconds));
+            }
 
             s.ShutdownInstance();
             h.Shutdown();
@@ -64,6 +91,13 @@ internal class Program
 
         public TimeSpan TimeoutThreshold { get; } = TimeSpan.FromSeconds(Program.TimeoutThreshold_Seconds);
 
+        private readonly string timeoutBehavior;
+
+        public StartupBehavior(string timeoutBehavior)
+        {
+            this.timeoutBehavior = timeoutBehavior;
+        }
+
         public void StartInstance()
         {
             string executablePath = "spkl.CLI.IPC.Test.Singleton.exe";
@@ -75,7 +109,7 @@ internal class Program
 #endif
 
             Process p = new Process();
-            p.StartInfo = new ProcessStartInfo(Path.Combine(Program.AssemblyDir, executablePath), "host");
+            p.StartInfo = new ProcessStartInfo(Path.Combine(Program.AssemblyDir, executablePath), $"{ARG_HOST} {this.timeoutBehavior}");
             p.StartInfo.UseShellExecute = false;
             p.Start();
         }
