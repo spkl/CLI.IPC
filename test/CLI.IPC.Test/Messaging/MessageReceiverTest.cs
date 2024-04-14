@@ -64,7 +64,7 @@ internal class MessageReceiverTest : TestBase
 
     private EndPoint CreateLoopbackEndpoint()
     {
-        return new IPEndPoint(IPAddress.Loopback, TestBase.GetUnusedPort());
+        return new IPEndPoint(IPAddress.Loopback, 0);
     }
 
     private void PrepareReceiver(out MessageReceiver messageReceiver, out Socket sendSocket, out EndPoint endPoint)
@@ -76,5 +76,6 @@ internal class MessageReceiverTest : TestBase
         messageReceiver = new MessageReceiver(receiveSocket);
 
         sendSocket = this.CreateUdpSocket();
+        endPoint = receiveSocket.LocalEndPoint!;
     }
 }
