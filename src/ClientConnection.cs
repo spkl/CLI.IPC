@@ -19,6 +19,8 @@ public class ClientConnection
 
     internal MessageChannel Channel { get; }
 
+    internal bool HasExited { get; private set; }
+
     /// <summary>
     /// Gets the standard output stream.
     /// </summary>
@@ -44,5 +46,6 @@ public class ClientConnection
     {
         this.Channel.Sender.SendExit(exitCode);
         this.Channel.Close();
+        this.HasExited = true;
     }
 }

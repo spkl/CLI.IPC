@@ -77,7 +77,13 @@ public class Host
 
             try
             {
-                this.Handler.HandleCall(new ClientConnection(properties, channel));
+                ClientConnection connection = new(properties, channel);
+                this.Handler.HandleCall(connection);
+
+                if (!connection.HasExited)
+                {
+                    connection.Exit(0);
+                }
             }
             catch
             {

@@ -25,8 +25,8 @@ public interface IClientConnectionHandler
     /// This method must implement its own exception handling, otherwise exceptions might be left unhandled.
     /// </summary>
     /// <remarks>
-    /// The connection is NOT automatically closed when this method returns: Use <see cref="ClientConnection.Exit(int)"/> to close the connection.
-    /// If this method throws an exception, the connection IS automatically closed.
+    /// If the connection is not closed when this method returns (<see cref="ClientConnection.Exit(int)"/>), it is automatically closed with exit code 0.
+    /// If this method throws an exception, the connection is automatically closed without sending an exit code, causing the client to report an error, too.
     /// </remarks>
     /// <param name="connection">Object to interact with the connected client.</param>
     void HandleCall(ClientConnection connection);
