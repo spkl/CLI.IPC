@@ -18,9 +18,7 @@
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<Copyright>Copyright (c) 2024 Sebastian Fischer</Copyright>
 		<RepositoryUrl>https://github.com/spkl/CLI.IPC</RepositoryUrl>
-		<AssemblyVersion>1.0.0.0</AssemblyVersion>
-		<FileVersion>1.1.0.0</FileVersion>
-		<Version>1.1.0</Version>
+		<MinVerTagPrefix>v</MinVerTagPrefix>
 		<PackageProjectUrl>https://github.com/spkl/CLI.IPC</PackageProjectUrl>
 		<Description>A .NET library that helps you implement a client/server architecture for command line interface applications.
 
@@ -35,6 +33,13 @@ This project uses Semantic Versioning (https://semver.org/).
 	<ItemGroup>
 		<None Include="..\LICENSE" Pack="true" PackagePath="\" />
 		<None Include="..\README.md" Link="README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="MinVer" Version="5.0.0">
+	    <PrivateAssets>all</PrivateAssets>
+	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	  </PackageReference>
 	</ItemGroup>
 
 </Project>
