@@ -25,8 +25,7 @@
 This project uses Semantic Versioning (https://semver.org/).
 		</Description>
 		<PackageTags>dotnet cli command-line command-line-interface client server client-server ipc interprocess communication interprocess-communication network-programming network-communication client-server-architecture client-server-communication client-server-application</PackageTags>
-		<PackageReleaseNotes>- The client connection is now closed automatically if IClientConnectionHandler.HandleCall did not close it.
-- New method: Host.WaitUntilUnusedFor returns after a specified idle time of the host instance.</PackageReleaseNotes>
+		<PackageReleaseNotes>- Fixed uncaught UnauthorizedAccessException when using SingletonApplication.</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>
