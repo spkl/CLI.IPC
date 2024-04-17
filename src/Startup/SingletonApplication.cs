@@ -96,6 +96,9 @@ public sealed class SingletonApplication : IDisposable
             catch (IOException)
             {
             }
+            catch (UnauthorizedAccessException)
+            {
+            }
         }
 
         if (this.runningLockStream == null)
@@ -133,6 +136,10 @@ public sealed class SingletonApplication : IDisposable
         {
             return true;
         }
+        catch (UnauthorizedAccessException)
+        {
+            return true;
+        }
     }
 
     private bool IsStarting()
@@ -151,6 +158,10 @@ public sealed class SingletonApplication : IDisposable
         {
             return true;
         }
+        catch (UnauthorizedAccessException)
+        {
+            return true;
+        }
     }
 
     private void TryToStart()
@@ -160,6 +171,10 @@ public sealed class SingletonApplication : IDisposable
             this.startupLockStream = this.OpenStreamForLocking(this.StartupLockPath);
         }
         catch (IOException)
+        {
+            return;
+        }
+        catch (UnauthorizedAccessException)
         {
             return;
         }
