@@ -41,15 +41,15 @@ internal class SingletonAppTest : TestBase
         this.disposables.Clear();
 
         // Ensure that the relevant files are not locked.
-        File.Open(this.negotiationFile + ".lock0", FileMode.Create).Dispose();
-        File.Open(this.negotiationFile + ".lock1", FileMode.Create).Dispose();
+        File.Open(this.negotiationFile + ".start_lock", FileMode.Create).Dispose();
+        File.Open(this.negotiationFile + ".run_lock", FileMode.Create).Dispose();
     }
 
     [Test]
     public void RequestInstanceReturnsWithoutActionIfApplicationRunning()
     {
         // arrange
-        this.disposables.Add(File.Open(this.negotiationFile + ".lock1", FileMode.Create));
+        this.disposables.Add(File.Open(this.negotiationFile + ".run_lock", FileMode.Create));
 
         // act
         this.singletonApp!.RequestInstance();
@@ -62,8 +62,8 @@ internal class SingletonAppTest : TestBase
     public void RequestInstanceReturnsWithoutActionIfApplicationStartingThenRunning()
     {
         // arrange
-        this.disposables.Add(File.Open(this.negotiationFile + ".lock0", FileMode.Create));
-        this.singletonApp!.BeforeRequestingInstance += (_, _) => this.disposables.Add(File.Open(this.negotiationFile + ".lock1", FileMode.Create));
+        this.disposables.Add(File.Open(this.negotiationFile + ".start_lock", FileMode.Create));
+        this.singletonApp!.BeforeRequestingInstance += (_, _) => this.disposables.Add(File.Open(this.negotiationFile + ".run_lock", FileMode.Create));
 
         // act
         this.singletonApp!.RequestInstance();
@@ -78,7 +78,7 @@ internal class SingletonAppTest : TestBase
         // arrange
         this.startupBehavior!
             .When(o => o.StartInstance())
-            .Do(_ => this.disposables.Add(File.Open(this.negotiationFile + ".lock1", FileMode.Create)));
+            .Do(_ => this.disposables.Add(File.Open(this.negotiationFile + ".run_lock", FileMode.Create)));
 
         // act
         this.singletonApp!.RequestInstance();
@@ -102,7 +102,7 @@ internal class SingletonAppTest : TestBase
 
         // assert
         Assert.That(
-            () => this.disposables.Add(File.Open(this.negotiationFile + ".lock1", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite | FileShare.Delete)),
+            () => this.disposables.Add(File.Open(this.negotiationFile + ".run_lock", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite | FileShare.Delete)),
             Throws.InstanceOf<IOException>());
     }
 
@@ -110,7 +110,7 @@ internal class SingletonAppTest : TestBase
     public void ReportInstanceRunningThrowsExceptionIfFileLockCannotBeObtained()
     {
         // arrange
-        this.disposables.Add(File.Open(this.negotiationFile + ".lock1", FileMode.Create));
+        this.disposables.Add(File.Open(this.negotiationFile + ".run_lock", FileMode.Create));
 
         // act & assert
         Assert.That(() => this.singletonApp!.ReportInstanceRunning(), Throws.InstanceOf<SingletonAppException>());
@@ -133,6 +133,6 @@ internal class SingletonAppTest : TestBase
         this.singletonApp!.ShutdownInstance();
 
         // assert
-        Assert.That(() => this.disposables.Add(File.Open(this.negotiationFile + ".lock1", FileMode.Create)), Throws.Nothing);
+        Assert.That(() => this.disposables.Add(File.Open(this.negotiationFile + ".run_lock", FileMode.Create)), Throws.Nothing);
     }
 }

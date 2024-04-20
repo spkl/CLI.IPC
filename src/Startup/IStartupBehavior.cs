@@ -12,7 +12,7 @@ public interface IStartupBehavior
 {
     /// <summary>
     /// Gets the base portion of the file names used for negotiating singleton startup/running.
-    /// E. g., if C:\foo\bar is returned, the files C:\foo\bar.lock0 and C:\foo\bar.lock1 will be used.
+    /// E. g., if C:\foo\bar is returned, the files C:\foo\bar.start_lock and C:\foo\bar.run_lock will be used.
     /// Write-access must be available in the directory.
     /// </summary>
     string NegotiationFileBasePath { get; }

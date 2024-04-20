@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using spkl.CLI.IPC;
+using spkl.CLI.IPC.Startup;
 using System;
 using System.Linq;
 using System.Threading;
@@ -13,20 +14,23 @@ internal class Program
 {
     static void Main(string[] args)
     {
-        ITransport transport;
-#if NET6_0_OR_GREATER
-        transport = new UdsTransport(@"C:\Users\Sebastian\Documents\Projects\StreamTest\playground\Server\bin\Debug\net6.0\socket");
-#else
-        transport = new TcpLoopbackTransport(65058);
-#endif
+        AutoTransportSingletonApp app = new AutoTransportSingletonApp(
+            new StartupBehavior(
+                @"C:\Users\Sebastian\Documents\Projects\StreamTest\playground\singleton",
+                TimeSpan.FromMilliseconds(250),
+                TimeSpan.FromSeconds(5),
+                () => { }));
 
-        Host host = Host.Start(transport, new ClientConnectionHandler());
+        Host host = Host.Start(app.Transport, new ClientConnectionHandler());
+        app.ReportInstanceRunning();
+        Console.WriteLine($"Listening on {app.Transport.EndPoint}");
 
         //Console.WriteLine("Press Enter to shutdown...");
         //Console.ReadLine();
         Console.WriteLine("Waiting until unused for 10 seconds...");
         host.WaitUntilUnusedFor(TimeSpan.FromSeconds(10));
 
+        app.ShutdownInstance();
         host.Shutdown();
         host.WaitUntilAllClientsDisconnected();
     }
@@ -58,7 +62,8 @@ internal class Program
             connection.Error.Write("this is an error string");
             connection.Exit(1);
 
-            connection.Out.Write(true);
+            Console.WriteLine("Closed connection");
+            //connection.Out.Write(true);
         }
 
         public void HandleListenerError(IListenerError error)

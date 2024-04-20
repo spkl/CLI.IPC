@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Sebastian Fischer. All Rights Reserved.
 // Licensed under the MIT License.
 
+using spkl.CLI.IPC.Internal;
 using System;
 using System.IO;
 using System.Threading;
@@ -21,9 +22,9 @@ public sealed class SingletonApp : IDisposable, ISingletonApp
 
     private readonly IStartupBehavior behavior;
 
-    private string StartupLockPath => this.behavior.NegotiationFileBasePath + ".lock0";
+    private string StartupLockPath => this.behavior.NegotiationFileBasePath + ".start_lock";
 
-    private string RunningLockPath => this.behavior.NegotiationFileBasePath + ".lock1";
+    private string RunningLockPath => this.behavior.NegotiationFileBasePath + ".run_lock";
 
     private FileStream? startupLockStream;
 
@@ -52,14 +53,13 @@ public sealed class SingletonApp : IDisposable, ISingletonApp
     /// <inheritdoc/>
     public void RequestInstance()
     {
-        DateTime startTime = DateTime.Now;
-        while ((DateTime.Now - startTime) < this.behavior.TimeoutThreshold)
+        Try.UntilTimedOut(this.behavior.TimeoutThreshold, () =>
         {
             this.BeforeRequestingInstance?.Invoke(this, EventArgs.Empty);
 
             if (this.IsRunning())
             {
-                return;
+                return true;
             }
 
             if (!this.IsStarting())
@@ -69,6 +69,13 @@ public sealed class SingletonApp : IDisposable, ISingletonApp
 
             int millisecondsTimeout = this.random.Next(this.pollingPeriodMin, this.pollingPeriodMax);
             Thread.Sleep(millisecondsTimeout);
+            return false;
+        });
+
+        if (this.isThisInstanceStarting)
+        {
+            Try.Dispose(ref this.startupLockStream);
+            this.isThisInstanceStarting = false;
         }
 
         if (!this.IsRunning())
@@ -80,20 +87,7 @@ public sealed class SingletonApp : IDisposable, ISingletonApp
     /// <inheritdoc/>
     public void ReportInstanceRunning()
     {
-        DateTime startTime = DateTime.Now;
-        while (this.runningLockStream == null && (DateTime.Now - startTime) < this.behavior.TimeoutThreshold)
-        {
-            try
-            {
-                this.runningLockStream = this.OpenStreamForLocking(this.RunningLockPath);
-            }
-            catch (IOException)
-            {
-            }
-            catch (UnauthorizedAccessException)
-            {
-            }
-        }
+        this.runningLockStream = FileStreams.TryLock(this.RunningLockPath, this.behavior.TimeoutThreshold);
 
         if (this.runningLockStream == null)
         {
@@ -109,25 +103,12 @@ public sealed class SingletonApp : IDisposable, ISingletonApp
             throw new InvalidOperationException($"{nameof(ReportInstanceRunning)} must be called before {nameof(ShutdownInstance)}.");
         }
 
-        this.runningLockStream?.Dispose();
-        this.runningLockStream = null;
+        Try.Dispose(ref this.runningLockStream);
     }
 
     private bool IsRunning()
     {
-        try
-        {
-            this.OpenStreamForChecking(this.RunningLockPath);
-            return false;
-        }
-        catch (IOException)
-        {
-            return true;
-        }
-        catch (UnauthorizedAccessException)
-        {
-            return true;
-        }
+        return FileStreams.IsLocked(this.RunningLockPath);
     }
 
     private bool IsStarting()
@@ -137,32 +118,13 @@ public sealed class SingletonApp : IDisposable, ISingletonApp
             return true;
         }
 
-        try
-        {
-            this.OpenStreamForChecking(this.StartupLockPath);
-            return false;
-        }
-        catch (IOException)
-        {
-            return true;
-        }
-        catch (UnauthorizedAccessException)
-        {
-            return true;
-        }
+        return FileStreams.IsLocked(this.StartupLockPath);
     }
 
     private void TryToStart()
     {
-        try
-        {
-            this.startupLockStream = this.OpenStreamForLocking(this.StartupLockPath);
-        }
-        catch (IOException)
-        {
-            return;
-        }
-        catch (UnauthorizedAccessException)
+        this.startupLockStream = FileStreams.TryLock(this.StartupLockPath);
+        if (this.startupLockStream == null)
         {
             return;
         }
@@ -171,20 +133,10 @@ public sealed class SingletonApp : IDisposable, ISingletonApp
         this.behavior.StartInstance();
     }
 
-    private void OpenStreamForChecking(string path)
-    {
-        new FileStream(path, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite | FileShare.Delete, 4096, FileOptions.DeleteOnClose).Dispose();
-    }
-
-    private FileStream OpenStreamForLocking(string path)
-    {
-        return new FileStream(path, FileMode.Create, FileAccess.ReadWrite, FileShare.None, 4096, FileOptions.DeleteOnClose);
-    }
-
     /// <inheritdoc />
     public void Dispose()
     {
-        this.startupLockStream?.Dispose();
-        this.runningLockStream?.Dispose();
+        Try.Dispose(ref this.startupLockStream);
+        Try.Dispose(ref this.runningLockStream);
     }
 }
