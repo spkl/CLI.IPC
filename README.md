@@ -36,6 +36,7 @@ private class MyClientConnectionHandler : IClientConnectionHandler
             connection.Out.WriteLine("Dumping database to file...");
             Db.DumpTo(Path.Combine(connection.Properties.CurrentDirectory, fileName));
             connection.Exit(0);
+            return;
         }
 
         connection.Error.WriteLine("Unknown command.");
