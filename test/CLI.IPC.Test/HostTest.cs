@@ -20,7 +20,7 @@ internal class HostTest : TestBase
         }
     }
 
-    public static IEnumerable<TestCaseData> HostCanBeInSameProcessAsClientTestCases
+    public static IEnumerable<TestCaseData> TestHostInSameProcessAsClientTestCases
     {
         get
         {
@@ -48,8 +48,8 @@ internal class HostTest : TestBase
 #endif
 
     [Test]
-    [TestCaseSource(nameof(HostTest.HostCanBeInSameProcessAsClientTestCases))]
-    public void HostCanBeInSameProcessAsClient(Func<ITransport> createTransport, HostConnectionHandler hostConnectionHandler)
+    [TestCaseSource(nameof(HostTest.TestHostInSameProcessAsClientTestCases))]
+    public void TestHostInSameProcessAsClient(Func<ITransport> createTransport, HostConnectionHandler hostConnectionHandler)
     {
         // arrange
         ITransport transport = createTransport();
@@ -63,7 +63,6 @@ internal class HostTest : TestBase
         // act
         Client.Attach(transport, hostConnectionHandler);
         this.host.Shutdown();
-        this.host.WaitUntilAllClientsDisconnected(TimeSpan.FromMilliseconds(1));
         this.host.WaitUntilAllClientsDisconnected();
 
         // assert
@@ -80,6 +79,33 @@ internal class HostTest : TestBase
         Assert.That(connectedClientsDuring, Is.EqualTo(1), "Number of connected clients during connection");
         Assert.That(this.host.ConnectedClients, Is.EqualTo(0), "Number of connected clients after shutdown");
     }
+
+    [Test]
+    public void WaitUntilAllClientsDisconnectedThrowsInvalidOperationExceptionWhenCalledBeforeShutdown()
+    {
+        // arrange
+        ITransport transport = new TcpLoopbackTransport(TestBase.GetUnusedPort());
+        this.host = Host.Start(transport, new ClientConnectionHandler());
+        this.WaitForHostStartUp();
+
+        // act & assert
+        Assert.That(() => this.host.WaitUntilAllClientsDisconnected(), Throws.InvalidOperationException);
+    }
+
+    [Test]
+    public void WaitUntilAllClientsDisconnectedThrowsInvalidOperationExceptionWhenCalledMoreThanOnce()
+    {
+        // arrange
+        ITransport transport = new TcpLoopbackTransport(TestBase.GetUnusedPort());
+        this.host = Host.Start(transport, new ClientConnectionHandler());
+        this.WaitForHostStartUp();
+        this.host.Shutdown();
+        this.host.WaitUntilAllClientsDisconnected();
+
+        // act & assert
+        Assert.That(() => this.host.WaitUntilAllClientsDisconnected(), Throws.InvalidOperationException);
+    }
+
 
     private void WaitForHostStartUp()
     {

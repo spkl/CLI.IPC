@@ -25,7 +25,10 @@
 This project uses Semantic Versioning (https://semver.org/).
 		</Description>
 		<PackageTags>dotnet cli command-line command-line-interface client server client-server ipc interprocess communication interprocess-communication network-programming network-communication client-server-architecture client-server-communication client-server-application</PackageTags>
-		<PackageReleaseNotes>- Fixed uncaught UnauthorizedAccessException when using SingletonApplication.</PackageReleaseNotes>
+		<PackageReleaseNotes>
+			- Introduced new overloads for the Host.WaitUntil[...] methods accepting a CancellationToken.
+			- Allowed usage of the Host.WaitUntilAllClientsDisconnected methods was clarified. An InvalidOperationException is now thrown when misused.
+		</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>
