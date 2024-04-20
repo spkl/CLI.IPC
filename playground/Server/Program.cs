@@ -35,7 +35,7 @@ internal class Program
     {
         public TaskFactory TaskFactory => Task.Factory;
 
-        public void HandleCall(ClientConnection connection)
+        public void HandleCall(IClientConnection connection)
         {
             Console.WriteLine("Accepted connection");
 
@@ -61,7 +61,7 @@ internal class Program
             connection.Out.Write(true);
         }
 
-        public void HandleListenerError(ListenerError error)
+        public void HandleListenerError(IListenerError error)
         {
             Console.WriteLine(error.Exception);
         }

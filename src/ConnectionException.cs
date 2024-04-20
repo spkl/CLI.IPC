@@ -10,11 +10,17 @@ namespace spkl.CLI.IPC;
 /// </summary>
 public class ConnectionException : Exception
 {
-    internal ConnectionException(string message) : base(message)
+    /// <summary>
+    /// Initializes a new instance of this class with a specified error message.
+    /// </summary>
+    public ConnectionException(string message) : base(message)
     {
     }
 
-    internal ConnectionException(string message, Exception innerException) : base(message, innerException)
+    /// <summary>
+    /// Initializes a new instance of this class with a specified error message and a reference to the inner exception that is the cause of this exception.
+    /// </summary>
+    public ConnectionException(string message, Exception innerException) : base(message, innerException)
     {
     }
 }

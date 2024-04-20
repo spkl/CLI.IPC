@@ -4,7 +4,7 @@
 namespace spkl.CLI.IPC;
 
 /// <summary>
-/// Specifies where a <see cref="ListenerError"/> occurred.
+/// Specifies where an <see cref="IListenerError"/> occurred.
 /// </summary>
 public enum ListenerErrorPoint
 {
@@ -19,7 +19,7 @@ public enum ListenerErrorPoint
     /// </summary>
     ReceiveClientProperties,
     /// <summary>
-    /// The exception occured in <see cref="IClientConnectionHandler.HandleCall(ClientConnection)"/>.
+    /// The exception occured in <see cref="IClientConnectionHandler.HandleCall(IClientConnection)"/>.
     /// This indicates a problem in the user code. The connection was closed, and the client received a <see cref="ConnectionException"/>.
     /// The host is still listening for new connections.
     /// </summary>

@@ -45,7 +45,7 @@ CurrentDirectory: {TestContext.CurrentContext.TestDirectory}.
     {
         public TaskFactory TaskFactory => Task.Factory;
 
-        public void HandleCall(ClientConnection connection)
+        public void HandleCall(IClientConnection connection)
         {
             connection.Out.WriteLine($"Arguments: {string.Join(",", connection.Properties.Arguments)}.");
             connection.Out.WriteLine($"CurrentDirectory: {connection.Properties.CurrentDirectory}.");
@@ -53,7 +53,7 @@ CurrentDirectory: {TestContext.CurrentContext.TestDirectory}.
             connection.Exit(42);
         }
 
-        public void HandleListenerError(ListenerError error)
+        public void HandleListenerError(IListenerError error)
         {
             Console.WriteLine(error.ToString());
             Environment.Exit(1);
