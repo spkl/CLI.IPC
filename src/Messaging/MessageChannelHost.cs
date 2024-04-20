@@ -35,6 +35,7 @@ public class MessageChannelHost
     {
         this.Socket = transport.Socket;
         this.Socket.Bind(transport.EndPoint);
+        transport.AfterHostBind(this.Socket.LocalEndPoint!);
 
         this.taskFactory = taskFactory;
         this.handleNewConnection = handleNewConnection;
