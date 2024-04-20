@@ -6,7 +6,7 @@ using System;
 namespace spkl.CLI.IPC.Startup;
 
 /// <summary>
-/// Controls behavior and parameters for <see cref="SingletonApplication"/>s.
+/// Controls behavior and parameters for <see cref="SingletonApp"/>s.
 /// </summary>
 public interface IStartupBehavior
 {
@@ -24,13 +24,13 @@ public interface IStartupBehavior
     void StartInstance();
 
     /// <summary>
-    /// Gets the period that is used for polling whether a hosting application is running (<see cref="SingletonApplication.RequestInstance"/>).
+    /// Gets the period that is used for polling whether a hosting application is running (<see cref="SingletonApp.RequestInstance"/>).
     /// The actually used period is randomized within +/- 25% from this value.
     /// </summary>
     TimeSpan PollingPeriod { get; }
 
     /// <summary>
-    /// Gets the period that is used until a time out occurs during <see cref="SingletonApplication.RequestInstance"/> and <see cref="SingletonApplication.ReportInstanceRunning"/>.
+    /// Gets the period that is used until a time out occurs during <see cref="SingletonApp.RequestInstance"/> and <see cref="SingletonApp.ReportInstanceRunning"/>.
     /// <b>Attention:</b> This implies that the hosting application is expected to start and become ready for incoming connections within this time period.
     /// </summary>
     TimeSpan TimeoutThreshold { get; }

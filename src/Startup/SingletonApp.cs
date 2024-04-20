@@ -12,7 +12,7 @@ namespace spkl.CLI.IPC.Startup;
 /// Usage as a client application: Call <see cref="RequestInstance"/> to ensure that an application instance is running before connecting to it.
 /// Usage as the hosting application: Call <see cref="ReportInstanceRunning"/> when ready for incoming connections. Call <see cref="ShutdownInstance"/> before exit.
 /// </summary>
-public sealed class SingletonApplication : IDisposable, ISingletonApplication
+public sealed class SingletonApp : IDisposable, ISingletonApp
 {
     /// <summary>
     /// Occurs before polling for a running or starting instance.
@@ -37,7 +37,7 @@ public sealed class SingletonApplication : IDisposable, ISingletonApplication
 
     /// <summary>
     /// </summary>
-    public SingletonApplication(IStartupBehavior behavior)
+    public SingletonApp(IStartupBehavior behavior)
     {
         this.behavior = behavior;
 
@@ -73,7 +73,7 @@ public sealed class SingletonApplication : IDisposable, ISingletonApplication
 
         if (!this.IsRunning())
         {
-            throw new SingletonApplicationException($"Timed out: Application did not become available within {this.behavior.TimeoutThreshold}.");
+            throw new SingletonAppException($"Timed out: Application did not become available within {this.behavior.TimeoutThreshold}.");
         }
     }
 
@@ -97,7 +97,7 @@ public sealed class SingletonApplication : IDisposable, ISingletonApplication
 
         if (this.runningLockStream == null)
         {
-            throw new SingletonApplicationException($"Timed out: Could not get lock on {this.RunningLockPath} within {this.behavior.TimeoutThreshold}.");
+            throw new SingletonAppException($"Timed out: Could not get lock on {this.RunningLockPath} within {this.behavior.TimeoutThreshold}.");
         }
     }
 

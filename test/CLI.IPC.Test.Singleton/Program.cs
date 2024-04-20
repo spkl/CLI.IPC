@@ -54,7 +54,7 @@ internal class Program
         }
 
         StartupBehavior b = new(timeoutBehavior);
-        SingletonApplication s = new(b);
+        SingletonApp s = new(b);
 
         if (args[0] == ARG_HOST)
         {
