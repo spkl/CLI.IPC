@@ -119,7 +119,7 @@ internal class Program
     {
         public TaskFactory TaskFactory => Task.Factory;
 
-        public void HandleCall(ClientConnection connection)
+        public void HandleCall(IClientConnection connection)
         {
             int processId;
 #if NET6_0_OR_GREATER
@@ -136,7 +136,7 @@ internal class Program
             connection.Exit(0);
         }
 
-        public void HandleListenerError(ListenerError error)
+        public void HandleListenerError(IListenerError error)
         {
             ExceptionDispatchInfo.Capture(error.Exception).Throw();
         }

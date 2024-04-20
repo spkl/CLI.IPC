@@ -31,12 +31,12 @@ internal class HostShutdownTest : DynamicExecutionTest
     {
         public TaskFactory TaskFactory => Task.Factory;
 
-        public void HandleCall(ClientConnection connection)
+        public void HandleCall(IClientConnection connection)
         {
             connection.Exit(0);
         }
 
-        public void HandleListenerError(ListenerError error)
+        public void HandleListenerError(IListenerError error)
         {
             Console.WriteLine(error.ToString());
             Environment.Exit(1);

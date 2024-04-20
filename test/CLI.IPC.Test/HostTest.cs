@@ -116,7 +116,7 @@ internal class HostTest : TestBase
     {
         public TaskFactory TaskFactory => Task.Factory;
 
-        public void HandleCall(ClientConnection connection)
+        public void HandleCall(IClientConnection connection)
         {
             this.ReceivedClientProperties = connection.Properties;
 
@@ -132,12 +132,12 @@ internal class HostTest : TestBase
             connection.Exit(42);
         }
 
-        public void HandleListenerError(ListenerError error)
+        public void HandleListenerError(IListenerError error)
         {
             Assert.Fail(error.ToString());
         }
 
-        public ClientProperties? ReceivedClientProperties { get; private set; }
+        public IClientProperties? ReceivedClientProperties { get; private set; }
     }
 
     public class HostConnectionHandler : IHostConnectionHandler

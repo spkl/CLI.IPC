@@ -5,27 +5,16 @@ using System;
 
 namespace spkl.CLI.IPC;
 
-/// <summary>
-/// Encapsulates all the information sent by a client.
-/// </summary>
-public class ClientProperties
+/// <inheritdoc cref="IClientProperties"/>
+public class ClientProperties : IClientProperties
 {
-    /// <summary>
-    /// Gets the command line arguments.
-    /// </summary>
+    /// <inheritdoc/>
     public string[] Arguments { get; set; }
 
-    /// <summary>
-    /// Gets the current working directory.
-    /// </summary>
+    /// <inheritdoc/>
     public string CurrentDirectory { get; set; }
 
-    /// <summary>
-    /// Gets the process ID.
-    /// </summary>
-    /// <remarks>
-    /// If the client does not support this property, -1 is returned.
-    /// </remarks>
+    /// <inheritdoc/>
     public int ProcessID { get; set; }
 
     /// <summary>

@@ -12,7 +12,7 @@ namespace spkl.CLI.IPC.Startup;
 /// Usage as a client application: Call <see cref="RequestInstance"/> to ensure that an application instance is running before connecting to it.
 /// Usage as the hosting application: Call <see cref="ReportInstanceRunning"/> when ready for incoming connections. Call <see cref="ShutdownInstance"/> before exit.
 /// </summary>
-public sealed class SingletonApplication : IDisposable
+public sealed class SingletonApplication : IDisposable, ISingletonApplication
 {
     /// <summary>
     /// Occurs before polling for a running or starting instance.
@@ -49,10 +49,7 @@ public sealed class SingletonApplication : IDisposable
         this.pollingPeriodMax = (int)(pollingPeriod * (1.0 + pollingPeriodVariability));
     }
 
-    /// <summary>
-    /// Ensures that a hosting application is running. If there is no running hosting application, one instance is started.
-    /// </summary>
-    /// <exception cref="SingletonApplicationException">There was no running hosting application within the <see cref="IStartupBehavior.TimeoutThreshold"/>.</exception>
+    /// <inheritdoc/>
     public void RequestInstance()
     {
         DateTime startTime = DateTime.Now;
@@ -80,10 +77,7 @@ public sealed class SingletonApplication : IDisposable
         }
     }
 
-    /// <summary>
-    /// Reports that this application is a hosting application that is ready for incoming connections.
-    /// </summary>
-    /// <exception cref="SingletonApplicationException">The 'running' lock could not be obtained within <see cref="IStartupBehavior.TimeoutThreshold"/>.</exception>
+    /// <inheritdoc/>
     public void ReportInstanceRunning()
     {
         DateTime startTime = DateTime.Now;
@@ -107,13 +101,7 @@ public sealed class SingletonApplication : IDisposable
         }
     }
 
-    /// <summary>
-    /// Reports that this hosting application is being shut down.
-    /// </summary>
-    /// <exception cref="InvalidOperationException">
-    /// <see cref="ReportInstanceRunning"/> was not called before <see cref="ShutdownInstance"/>.
-    /// It is not possible to shut down an instance that was not running.
-    /// </exception>
+    /// <inheritdoc/>
     public void ShutdownInstance()
     {
         if (this.runningLockStream == null)

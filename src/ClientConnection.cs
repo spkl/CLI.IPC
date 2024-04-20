@@ -7,31 +7,23 @@ using System.IO;
 
 namespace spkl.CLI.IPC;
 
-/// <summary>
-/// Holds all information and capability to let a host interact with a client.
-/// </summary>
-public class ClientConnection
+/// <inheritdoc cref="IClientConnection"/>
+public class ClientConnection : IClientConnection
 {
-    /// <summary>
-    /// Gets the information sent by a client.
-    /// </summary>
-    public ClientProperties Properties { get; }
+    /// <inheritdoc/>
+    public IClientProperties Properties { get; }
 
     internal MessageChannel Channel { get; }
 
     internal bool HasExited { get; private set; }
 
-    /// <summary>
-    /// Gets the standard output stream.
-    /// </summary>
+    /// <inheritdoc/>
     public TextWriter Out { get; }
 
-    /// <summary>
-    /// Gets the error output stream.
-    /// </summary>
+    /// <inheritdoc/>
     public TextWriter Error { get; }
 
-    internal ClientConnection(ClientProperties properties, MessageChannel channel)
+    internal ClientConnection(IClientProperties properties, MessageChannel channel)
     {
         this.Properties = properties;
         this.Channel = channel;
@@ -39,9 +31,7 @@ public class ClientConnection
         this.Error = new DelegateTextWriter(this.Channel.Sender.SendErrStr);
     }
 
-    /// <summary>
-    /// Sends the <paramref name="exitCode"/> to the client and closes the connection.
-    /// </summary>
+    /// <inheritdoc/>
     public void Exit(int exitCode)
     {
         this.Channel.Sender.SendExit(exitCode);
