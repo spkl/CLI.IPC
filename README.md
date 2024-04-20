@@ -62,16 +62,16 @@ For most scenarios, the built-in `DefaultHostConnectionHandler` can be used. It 
 
 ## Other Features
 
-### SingletonApplication: Starting a Server On Demand
+### SingletonApp: Starting a Server On Demand
 
-A client application obviously can't connect to a server when the server is not running. If the server should be started on demand, i.e. when a client wants to connect, the `SingletonApplication` class can help.
+A client application obviously can't connect to a server when the server is not running. If the server should be started on demand, i.e. when a client wants to connect, the `SingletonApp` class can help.
 
-With `SingletonApplication`, you can ensure that only one instance of the server is started, even when multiple clients ask for it simultaneously.
+With `SingletonApp`, you can ensure that only one instance of the server is started, even when multiple clients ask for it simultaneously.
 
 Usage as a client application: Call `RequestInstance` to ensure that an application instance is running before connecting to it.
 ```csharp
 IStartupBehavior startupBehavior = [...];
-new SingletonApplication(startupBehavior).RequestInstance();
+new SingletonApp(startupBehavior).RequestInstance();
 
 Client.Attach([...]);
 ```
@@ -79,12 +79,12 @@ Client.Attach([...]);
 Usage as a server application: Call `ReportInstanceRunning` when ready for incoming connections. Call `ShutdownInstance` before no longer accepting connections.
 ```csharp
 IStartupBehavior startupBehavior = [...];
-SingletonApplication singletonApplication = new(startupBehavior);
+SingletonApp singletonApp = new(startupBehavior);
 
 Host host = Host.Start([...]);
-singletonApplication.ReportInstanceRunning();
+singletonApp.ReportInstanceRunning();
 // [...]
-singletonApplication.ShutdownInstance();
+singletonApp.ShutdownInstance();
 host.Shutdown();
 ```
 
@@ -92,4 +92,4 @@ Using the `IStartupBehavior` interface, you can customize the following aspects:
 * How a server instance is started. Typically, by starting a new process.
 * Which time period is used for polling whether a server is starting or running.
 * After what timeout the `RequestInstance` or `ReportInstanceRunning` methods will fail.
-* Which file path is used to determine server state (because `SingletonApplication` uses file-based locking). This can be used to provide a server process per machine, per user, or arbitrarily.
+* Which file path is used to determine server state (because `SingletonApp` uses file-based locking). This can be used to provide a server process per machine, per user, or arbitrarily.
