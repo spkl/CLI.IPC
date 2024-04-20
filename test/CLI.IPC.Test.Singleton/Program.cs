@@ -30,13 +30,6 @@ internal class Program
 
     static void Main(string[] args)
     {
-        ITransport transport;
-#if NET6_0_OR_GREATER
-        transport = new UdsTransport(Path.Combine(Program.AssemblyDir, "sock"));
-#else
-        transport = new TcpLoopbackTransport(65049);
-#endif
-
         if (args.Length == 0 || args[0] is not (ARG_HOST or ARG_STATIC_TIME or ARG_UNTIL_UNUSED))
         {
             throw new Exception($"Specify either '{ARG_HOST}', '{ARG_STATIC_TIME}' or '{ARG_UNTIL_UNUSED}' as first argument.");
@@ -54,13 +47,13 @@ internal class Program
         }
 
         StartupBehavior b = new(timeoutBehavior);
-        SingletonApp s = new(b);
+        AutoTransportSingletonApp s = new(b);
 
         if (args[0] == ARG_HOST)
         {
             Thread.Sleep(TimeSpan.FromSeconds(HostStartupDelay_Seconds));
 
-            Host h = Host.Start(transport, new ClientConnectionHandler());
+            Host h = Host.Start(s.Transport, new ClientConnectionHandler());
             s.ReportInstanceRunning();
 
             if (timeoutBehavior == ARG_STATIC_TIME)
@@ -79,13 +72,13 @@ internal class Program
         else
         {
             s.RequestInstance();
-            Client.Attach(transport, new DefaultHostConnectionHandler());
+            Client.Attach(s.Transport, new DefaultHostConnectionHandler());
         }
     }
 
     private class StartupBehavior : IStartupBehavior
     {
-        public string NegotiationFileBasePath => Path.Combine(Program.AssemblyDir, "singleton");
+        public string NegotiationFileBasePath => Path.Combine(Program.AssemblyDir, "s");
 
         public TimeSpan PollingPeriod { get; } = TimeSpan.FromMilliseconds(Program.PollingPeriod_Milliseconds);
 

@@ -28,6 +28,7 @@ This project uses Semantic Versioning (https://semver.org/).
 		<PackageReleaseNotes>
 			- BREAKING: Introduced and used interfaces for all public-facing types to facilitate easier unit testing for library users. Provided public ctors for exceptions.
 			- BREAKING: Shortened names of SingletonApplication and SingleApplicationException to SingletonApp and SingletonAppException, respectively.
+			- Introduced the AutoTransportSingletonApp class: This lets you automatically use the correct ITransport objects to connect server and client.
 			- Introduced new overloads for the Host.WaitUntil[...] methods accepting a CancellationToken.
 			- Allowed usage of the Host.WaitUntilAllClientsDisconnected methods was clarified. An InvalidOperationException is now thrown when misused.
 		</PackageReleaseNotes>

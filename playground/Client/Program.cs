@@ -2,6 +2,11 @@
 // Licensed under the MIT License.
 
 using spkl.CLI.IPC;
+using spkl.CLI.IPC.Startup;
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.Reflection;
 
 namespace Client;
 
@@ -9,15 +14,25 @@ internal class Program
 {
     static void Main(string[] args)
     {
-        ITransport transport;
-#if NET6_0_OR_GREATER
-        transport = new UdsTransport(@"C:\Users\Sebastian\Documents\Projects\StreamTest\playground\Server\bin\Debug\net6.0\socket");
-#else
-        transport = new TcpLoopbackTransport(65058);
-#endif
+        AutoTransportSingletonApp app = new AutoTransportSingletonApp(
+            new StartupBehavior(
+                @"C:\Users\Sebastian\Documents\Projects\StreamTest\playground\singleton",
+                TimeSpan.FromMilliseconds(250),
+                TimeSpan.FromSeconds(5),
+                () =>
+                {
+                    string clientDir = Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!;
+                    string serverDir = clientDir.Replace(Path.Combine("playground", "Client", "bin"), Path.Combine("playground", "Server", "bin"));
+                    string serverExe = Path.Combine(serverDir, "Server.exe");
 
+                    ProcessStartInfo psi = new ProcessStartInfo(serverExe);
+                    psi.UseShellExecute = true;
+                    Process.Start(psi);
+                }));
+
+        app.RequestInstance();
         spkl.CLI.IPC.Client.Attach(
-            transport,
+            app.Transport,
             new DefaultHostConnectionHandler());
     }
 }

@@ -93,3 +93,9 @@ Using the `IStartupBehavior` interface, you can customize the following aspects:
 * Which time period is used for polling whether a server is starting or running.
 * After what timeout the `RequestInstance` or `ReportInstanceRunning` methods will fail.
 * Which file path is used to determine server state (because `SingletonApp` uses file-based locking). This can be used to provide a server process per machine, per user, or arbitrarily.
+
+### AutoTransportSingletonApp: On Demand and Even Easier
+
+`AutoTransportSingletonApp` does everything that `SingletonApp` does, plus it automatically connects your server and your client so you don't have to manage TCP ports or Unix Domain Socket paths.
+
+Simply use the value of the `AutoTransportSingletonApp.Transport` property for the call to `Host.Start` and `Client.Attach`, and a connection can be established.
