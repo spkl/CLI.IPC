@@ -28,6 +28,12 @@ public interface ITransport
     void BeforeHostStart();
 
     /// <summary>
+    /// Executes after the host binds the socket to an endpoint.
+    /// The <paramref name="usedEndPoint"/> parameter contains the actually used endpoint.
+    /// </summary>
+    void AfterHostBind(EndPoint? usedEndPoint);
+
+    /// <summary>
     /// Executes after a host was shut down.
     /// </summary>
     void AfterHostShutdown();

@@ -5,18 +5,21 @@
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.Serialization;
 
 namespace spkl.CLI.IPC;
 
 /// <summary>
 /// Establishes a local connection using a Unix Domain Socket.
 /// </summary>
+[DataContract]
 public class UdsTransport : ITransport
 {
     /// <summary>
     /// Gets the file path used for the socket file.
     /// </summary>
-    public string FilePath { get; }
+    [DataMember]
+    public string FilePath { get; private set; }
 
     /// <summary>
     /// </summary>
@@ -35,6 +38,11 @@ public class UdsTransport : ITransport
     public virtual void BeforeHostStart()
     {
         File.Delete(this.FilePath);
+    }
+
+    /// <inheritdoc/>
+    public virtual void AfterHostBind(EndPoint? usedEndPoint)
+    {
     }
 
     /// <inheritdoc/>
