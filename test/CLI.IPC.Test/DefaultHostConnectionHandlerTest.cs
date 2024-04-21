@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace spkl.CLI.IPC.Test;
@@ -30,6 +31,17 @@ internal class DefaultHostConnectionHandlerTest : TestBase
 
         // assert
         Assert.That(result, Is.EqualTo(Environment.CurrentDirectory));
+    }
+
+    [Test]
+    public void ProcessID()
+    {
+        // act
+        int result = this.handler.ProcessID;
+
+        // assert
+        using Process p = Process.GetCurrentProcess();
+        Assert.That(result, Is.EqualTo(p.Id));
     }
 
     [Test]
