@@ -11,7 +11,7 @@ internal class Program
         string dllPath = args[1];
         string typeName = args[2];
 
-        Type hostConnectionHandlerType = Type.GetType(typeName + ", spkl.CLI.IPC, Version=1.0.0.0, Culture=neutral, PublicKeyToken=e5ae298f5c89d3e9")
+        Type hostConnectionHandlerType = Type.GetType(typeName + ", spkl.CLI.IPC, Version=2.0.0.0, Culture=neutral, PublicKeyToken=e5ae298f5c89d3e9")
                                          ?? Assembly.LoadFrom(dllPath).GetType(typeName)
                                          ?? throw new Exception($"Could not find type {typeName} in DLL {dllPath}.");
         IHostConnectionHandler hostConnectionHandler = (IHostConnectionHandler)Activator.CreateInstance(hostConnectionHandlerType)!;
