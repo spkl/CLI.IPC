@@ -25,6 +25,7 @@ internal class AutoTransportSingletonAppTest : SingletonAppTestBase
     {
         // arrange
         this.disposables.Add(File.Open(this.negotiationFile + ".run_lock", FileMode.Create));
+        this.disposables.Add(File.Open(this.negotiationFile + ".transport_lock", FileMode.Create));
         this.disposables.Add(File.Open(this.negotiationFile + ".transport_ready", FileMode.Create));
         using (FileStream type = File.Open(this.negotiationFile + ".transport_type", FileMode.Create))
         using (FileStream data = File.Open(this.negotiationFile + ".transport_data", FileMode.Create))
@@ -56,6 +57,7 @@ internal class AutoTransportSingletonAppTest : SingletonAppTestBase
     {
         // arrange
         this.disposables.Add(File.Open(this.negotiationFile + ".run_lock", FileMode.Create));
+        this.disposables.Add(File.Open(this.negotiationFile + ".transport_lock", FileMode.Create));
         this.disposables.Add(File.Open(this.negotiationFile + ".transport_ready", FileMode.Create));
 
         // act & assert
@@ -63,12 +65,15 @@ internal class AutoTransportSingletonAppTest : SingletonAppTestBase
     }
 
     [Test]
-    public void ReportInstanceRunningLocksFile()
+    public void ReportInstanceRunningLocksFiles()
     {
         // act
         this.singletonApp.ReportInstanceRunning();
 
         // assert
+        Assert.That(
+            () => this.disposables.Add(File.Open(this.negotiationFile + ".transport_lock", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite | FileShare.Delete)),
+            Throws.InstanceOf<IOException>());
         Assert.That(
             () => this.disposables.Add(File.Open(this.negotiationFile + ".transport_ready", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite | FileShare.Delete)),
             Throws.InstanceOf<IOException>());
@@ -98,7 +103,7 @@ internal class AutoTransportSingletonAppTest : SingletonAppTestBase
     public void ReportInstanceRunningThrowsExceptionIfFileIsLocked()
     {
         // arrange
-        this.disposables.Add(File.Open(this.negotiationFile + ".transport_ready", FileMode.Create, FileAccess.ReadWrite, FileShare.None));
+        this.disposables.Add(File.Open(this.negotiationFile + ".transport_lock", FileMode.Create));
 
         // act & assert
         Assert.That(() => this.singletonApp.ReportInstanceRunning(), Throws.InstanceOf<SingletonAppException>());
@@ -114,9 +119,10 @@ internal class AutoTransportSingletonAppTest : SingletonAppTestBase
         this.singletonApp.ShutdownInstance();
 
         // assert
-        Assert.That(() => this.disposables.Add(File.Open(this.negotiationFile + ".transport_ready", FileMode.Create)), Throws.Nothing);
         Assert.That(() => this.disposables.Add(File.Open(this.negotiationFile + ".transport_type", FileMode.Create)), Throws.Nothing);
         Assert.That(() => this.disposables.Add(File.Open(this.negotiationFile + ".transport_data", FileMode.Create)), Throws.Nothing);
+        Assert.That(() => this.disposables.Add(File.Open(this.negotiationFile + ".transport_ready", FileMode.Create)), Throws.Nothing);
+        Assert.That(() => this.disposables.Add(File.Open(this.negotiationFile + ".transport_lock", FileMode.Create)), Throws.Nothing);
     }
 
 #if NET6_0_OR_GREATER
@@ -161,5 +167,6 @@ internal class AutoTransportSingletonAppTest : SingletonAppTestBase
         File.Open(this.negotiationFile + ".transport_type", FileMode.Create).Dispose();
         File.Open(this.negotiationFile + ".transport_data", FileMode.Create).Dispose();
         File.Open(this.negotiationFile + ".transport_ready", FileMode.Create).Dispose();
+        File.Open(this.negotiationFile + ".transport_lock", FileMode.Create).Dispose();
     }
 }

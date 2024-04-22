@@ -25,11 +25,15 @@ public sealed class AutoTransportSingletonApp : IDisposable, IAutoTransportSingl
 
     private readonly SingletonApp innerSingleton;
 
+    private string TransportLockPath => this.behavior.NegotiationFileBasePath + ".transport_lock";
+
     private string TransportTypePath => this.behavior.NegotiationFileBasePath + ".transport_type";
 
     private string TransportDataPath => this.behavior.NegotiationFileBasePath + ".transport_data";
 
     private string TransportReadyPath => this.behavior.NegotiationFileBasePath + ".transport_ready";
+
+    private FileStream? transportLockStream;
 
     private FileStream? transportTypeStream;
 
@@ -74,7 +78,7 @@ public sealed class AutoTransportSingletonApp : IDisposable, IAutoTransportSingl
 
         try
         {
-            File.Delete(this.TransportReadyPath);
+            this.transportLockStream = FileStreams.OpenForLocking(this.TransportLockPath);
 
             this.transportTypeStream = FileStreams.OpenForExclusiveWriting(this.TransportTypePath);
             this.transportDataStream = FileStreams.OpenForExclusiveWriting(this.TransportDataPath);
@@ -107,7 +111,7 @@ public sealed class AutoTransportSingletonApp : IDisposable, IAutoTransportSingl
         TimeSpan timeout = TimeSpan.FromSeconds(5);
         Try.UntilTimedOut(timeout, () =>
         {
-            ready = FileStreams.IsLocked(this.TransportReadyPath);
+            ready = FileStreams.IsLocked(this.TransportLockPath) && FileStreams.IsLocked(this.TransportReadyPath);
             return ready;
         });
 
@@ -148,6 +152,7 @@ public sealed class AutoTransportSingletonApp : IDisposable, IAutoTransportSingl
 
     private void DisposeAllStreams()
     {
+        Try.Dispose(ref this.transportLockStream);
         Try.Dispose(ref this.transportTypeStream);
         Try.Dispose(ref this.transportDataStream);
         Try.Dispose(ref this.transportReadyStream);
