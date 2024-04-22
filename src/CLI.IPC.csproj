@@ -27,6 +27,7 @@ This project uses Semantic Versioning (https://semver.org/).
 		<PackageTags>dotnet cli command-line command-line-interface client server client-server ipc interprocess communication interprocess-communication network-programming network-communication client-server-architecture client-server-communication client-server-application</PackageTags>
 		<PackageReleaseNotes>
 			- AutoTransportSingletonApp: Use TcpLoopbackTransport if UdsTransport is not supported or the socket path is too long.
+			- Provided public ctor for SingletonAppException.
 		</PackageReleaseNotes>
 	</PropertyGroup>
 
