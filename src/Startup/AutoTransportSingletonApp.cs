@@ -13,8 +13,11 @@ namespace spkl.CLI.IPC.Startup;
 /// Usage as the hosting application: Start the host using the provided <see cref="Transport"/>, then call <see cref="ReportInstanceRunning"/> when ready for incoming connections. Call <see cref="ShutdownInstance"/> before exit
 /// </summary>
 /// <remarks>
-/// When running as a host on .NET 6 (or higher), a Unix Domain Socket transport is used by default, which is not supported by clients running on .NET Framework / .NET Standard.
-/// To enable those clients to connect to the host, manually set the <see cref="Transport"/> property to a supported transport before starting the host.
+/// When running as a host on .NET 6 (or higher), a Unix Domain Socket transport is used by default,
+/// but only if the resulting socket path (dependent on <see cref="IStartupBehavior.NegotiationFileBasePath"/>) is not too long,
+/// and the OS supports Unix Domain Sockets.
+/// In all other cases, a TCP loopback transport on an automatically determined free port is used.
+/// To override the default behavior, manually set the <see cref="Transport"/> property before starting the host.
 /// </remarks>
 public sealed class AutoTransportSingletonApp : IDisposable, IAutoTransportSingletonApp
 {
@@ -22,11 +25,15 @@ public sealed class AutoTransportSingletonApp : IDisposable, IAutoTransportSingl
 
     private readonly SingletonApp innerSingleton;
 
+    private string TransportLockPath => this.behavior.NegotiationFileBasePath + ".transport_lock";
+
     private string TransportTypePath => this.behavior.NegotiationFileBasePath + ".transport_type";
 
     private string TransportDataPath => this.behavior.NegotiationFileBasePath + ".transport_data";
 
     private string TransportReadyPath => this.behavior.NegotiationFileBasePath + ".transport_ready";
+
+    private FileStream? transportLockStream;
 
     private FileStream? transportTypeStream;
 
@@ -49,7 +56,16 @@ public sealed class AutoTransportSingletonApp : IDisposable, IAutoTransportSingl
     private ITransport CreateTransportForHost()
     {
 #if NET6_0_OR_GREATER
-        return new UdsTransport(this.behavior.NegotiationFileBasePath + ".sock");
+        UdsTransport udsTransport = new UdsTransport(this.behavior.NegotiationFileBasePath + ".sock");
+        try
+        {
+            _ = udsTransport.EndPoint;
+            return udsTransport;
+        }
+        catch (Exception e) when (e is ArgumentOutOfRangeException or PlatformNotSupportedException)
+        {
+            return new TcpLoopbackTransport(0);
+        }
 #else
         return new TcpLoopbackTransport(0);
 #endif
@@ -62,7 +78,7 @@ public sealed class AutoTransportSingletonApp : IDisposable, IAutoTransportSingl
 
         try
         {
-            File.Delete(this.TransportReadyPath);
+            this.transportLockStream = FileStreams.OpenForLocking(this.TransportLockPath);
 
             this.transportTypeStream = FileStreams.OpenForExclusiveWriting(this.TransportTypePath);
             this.transportDataStream = FileStreams.OpenForExclusiveWriting(this.TransportDataPath);
@@ -95,7 +111,7 @@ public sealed class AutoTransportSingletonApp : IDisposable, IAutoTransportSingl
         TimeSpan timeout = TimeSpan.FromSeconds(5);
         Try.UntilTimedOut(timeout, () =>
         {
-            ready = FileStreams.IsLocked(this.TransportReadyPath);
+            ready = FileStreams.IsLocked(this.TransportLockPath) && FileStreams.IsLocked(this.TransportReadyPath);
             return ready;
         });
 
@@ -136,6 +152,7 @@ public sealed class AutoTransportSingletonApp : IDisposable, IAutoTransportSingl
 
     private void DisposeAllStreams()
     {
+        Try.Dispose(ref this.transportLockStream);
         Try.Dispose(ref this.transportTypeStream);
         Try.Dispose(ref this.transportDataStream);
         Try.Dispose(ref this.transportReadyStream);

@@ -1,46 +1,27 @@
 ﻿using spkl.CLI.IPC.Startup;
 using System;
-using System.Collections.Generic;
 using System.IO;
 
 namespace spkl.CLI.IPC.Test.Startup;
 
-internal class SingletonAppTest : TestBase
+internal class SingletonAppTest : SingletonAppTestBase
 {
-    private readonly List<IDisposable> disposables = new List<IDisposable>();
-
-    private string negotiationFile = string.Empty;
-
-    private IStartupBehavior? startupBehavior;
-
-    private SingletonApp? singletonApp;
+    protected SingletonApp singletonApp = null!;
 
     [SetUp]
     public void SetUp()
     {
-        this.negotiationFile = Path.Combine(TestContext.CurrentContext.WorkDirectory, "SingletonAppTest");
-
-        this.startupBehavior = Substitute.For<IStartupBehavior>();
-        this.startupBehavior.PollingPeriod.Returns(TimeSpan.FromMilliseconds(1));
-        this.startupBehavior.TimeoutThreshold.Returns(TimeSpan.FromSeconds(2));
-        this.startupBehavior.NegotiationFileBasePath.Returns(this.negotiationFile);
-
         this.singletonApp = new SingletonApp(this.startupBehavior);
     }
 
     [TearDown]
     public void TearDown()
     {
-        this.singletonApp?.Dispose();
+        this.singletonApp.Dispose();
+    }
 
-        foreach (IDisposable disposable in this.disposables)
-        {
-            disposable.Dispose();
-        }
-
-        this.disposables.Clear();
-
-        // Ensure that the relevant files are not locked.
+    protected override void CheckForLockedFiles()
+    {
         File.Open(this.negotiationFile + ".start_lock", FileMode.Create).Dispose();
         File.Open(this.negotiationFile + ".run_lock", FileMode.Create).Dispose();
     }
@@ -52,10 +33,10 @@ internal class SingletonAppTest : TestBase
         this.disposables.Add(File.Open(this.negotiationFile + ".run_lock", FileMode.Create));
 
         // act
-        this.singletonApp!.RequestInstance();
+        this.singletonApp.RequestInstance();
 
         // assert
-        this.startupBehavior!.DidNotReceive().StartInstance();
+        this.startupBehavior.DidNotReceive().StartInstance();
     }
 
     [Test]
@@ -63,42 +44,42 @@ internal class SingletonAppTest : TestBase
     {
         // arrange
         this.disposables.Add(File.Open(this.negotiationFile + ".start_lock", FileMode.Create));
-        this.singletonApp!.BeforeRequestingInstance += (_, _) => this.disposables.Add(File.Open(this.negotiationFile + ".run_lock", FileMode.Create));
+        this.singletonApp.BeforeRequestingInstance += (_, _) => this.disposables.Add(File.Open(this.negotiationFile + ".run_lock", FileMode.Create));
 
         // act
-        this.singletonApp!.RequestInstance();
+        this.singletonApp.RequestInstance();
 
         // assert
-        this.startupBehavior!.DidNotReceive().StartInstance();
+        this.startupBehavior.DidNotReceive().StartInstance();
     }
 
     [Test]
     public void RequestInstanceCallsStartInstanceIfNoApplicationRunningOrStarting()
     {
         // arrange
-        this.startupBehavior!
+        this.startupBehavior
             .When(o => o.StartInstance())
             .Do(_ => this.disposables.Add(File.Open(this.negotiationFile + ".run_lock", FileMode.Create)));
 
         // act
-        this.singletonApp!.RequestInstance();
+        this.singletonApp.RequestInstance();
 
         // assert
-        this.startupBehavior!.Received().StartInstance();
+        this.startupBehavior.Received().StartInstance();
     }
 
     [Test]
     public void RequestInstanceThrowsExceptionIfNoApplicationIsStartedBeforeTimeout()
     {
         // act & assert
-        Assert.That(() => this.singletonApp!.RequestInstance(), Throws.InstanceOf<SingletonAppException>());
+        Assert.That(() => this.singletonApp.RequestInstance(), Throws.InstanceOf<SingletonAppException>());
     }
 
     [Test]
     public void ReportInstanceRunningLocksFile()
     {
         // act
-        this.singletonApp!.ReportInstanceRunning();
+        this.singletonApp.ReportInstanceRunning();
 
         // assert
         Assert.That(
@@ -113,24 +94,24 @@ internal class SingletonAppTest : TestBase
         this.disposables.Add(File.Open(this.negotiationFile + ".run_lock", FileMode.Create));
 
         // act & assert
-        Assert.That(() => this.singletonApp!.ReportInstanceRunning(), Throws.InstanceOf<SingletonAppException>());
+        Assert.That(() => this.singletonApp.ReportInstanceRunning(), Throws.InstanceOf<SingletonAppException>());
     }
 
     [Test]
     public void ShutdownInstanceThrowsExceptionIfReportInstanceRunningWasNotCalled()
     {
         // act & assert
-        Assert.That(() => this.singletonApp!.ShutdownInstance(), Throws.InstanceOf<InvalidOperationException>());
+        Assert.That(() => this.singletonApp.ShutdownInstance(), Throws.InstanceOf<InvalidOperationException>());
     }
 
     [Test]
     public void ShutdownInstanceUnlocksFile()
     {
         // arrange
-        this.singletonApp!.ReportInstanceRunning();
+        this.singletonApp.ReportInstanceRunning();
 
         // act
-        this.singletonApp!.ShutdownInstance();
+        this.singletonApp.ShutdownInstance();
 
         // assert
         Assert.That(() => this.disposables.Add(File.Open(this.negotiationFile + ".run_lock", FileMode.Create)), Throws.Nothing);
