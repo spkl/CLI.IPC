@@ -10,7 +10,10 @@ namespace spkl.CLI.IPC.Startup;
 /// </summary>
 public class SingletonAppException : Exception
 {
-    internal SingletonAppException(string? message) : base(message)
+    /// <summary>
+    /// Initializes a new instance of this class with a specified error message.
+    /// </summary>
+    public SingletonAppException(string? message) : base(message)
     {
     }
 }
