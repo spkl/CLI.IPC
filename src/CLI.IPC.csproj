@@ -8,9 +8,13 @@
 		<LangVersion>10.0</LangVersion>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		
 		<SignAssembly>True</SignAssembly>
 		<AssemblyOriginatorKeyFile>..\keys\spkl.CLI.IPC.snk</AssemblyOriginatorKeyFile>
 		<DelaySign>false</DelaySign>
+
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 		
 		<Authors>Sebastian Fischer</Authors>
 		<Company>Sebastian Fischer</Company>
