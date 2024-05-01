@@ -1,16 +1,12 @@
-# This workflow will build a .NET project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
-
-name: Create NuGet Package
+name: Publish NuGet Package
 
 on:
   release:
     types: [ published ]
   workflow_dispatch:
-  push:
 
 jobs:
-  pack:
+  publish:
 
     runs-on: ubuntu-latest
 
@@ -27,7 +23,7 @@ jobs:
       run: dotnet restore
     - name: Pack
       run: dotnet pack src/CLI.IPC.csproj /p:ContinuousIntegrationBuild=true --output .
-    - name: publish
+    - name: Publish
       shell: bash
       env:
         API_KEY: ${{ secrets.NUGET_ORG_API_KEY }}
