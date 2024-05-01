@@ -27,7 +27,7 @@ jobs:
       run: dotnet restore
     - name: Pack
       run: dotnet pack src/CLI.IPC.csproj /p:ContinuousIntegrationBuild=true --output .
-    - name: Upload *.nupkg
+    - name: Upload *.nupkg, *.snupkg
       uses: actions/upload-artifact@v4
       with:
         name: NuGet Package
