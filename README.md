@@ -29,7 +29,7 @@ static void Main(string[] args)
 
 private class MyClientConnectionHandler : IClientConnectionHandler
 {
-    public void HandleCall(ClientConnection connection)
+    public void HandleCall(IClientConnection connection)
     {
         if (connection.Properties.Arguments is [_, "dump-db", string fileName])
         {

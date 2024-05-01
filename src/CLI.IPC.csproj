@@ -31,6 +31,7 @@ This project uses Semantic Versioning (https://semver.org/).
 		<PackageTags>dotnet cli command-line command-line-interface client server client-server ipc interprocess communication interprocess-communication network-programming network-communication client-server-architecture client-server-communication client-server-application</PackageTags>
 		<PackageReleaseNotes>- Provided additional net8.0 library in addition to the previously supported net6.0 and netstandard2.0.
 - Provided snupkg for debug symbols.
+- Fixed HandleCall signature in README.
 		</PackageReleaseNotes>
 	</PropertyGroup>
 
