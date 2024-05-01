@@ -27,10 +27,9 @@ jobs:
       run: dotnet restore
     - name: Pack
       run: dotnet pack src/CLI.IPC.csproj /p:ContinuousIntegrationBuild=true --output .
-    - name: Upload *.nupkg, *.snupkg
-      uses: actions/upload-artifact@v4
-      with:
-        name: NuGet Package
-        path: |
-          **/*.nupkg
-          **/*.snupkg
+    - name: publish
+      shell: bash
+      env:
+        API_KEY: ${{ secrets.NUGET_ORG_API_KEY }}
+      run: |
+        dotnet nuget push "*.nupkg" --api-key "$API_KEY" --source https://int.nugettest.org/
