@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net6.0;net48</TargetFrameworks>
+    <TargetFrameworks>net8.0;net6.0;net48</TargetFrameworks>
     <AssemblyName>spkl.CLI.IPC.Test.Singleton</AssemblyName>
 	<RootNamespace>spkl.CLI.IPC.Test.Singleton</RootNamespace>
     <Nullable>enable</Nullable>
