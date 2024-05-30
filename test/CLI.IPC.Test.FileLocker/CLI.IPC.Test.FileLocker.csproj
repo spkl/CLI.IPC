@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFrameworks>net8.0;net6.0;net48</TargetFrameworks>
+    <AssemblyName>spkl.CLI.IPC.Test.FileLocker</AssemblyName>
+    <RootNamespace>spkl.CLI.IPC.Test.FileLocker</RootNamespace>
+    <Nullable>enable</Nullable>
+    <LangVersion>10.0</LangVersion>
+    <IsTestProject>false</IsTestProject>
+
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\keys\spkl.CLI.IPC.snk</AssemblyOriginatorKeyFile>
+    <DelaySign>false</DelaySign>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\CLI.IPC.csproj" />
+  </ItemGroup>
+
+</Project>

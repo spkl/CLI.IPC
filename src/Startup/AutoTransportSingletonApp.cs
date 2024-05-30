@@ -25,21 +25,17 @@ public sealed class AutoTransportSingletonApp : IDisposable, IAutoTransportSingl
 
     private readonly SingletonApp innerSingleton;
 
-    private string TransportLockPath => this.behavior.NegotiationFileBasePath + ".transport_lock";
+    private readonly FileLock transportLock;
+
+    private readonly FileLock transportReadyLock;
 
     private string TransportTypePath => this.behavior.NegotiationFileBasePath + ".transport_type";
 
     private string TransportDataPath => this.behavior.NegotiationFileBasePath + ".transport_data";
 
-    private string TransportReadyPath => this.behavior.NegotiationFileBasePath + ".transport_ready";
-
-    private FileStream? transportLockStream;
-
     private FileStream? transportTypeStream;
 
     private FileStream? transportDataStream;
-
-    private FileStream? transportReadyStream;
 
     /// <inheritdoc/>
     public ITransport Transport { get; set; }
@@ -50,6 +46,10 @@ public sealed class AutoTransportSingletonApp : IDisposable, IAutoTransportSingl
     {
         this.behavior = behavior;
         this.innerSingleton = new SingletonApp(behavior);
+
+        this.transportLock = new FileLock(this.behavior.NegotiationFileBasePath + ".transport_lock");
+        this.transportReadyLock = new FileLock(this.behavior.NegotiationFileBasePath + ".transport_ready");
+
         this.Transport = this.CreateTransportForHost();
     }
 
@@ -78,13 +78,13 @@ public sealed class AutoTransportSingletonApp : IDisposable, IAutoTransportSingl
 
         try
         {
-            this.transportLockStream = FileStreams.OpenForLocking(this.TransportLockPath);
+            this.transportLock.Lock();
 
             this.transportTypeStream = FileStreams.OpenForExclusiveWriting(this.TransportTypePath);
             this.transportDataStream = FileStreams.OpenForExclusiveWriting(this.TransportDataPath);
             Serializer.Write(this.Transport, this.transportTypeStream, this.transportDataStream);
 
-            this.transportReadyStream = FileStreams.OpenForLocking(this.TransportReadyPath);
+            this.transportReadyLock.Lock();
         }
         catch (IOException e)
         {
@@ -97,7 +97,7 @@ public sealed class AutoTransportSingletonApp : IDisposable, IAutoTransportSingl
 
         void HandleException(Exception e)
         {
-            this.DisposeAllStreams();
+            this.CloseAllFiles();
             throw new SingletonAppException($"Could not write transport information: {e.Message}");
         }
     }
@@ -111,7 +111,7 @@ public sealed class AutoTransportSingletonApp : IDisposable, IAutoTransportSingl
         TimeSpan timeout = TimeSpan.FromSeconds(5);
         Try.UntilTimedOut(timeout, () =>
         {
-            ready = FileStreams.IsLocked(this.TransportLockPath) && FileStreams.IsLocked(this.TransportReadyPath);
+            ready = this.transportLock.IsLocked() && this.transportReadyLock.IsLocked();
             return ready;
         });
 
@@ -132,7 +132,7 @@ public sealed class AutoTransportSingletonApp : IDisposable, IAutoTransportSingl
         }
         finally
         {
-            this.DisposeAllStreams();
+            this.CloseAllFiles();
         }
     }
 
@@ -140,21 +140,21 @@ public sealed class AutoTransportSingletonApp : IDisposable, IAutoTransportSingl
     public void ShutdownInstance()
     {
         this.innerSingleton.ShutdownInstance();
-        this.DisposeAllStreams();
+        this.CloseAllFiles();
     }
 
     /// <inheritdoc/>
     public void Dispose()
     {
-        this.DisposeAllStreams();
+        this.CloseAllFiles();
         this.innerSingleton.Dispose();
     }
 
-    private void DisposeAllStreams()
+    private void CloseAllFiles()
     {
-        Try.Dispose(ref this.transportLockStream);
+        this.transportLock.Unlock();
         Try.Dispose(ref this.transportTypeStream);
         Try.Dispose(ref this.transportDataStream);
-        Try.Dispose(ref this.transportReadyStream);
+        this.transportReadyLock.Unlock();
     }
 }

@@ -3,7 +3,6 @@
 
 using spkl.CLI.IPC.Internal;
 using System;
-using System.IO;
 using System.Threading;
 
 namespace spkl.CLI.IPC.Startup;
@@ -22,13 +21,9 @@ public sealed class SingletonApp : IDisposable, ISingletonApp
 
     private readonly IStartupBehavior behavior;
 
-    private string StartupLockPath => this.behavior.NegotiationFileBasePath + ".start_lock";
+    private readonly FileLock startupLock;
 
-    private string RunningLockPath => this.behavior.NegotiationFileBasePath + ".run_lock";
-
-    private FileStream? startupLockStream;
-
-    private FileStream? runningLockStream;
+    private readonly FileLock runningLock;
 
     private bool isThisInstanceStarting;
 
@@ -41,6 +36,9 @@ public sealed class SingletonApp : IDisposable, ISingletonApp
     public SingletonApp(IStartupBehavior behavior)
     {
         this.behavior = behavior;
+
+        this.startupLock = new FileLock(this.behavior.NegotiationFileBasePath + ".start_lock");
+        this.runningLock = new FileLock(this.behavior.NegotiationFileBasePath + ".run_lock");
 
         this.random = new Random();
 
@@ -74,7 +72,7 @@ public sealed class SingletonApp : IDisposable, ISingletonApp
 
         if (this.isThisInstanceStarting)
         {
-            Try.Dispose(ref this.startupLockStream);
+            this.startupLock.Unlock();
             this.isThisInstanceStarting = false;
         }
 
@@ -87,28 +85,26 @@ public sealed class SingletonApp : IDisposable, ISingletonApp
     /// <inheritdoc/>
     public void ReportInstanceRunning()
     {
-        this.runningLockStream = FileStreams.TryLock(this.RunningLockPath, this.behavior.TimeoutThreshold);
-
-        if (this.runningLockStream == null)
+        if (!this.runningLock.TryLock(this.behavior.TimeoutThreshold))
         {
-            throw new SingletonAppException($"Timed out: Could not get lock on {this.RunningLockPath} within {this.behavior.TimeoutThreshold}.");
+            throw new SingletonAppException($"Timed out: Could not get lock on {this.runningLock.Path} within {this.behavior.TimeoutThreshold}.");
         }
     }
 
     /// <inheritdoc/>
     public void ShutdownInstance()
     {
-        if (this.runningLockStream == null)
+        if (!this.runningLock.IsHoldingLock())
         {
             throw new InvalidOperationException($"{nameof(ReportInstanceRunning)} must be called before {nameof(ShutdownInstance)}.");
         }
 
-        Try.Dispose(ref this.runningLockStream);
+        this.runningLock.Unlock();
     }
 
     private bool IsRunning()
     {
-        return FileStreams.IsLocked(this.RunningLockPath);
+        return this.runningLock.IsLocked();
     }
 
     private bool IsStarting()
@@ -118,13 +114,12 @@ public sealed class SingletonApp : IDisposable, ISingletonApp
             return true;
         }
 
-        return FileStreams.IsLocked(this.StartupLockPath);
+        return this.startupLock.IsLocked();
     }
 
     private void TryToStart()
     {
-        this.startupLockStream = FileStreams.TryLock(this.StartupLockPath);
-        if (this.startupLockStream == null)
+        if (!this.startupLock.TryLock())
         {
             return;
         }
@@ -136,7 +131,7 @@ public sealed class SingletonApp : IDisposable, ISingletonApp
     /// <inheritdoc />
     public void Dispose()
     {
-        Try.Dispose(ref this.startupLockStream);
-        Try.Dispose(ref this.runningLockStream);
+        this.startupLock.Unlock();
+        this.runningLock.Unlock();
     }
 }
