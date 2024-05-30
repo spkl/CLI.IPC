@@ -116,4 +116,41 @@ internal class SingletonAppTest : SingletonAppTestBase
         // assert
         Assert.That(() => this.disposables.Add(File.Open(this.negotiationFile + ".run_lock", FileMode.Create)), Throws.Nothing);
     }
+
+    [Test]
+    public void SuspendStartupLocksFile()
+    {
+        // act
+        this.disposables.Add(
+            this.singletonApp.SuspendStartup()
+        );
+
+        // assert
+        Assert.That(
+            () => this.disposables.Add(File.Open(this.negotiationFile + ".start_lock", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite | FileShare.Delete)),
+            Throws.InstanceOf<IOException>());
+    }
+
+    [Test]
+    public void SuspendStartupTwiceThrowsException()
+    {
+        // arrange
+        this.disposables.Add(this.singletonApp.SuspendStartup());
+
+        // act & assert
+        Assert.That(() => this.disposables.Add(this.singletonApp.SuspendStartup()), Throws.InstanceOf<SingletonAppException>());
+    }
+
+    [Test]
+    public void SuspendStartupDisposeUnlocksFile()
+    {
+        // arrange
+        IDisposable disposable = this.singletonApp.SuspendStartup();
+
+        // act
+        disposable.Dispose();
+
+        // assert
+        Assert.That(() => this.disposables.Add(File.Open(this.negotiationFile + ".start_lock", FileMode.Create)), Throws.Nothing);
+    }
 }

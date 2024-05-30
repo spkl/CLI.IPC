@@ -144,6 +144,12 @@ public sealed class AutoTransportSingletonApp : IDisposable, IAutoTransportSingl
     }
 
     /// <inheritdoc/>
+    public IDisposable SuspendStartup()
+    {
+        return this.innerSingleton.SuspendStartup();
+    }
+
+    /// <inheritdoc/>
     public void Dispose()
     {
         this.CloseAllFiles();

@@ -102,6 +102,17 @@ public sealed class SingletonApp : IDisposable, ISingletonApp
         this.runningLock.Unlock();
     }
 
+    /// <inheritdoc/>
+    public IDisposable SuspendStartup()
+    {
+        if (!this.startupLock.TryLock(this.behavior.TimeoutThreshold))
+        {
+            throw new SingletonAppException($"Timed out: Could not get lock on {this.startupLock.Path} within {this.behavior.TimeoutThreshold}.");
+        }
+
+        return new Disposable(() => this.startupLock.Unlock());
+    }
+
     private bool IsRunning()
     {
         return this.runningLock.IsLocked();
