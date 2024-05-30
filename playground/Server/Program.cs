@@ -16,7 +16,7 @@ internal class Program
     {
         AutoTransportSingletonApp app = new AutoTransportSingletonApp(
             new StartupBehavior(
-                @"C:\Users\Sebastian\Documents\Projects\StreamTest\playground\singleton",
+                @"C:\Users\Sebastian\Documents\Projects\spkl.CLI.IPC\playground\singleton",
                 TimeSpan.FromMilliseconds(250),
                 TimeSpan.FromSeconds(5),
                 () => { }));
