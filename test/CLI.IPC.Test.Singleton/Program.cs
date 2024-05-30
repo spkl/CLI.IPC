@@ -16,6 +16,8 @@ internal class Program
 
     private const int HostAliveTime_Seconds = 5;
 
+    private const int HostShutdownGracePeriod_Milliseconds = 250;
+
     private const int PollingPeriod_Milliseconds = 250;
 
     private const int TimeoutThreshold_Seconds = 10;
@@ -66,6 +68,7 @@ internal class Program
             }
 
             s.ShutdownInstance();
+            Thread.Sleep(Program.HostShutdownGracePeriod_Milliseconds);
             h.Shutdown();
             h.WaitUntilAllClientsDisconnected();
         }

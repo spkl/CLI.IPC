@@ -22,7 +22,6 @@ internal class SingletonTest : TestBase
     [Test]
     [TestCase("staticTime", 2)]
     [TestCase("untilUnused", 1)]
-    [Retry(5)]
     public void TestSingleton(string timeoutBehavior, int expectedProcesses)
     {
         // arrange
