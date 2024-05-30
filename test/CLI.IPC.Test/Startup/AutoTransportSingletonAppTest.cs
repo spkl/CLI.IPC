@@ -125,6 +125,20 @@ internal class AutoTransportSingletonAppTest : SingletonAppTestBase
         Assert.That(() => this.disposables.Add(File.Open(this.negotiationFile + ".transport_lock", FileMode.Create)), Throws.Nothing);
     }
 
+    [Test]
+    public void SuspendStartupLocksFile()
+    {
+        // act
+        this.disposables.Add(
+            this.singletonApp.SuspendStartup()
+        );
+
+        // assert
+        Assert.That(
+            () => this.disposables.Add(File.Open(this.negotiationFile + ".start_lock", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite | FileShare.Delete)),
+            Throws.InstanceOf<IOException>());
+    }
+
 #if NET6_0_OR_GREATER
     [Test]
     public void TransportIsUdsIfPathShortEnough()

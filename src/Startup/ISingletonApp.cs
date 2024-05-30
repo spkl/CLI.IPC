@@ -30,4 +30,13 @@ public interface ISingletonApp
     /// It is not possible to shut down an instance that was not running.
     /// </exception>
     void ShutdownInstance();
+
+    /// <summary>
+    /// Prevents the start of a new hosting application instance until <see cref="IDisposable.Dispose"/> is called on the returned object.
+    /// Calls to <see cref="RequestInstance"/> during this period will time out, if there is no instance running.
+    /// </summary>
+    /// <exception cref="SingletonAppException">
+    /// The startup lock could not be obtained within <see cref="IStartupBehavior.TimeoutThreshold"/>.
+    /// </exception>
+    IDisposable SuspendStartup();
 }
