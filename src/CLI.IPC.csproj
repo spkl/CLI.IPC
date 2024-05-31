@@ -30,6 +30,8 @@ This project uses Semantic Versioning (https://semver.org/).
 		</Description>
 		<PackageTags>dotnet cli command-line command-line-interface client server client-server ipc interprocess communication interprocess-communication network-programming network-communication client-server-architecture client-server-communication client-server-application</PackageTags>
 		<PackageReleaseNotes>- New methods: ISingletonApp.IsInstanceRunning/IsInstanceStarting provide information on application state.
+- Marked ISingletonApp.ShutdownInstance obsolete in favor of new method ISingletonApp.ReportInstanceShuttingDown, because its method name has clearer wording.
+- Added remarks to some ISingletonApp methods to explain intended usage.
 		</PackageReleaseNotes>
 	</PropertyGroup>
 

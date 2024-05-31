@@ -67,7 +67,7 @@ internal class Program
                 h.WaitUntilUnusedFor(TimeSpan.FromSeconds(Program.HostAliveTime_Seconds));
             }
 
-            s.ShutdownInstance();
+            s.ReportInstanceShuttingDown();
             Thread.Sleep(Program.HostShutdownGracePeriod_Milliseconds);
             h.Shutdown();
             h.WaitUntilAllClientsDisconnected();

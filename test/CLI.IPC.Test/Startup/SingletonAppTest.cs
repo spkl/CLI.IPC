@@ -98,20 +98,20 @@ internal class SingletonAppTest : SingletonAppTestBase
     }
 
     [Test]
-    public void ShutdownInstanceThrowsExceptionIfReportInstanceRunningWasNotCalled()
+    public void ReportInstanceShuttingDownThrowsExceptionIfReportInstanceRunningWasNotCalled()
     {
         // act & assert
-        Assert.That(() => this.singletonApp.ShutdownInstance(), Throws.InstanceOf<InvalidOperationException>());
+        Assert.That(() => this.singletonApp.ReportInstanceShuttingDown(), Throws.InstanceOf<InvalidOperationException>());
     }
 
     [Test]
-    public void ShutdownInstanceUnlocksFile()
+    public void ReportInstanceShuttingDownUnlocksFile()
     {
         // arrange
         this.singletonApp.ReportInstanceRunning();
 
         // act
-        this.singletonApp.ShutdownInstance();
+        this.singletonApp.ReportInstanceShuttingDown();
 
         // assert
         Assert.That(() => this.disposables.Add(File.Open(this.negotiationFile + ".run_lock", FileMode.Create)), Throws.Nothing);

@@ -110,13 +110,13 @@ internal class AutoTransportSingletonAppTest : SingletonAppTestBase
     }
 
     [Test]
-    public void ShutdownInstanceUnlocksFiles()
+    public void ReportInstanceShuttingDownUnlocksFiles()
     {
         // arrange
         this.singletonApp.ReportInstanceRunning();
 
         // act
-        this.singletonApp.ShutdownInstance();
+        this.singletonApp.ReportInstanceShuttingDown();
 
         // assert
         Assert.That(() => this.disposables.Add(File.Open(this.negotiationFile + ".transport_type", FileMode.Create)), Throws.Nothing);
