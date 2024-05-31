@@ -2,15 +2,18 @@
 
   <PropertyGroup>
     <TargetFrameworks>net8.0;net6.0;net48</TargetFrameworks>
-	<AssemblyName>spkl.CLI.IPC.Test</AssemblyName>
-	<RootNamespace>spkl.CLI.IPC.Test</RootNamespace>
+    <AssemblyName>spkl.CLI.IPC.Test</AssemblyName>
+    <RootNamespace>spkl.CLI.IPC.Test</RootNamespace>
     <Nullable>enable</Nullable>
-	<LangVersion>10.0</LangVersion>
+    <LangVersion>10.0</LangVersion>
 
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\keys\spkl.CLI.IPC.snk</AssemblyOriginatorKeyFile>
+
+    <VSTestLogger>trx%3bLogFileName=$(MSBuildProjectName).trx</VSTestLogger>
+    <VSTestResultsDirectory>$(MSBuildThisFileDirectory)TestResults/$(TargetFramework)</VSTestResultsDirectory>
   </PropertyGroup>
 
   <ItemGroup>
