@@ -150,6 +150,18 @@ public sealed class AutoTransportSingletonApp : IDisposable, IAutoTransportSingl
     }
 
     /// <inheritdoc/>
+    public bool IsInstanceRunning()
+    {
+        return this.innerSingleton.IsInstanceRunning();
+    }
+
+    /// <inheritdoc/>
+    public bool IsInstanceStarting()
+    {
+        return this.innerSingleton.IsInstanceStarting();
+    }
+
+    /// <inheritdoc/>
     public void Dispose()
     {
         this.CloseAllFiles();

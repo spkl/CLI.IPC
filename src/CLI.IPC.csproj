@@ -29,7 +29,7 @@
 This project uses Semantic Versioning (https://semver.org/).
 		</Description>
 		<PackageTags>dotnet cli command-line command-line-interface client server client-server ipc interprocess communication interprocess-communication network-programming network-communication client-server-architecture client-server-communication client-server-application</PackageTags>
-		<PackageReleaseNotes>- New method: ISingletonApp.SuspendStartup prevents new host instances from being started.
+		<PackageReleaseNotes>- New methods: ISingletonApp.IsInstanceRunning/IsInstanceStarting provide information on application state.
 		</PackageReleaseNotes>
 	</PropertyGroup>
 

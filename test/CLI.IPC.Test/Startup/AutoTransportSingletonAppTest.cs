@@ -139,6 +139,38 @@ internal class AutoTransportSingletonAppTest : SingletonAppTestBase
             Throws.InstanceOf<IOException>());
     }
 
+    [Theory]
+    public void IsInstanceRunningReflectsFileLockState(bool fileLocked)
+    {
+        // arrange
+        if (fileLocked)
+        {
+            this.disposables.Add(File.Open(this.negotiationFile + ".run_lock", FileMode.Create));
+        }
+
+        // act
+        bool result = this.singletonApp.IsInstanceRunning();
+
+        // assert
+        Assert.That(result, Is.EqualTo(fileLocked));
+    }
+
+    [Theory]
+    public void IsInstanceStartingReflectsFileLockState(bool fileLocked)
+    {
+        // arrange
+        if (fileLocked)
+        {
+            this.disposables.Add(File.Open(this.negotiationFile + ".start_lock", FileMode.Create));
+        }
+
+        // act
+        bool result = this.singletonApp.IsInstanceStarting();
+
+        // assert
+        Assert.That(result, Is.EqualTo(fileLocked));
+    }
+
 #if NET6_0_OR_GREATER
     [Test]
     public void TransportIsUdsIfPathShortEnough()

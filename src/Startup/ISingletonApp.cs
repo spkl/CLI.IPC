@@ -39,4 +39,14 @@ public interface ISingletonApp
     /// The startup lock could not be obtained within <see cref="IStartupBehavior.TimeoutThreshold"/>.
     /// </exception>
     IDisposable SuspendStartup();
+
+    /// <summary>
+    /// Returns whether a hosting application is currently running.
+    /// </summary>
+    bool IsInstanceRunning();
+
+    /// <summary>
+    /// Returns whether a hosting application is currently starting.
+    /// </summary>
+    bool IsInstanceStarting();
 }
