@@ -10,7 +10,7 @@ internal class Program
     static void Main(string[] args)
     {
         string filePath = args[0];
-        FileStream stream = FileStreams.OpenForLocking(filePath);
+        //FileStream stream = FileStreams.OpenForLocking(filePath);
         Console.Out.WriteLine("locked");
         Console.Out.Flush();
         Thread.Sleep(Timeout.Infinite);
