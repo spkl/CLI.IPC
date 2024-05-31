@@ -153,4 +153,38 @@ internal class SingletonAppTest : SingletonAppTestBase
         // assert
         Assert.That(() => this.disposables.Add(File.Open(this.negotiationFile + ".start_lock", FileMode.Create)), Throws.Nothing);
     }
+
+    [Theory]
+    public void IsInstanceRunningReflectsFileLockState(bool fileLocked)
+    {
+        // arrange
+        if (fileLocked)
+        {
+            this.disposables.Add(File.Open(this.negotiationFile + ".run_lock", FileMode.Create));
+        }
+
+        // act
+        bool result = this.singletonApp.IsInstanceRunning();
+
+        // assert
+        Assert.That(result, Is.EqualTo(fileLocked));
+    }
+
+
+
+    [Theory]
+    public void IsInstanceStartingReflectsFileLockState(bool fileLocked)
+    {
+        // arrange
+        if (fileLocked)
+        {
+            this.disposables.Add(File.Open(this.negotiationFile + ".start_lock", FileMode.Create));
+        }
+
+        // act
+        bool result = this.singletonApp.IsInstanceStarting();
+
+        // assert
+        Assert.That(result, Is.EqualTo(fileLocked));
+    }
 }

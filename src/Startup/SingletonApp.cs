@@ -55,12 +55,12 @@ public sealed class SingletonApp : IDisposable, ISingletonApp
         {
             this.BeforeRequestingInstance?.Invoke(this, EventArgs.Empty);
 
-            if (this.IsRunning())
+            if (this.IsInstanceRunning())
             {
                 return true;
             }
 
-            if (!this.IsStarting())
+            if (!this.IsInstanceStarting())
             {
                 this.TryToStart();
             }
@@ -76,7 +76,7 @@ public sealed class SingletonApp : IDisposable, ISingletonApp
             this.isThisInstanceStarting = false;
         }
 
-        if (!this.IsRunning())
+        if (!this.IsInstanceRunning())
         {
             throw new SingletonAppException($"Timed out: Application did not become available within {this.behavior.TimeoutThreshold}.");
         }
@@ -113,12 +113,14 @@ public sealed class SingletonApp : IDisposable, ISingletonApp
         return new Disposable(() => this.startupLock.Unlock());
     }
 
-    private bool IsRunning()
+    /// <inheritdoc/>
+    public bool IsInstanceRunning()
     {
         return this.runningLock.IsLocked();
     }
 
-    private bool IsStarting()
+    /// <inheritdoc/>
+    public bool IsInstanceStarting()
     {
         if (this.isThisInstanceStarting)
         {
