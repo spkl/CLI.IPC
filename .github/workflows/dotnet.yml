@@ -9,6 +9,11 @@ on:
   pull_request:
     branches: [ "main" ]
 
+permissions:
+  contents: read
+  actions: read
+  checks: write
+
 jobs:
   build:
 
@@ -31,10 +36,17 @@ jobs:
             8.0.x
     - name: Restore dependencies
       run: dotnet restore
+    - name: Check Format
+      run: dotnet format --verify-no-changes
+      if: ${{ matrix.os == 'windows-latest' }}
     - name: Build
       run: dotnet build --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal
-    - name: Check Format
-      run: dotnet format --verify-no-changes
-      if: ${{ matrix.os == 'windows-latest' }}
+    - name: Test Report
+      uses: dorny/test-reporter@v1
+      if: success() || failure()
+      with:
+        name: NUnit Tests (${{ matrix.os }})
+        path: test/**/*.trx
+        reporter: dotnet-trx

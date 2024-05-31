@@ -36,6 +36,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CLI.IPC.Test.Singleton", "t
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CLI.IPC.Test.FileLocker", "test\CLI.IPC.Test.FileLocker\CLI.IPC.Test.FileLocker.csproj", "{7BBBA9BC-5AB5-4635-9DCF-FABE62251C20}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GitHub", "GitHub", "{6BA84FAB-DAD4-4058-A80B-51D00152E83C}"
+	ProjectSection(SolutionItems) = preProject
+		.github\dependabot.yml = .github\dependabot.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Actions", "Actions", "{F1DB2068-448B-403F-886B-E9CF2BC846A3}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
+		.github\workflows\nuget.yml = .github\workflows\nuget.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -86,6 +97,8 @@ Global
 		{3DFB5A21-C03E-44FB-A650-312A70CE96FF} = {D4313F7F-9ABC-4AC8-B39B-AD18E1367EEB}
 		{57141C2E-6BD5-46D9-8E06-B743C10FD38B} = {D4313F7F-9ABC-4AC8-B39B-AD18E1367EEB}
 		{7BBBA9BC-5AB5-4635-9DCF-FABE62251C20} = {D4313F7F-9ABC-4AC8-B39B-AD18E1367EEB}
+		{6BA84FAB-DAD4-4058-A80B-51D00152E83C} = {F40CACBD-C736-4F3C-9A45-FED4E539ECAA}
+		{F1DB2068-448B-403F-886B-E9CF2BC846A3} = {6BA84FAB-DAD4-4058-A80B-51D00152E83C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {62D6393D-66AD-4330-BB1F-4BF32160E4EE}
