@@ -10,7 +10,7 @@ namespace spkl.CLI.IPC.Startup;
 /// <summary>
 /// Ensures that an application is only started once.
 /// Usage as a client application: Call <see cref="RequestInstance"/> to ensure that an application instance is running before connecting to it.
-/// Usage as the hosting application: Call <see cref="ReportInstanceRunning"/> when ready for incoming connections. Call <see cref="ShutdownInstance"/> before exit.
+/// Usage as the hosting application: Call <see cref="ReportInstanceRunning"/> when ready for incoming connections. Call <see cref="ReportInstanceShuttingDown"/> before exit.
 /// </summary>
 public sealed class SingletonApp : IDisposable, ISingletonApp
 {
@@ -92,11 +92,18 @@ public sealed class SingletonApp : IDisposable, ISingletonApp
     }
 
     /// <inheritdoc/>
+    [Obsolete("Use ReportInstanceShuttingDown() instead, as its method name has clearer wording.")]
     public void ShutdownInstance()
+    {
+        this.ReportInstanceShuttingDown();
+    }
+
+    /// <inheritdoc/>
+    public void ReportInstanceShuttingDown()
     {
         if (!this.runningLock.IsHoldingLock())
         {
-            throw new InvalidOperationException($"{nameof(ReportInstanceRunning)} must be called before {nameof(ShutdownInstance)}.");
+            throw new InvalidOperationException($"{nameof(ReportInstanceRunning)} must be called before {nameof(ReportInstanceShuttingDown)}.");
         }
 
         this.runningLock.Unlock();

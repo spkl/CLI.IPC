@@ -10,7 +10,7 @@ namespace spkl.CLI.IPC.Startup;
 /// <summary>
 /// Ensures that an application is only started once while automatically managing the <see cref="ITransport"/> used between Host and Client.
 /// Usage as a client application: Call <see cref="RequestInstance"/> to ensure that an application instance is running before connecting to it using the provided <see cref="Transport"/>.
-/// Usage as the hosting application: Start the host using the provided <see cref="Transport"/>, then call <see cref="ReportInstanceRunning"/> when ready for incoming connections. Call <see cref="ShutdownInstance"/> before exit
+/// Usage as the hosting application: Start the host using the provided <see cref="Transport"/>, then call <see cref="ReportInstanceRunning"/> when ready for incoming connections. Call <see cref="ReportInstanceShuttingDown"/> before exit
 /// </summary>
 /// <remarks>
 /// When running as a host on .NET 6 (or higher), a Unix Domain Socket transport is used by default,
@@ -137,9 +137,16 @@ public sealed class AutoTransportSingletonApp : IDisposable, IAutoTransportSingl
     }
 
     /// <inheritdoc/>
+    [Obsolete("Use ReportInstanceShuttingDown() instead, as its method name has clearer wording.")]
     public void ShutdownInstance()
     {
-        this.innerSingleton.ShutdownInstance();
+        this.ReportInstanceShuttingDown();
+    }
+
+    /// <inheritdoc/>
+    public void ReportInstanceShuttingDown()
+    {
+        this.innerSingleton.ReportInstanceShuttingDown();
         this.CloseAllFiles();
     }
 

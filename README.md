@@ -76,7 +76,7 @@ new SingletonApp(startupBehavior).RequestInstance();
 Client.Attach([...]);
 ```
 
-Usage as a server application: Call `ReportInstanceRunning` when ready for incoming connections. Call `ShutdownInstance` before no longer accepting connections.
+Usage as a server application: Call `ReportInstanceRunning` when ready for incoming connections. Call `ReportInstanceShuttingDown` before no longer accepting connections.
 ```csharp
 IStartupBehavior startupBehavior = [...];
 SingletonApp singletonApp = new(startupBehavior);
@@ -84,7 +84,8 @@ SingletonApp singletonApp = new(startupBehavior);
 Host host = Host.Start([...]);
 singletonApp.ReportInstanceRunning();
 // [...]
-singletonApp.ShutdownInstance();
+singletonApp.ReportInstanceShuttingDown();
+// Consider adding a short waiting period here, to prevent clients that just started up from being denied service.
 host.Shutdown();
 ```
 

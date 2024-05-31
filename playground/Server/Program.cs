@@ -30,7 +30,7 @@ internal class Program
         Console.WriteLine("Waiting until unused for 10 seconds...");
         host.WaitUntilUnusedFor(TimeSpan.FromSeconds(10));
 
-        app.ShutdownInstance();
+        app.ReportInstanceShuttingDown();
         host.Shutdown();
         host.WaitUntilAllClientsDisconnected();
     }
