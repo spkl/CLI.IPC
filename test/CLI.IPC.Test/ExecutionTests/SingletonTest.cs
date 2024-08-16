@@ -16,8 +16,8 @@ internal class SingletonTest : TestBase
 {
     /// <summary>
     /// Approach:
-    /// - staticTime: Host lifetime is 5 seconds, so if we continuously create new clients for 7 seconds, there should be exactly two host processes.
-    /// - untilUnused: Host lifetime is "last used time" plus 5 seconds, so there should be only one host process.
+    /// - staticTime: Host lifetime is 2 seconds, so if we continuously create new clients for 3.5 seconds, there should be exactly two host processes.
+    /// - untilUnused: Host lifetime is "last used time" plus 2 seconds, so there should be only one host process.
     /// </summary>
     [Test]
     [TestCase("staticTime", 2)]
@@ -37,7 +37,7 @@ internal class SingletonTest : TestBase
         ConcurrentQueue<int> exitCodes = new ConcurrentQueue<int>();
         ConcurrentQueue<string> stdOutputs = new ConcurrentQueue<string>();
         ConcurrentQueue<string> errOutputs = new ConcurrentQueue<string>();
-        TimeSpan testDuration = TimeSpan.FromSeconds(7);
+        TimeSpan testDuration = TimeSpan.FromSeconds(3.5);
         DateTime testStart = DateTime.Now;
         int startedProcesses = 0;
 
@@ -72,7 +72,7 @@ internal class SingletonTest : TestBase
             t.Join();
         }
 
-        Thread.Sleep(TimeSpan.FromSeconds(3)); // Grace period for host shutdown.
+        Thread.Sleep(TimeSpan.FromSeconds(1)); // Grace period for host shutdown.
 
         // assert
         TestContext.Out.WriteLine($"{startedProcesses} processes were started.");

@@ -14,17 +14,17 @@ internal class Program
 {
     private static string AssemblyDir => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
 
-    private const int HostAliveTime_Seconds = 5;
+    private static readonly TimeSpan HostAliveTime = TimeSpan.FromSeconds(2);
 
-    private const int HostShutdownGracePeriod_Milliseconds = 250;
+    private static readonly TimeSpan HostShutdownGracePeriod = TimeSpan.FromSeconds(0.25);
 
-    private const int PollingPeriod_Milliseconds = 250;
+    private static readonly TimeSpan PollingPeriod = TimeSpan.FromSeconds(0.25);
 
-    private const int TimeoutThreshold_Seconds = 10;
+    private static readonly TimeSpan TimeoutThreshold = TimeSpan.FromSeconds(10);
 
-    private const int HostStartupDelay_Seconds = 1;
+    private static readonly TimeSpan HostStartupDelay = TimeSpan.FromSeconds(0.5);
 
-    private const int ClientConnectionDuration_Seconds = 1;
+    private static readonly TimeSpan ClientConnectionDuration = TimeSpan.FromSeconds(0.5);
 
     private const string ARG_HOST = "host";
     private const string ARG_STATIC_TIME = "staticTime";
@@ -53,22 +53,22 @@ internal class Program
 
         if (args[0] == ARG_HOST)
         {
-            Thread.Sleep(TimeSpan.FromSeconds(HostStartupDelay_Seconds));
+            Thread.Sleep(Program.HostStartupDelay);
 
             Host h = Host.Start(s.Transport, new ClientConnectionHandler());
             s.ReportInstanceRunning();
 
             if (timeoutBehavior == ARG_STATIC_TIME)
             {
-                Thread.Sleep(TimeSpan.FromSeconds(Program.HostAliveTime_Seconds));
+                Thread.Sleep(Program.HostAliveTime);
             }
             else
             {
-                h.WaitUntilUnusedFor(TimeSpan.FromSeconds(Program.HostAliveTime_Seconds));
+                h.WaitUntilUnusedFor(Program.HostAliveTime);
             }
 
             s.ReportInstanceShuttingDown();
-            Thread.Sleep(Program.HostShutdownGracePeriod_Milliseconds);
+            Thread.Sleep(Program.HostShutdownGracePeriod);
             h.Shutdown();
             h.WaitUntilAllClientsDisconnected();
         }
@@ -83,9 +83,9 @@ internal class Program
     {
         public string NegotiationFileBasePath => Path.Combine(Program.AssemblyDir, "s");
 
-        public TimeSpan PollingPeriod { get; } = TimeSpan.FromMilliseconds(Program.PollingPeriod_Milliseconds);
+        public TimeSpan PollingPeriod { get; } = Program.PollingPeriod;
 
-        public TimeSpan TimeoutThreshold { get; } = TimeSpan.FromSeconds(Program.TimeoutThreshold_Seconds);
+        public TimeSpan TimeoutThreshold { get; } = Program.TimeoutThreshold;
 
         private readonly string timeoutBehavior;
 
@@ -127,7 +127,7 @@ internal class Program
 
             connection.Out.Write("PID " + processId);
 
-            Thread.Sleep(TimeSpan.FromSeconds(Program.ClientConnectionDuration_Seconds));
+            Thread.Sleep(Program.ClientConnectionDuration);
 
             connection.Exit(0);
         }

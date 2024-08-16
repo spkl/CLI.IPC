@@ -45,7 +45,7 @@ internal class MultipleClientsTest : DynamicExecutionTest
 
         public void HandleCall(IClientConnection connection)
         {
-            Thread.Sleep(2000);
+            Thread.Sleep(500);
             connection.Out.Write("Done");
             connection.Exit(0);
         }
