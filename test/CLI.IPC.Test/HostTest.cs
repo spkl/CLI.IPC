@@ -134,7 +134,7 @@ internal class HostTest : TestBase
 
         public void HandleListenerError(IListenerError error)
         {
-            Assert.Fail(error.ToString());
+            Assert.Fail(error.ToString() ?? "Unknown listener error");
         }
 
         public IClientProperties? ReceivedClientProperties { get; private set; }
