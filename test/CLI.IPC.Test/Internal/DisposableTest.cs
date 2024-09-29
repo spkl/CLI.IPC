@@ -7,22 +7,22 @@ internal class DisposableTest : TestBase
     public void DisposeCallsCallback()
     {
         // arrange
-        int i = 0;
-        Disposable disposable = new(() => i++);
+        int callCount = 0;
+        Disposable disposable = new(() => callCount++);
 
         // act
         disposable.Dispose();
 
         // assert
-        Assert.That(i, Is.EqualTo(1));
+        callCount.Should().Be(1);
     }
 
     [Test]
     public void DisposeCallsCallbackOnlyOnce()
     {
         // arrange
-        int i = 0;
-        Disposable disposable = new(() => i++);
+        int callCount = 0;
+        Disposable disposable = new(() => callCount++);
 
         // act
         disposable.Dispose();
@@ -30,6 +30,6 @@ internal class DisposableTest : TestBase
         disposable.Dispose();
 
         // assert
-        Assert.That(i, Is.EqualTo(1));
+        callCount.Should().Be(1);
     }
 }

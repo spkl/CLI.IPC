@@ -16,8 +16,8 @@ internal class TcpLoopbackTransportTest : TestBase
         EndPoint result = t.EndPoint;
 
         // assert
-        Assert.That(result, Is.InstanceOf<IPEndPoint>());
-        Assert.That(((IPEndPoint)result).Port, Is.EqualTo(23230));
+        result.Should().BeOfType<IPEndPoint>();
+        result.As<IPEndPoint>().Port.Should().Be(23230);
     }
 
     [Test]
@@ -27,28 +27,28 @@ internal class TcpLoopbackTransportTest : TestBase
         TcpLoopbackTransport t = new(0);
 
         // act
-        Socket result = t.Socket;
+        Socket socket = t.Socket;
 
         // assert
-        Assert.That(result, Is.Not.Null);
+        socket.Should().NotBeNull();
     }
 
     [Test]
     public void CanSerialize()
     {
         // arrange
-        TcpLoopbackTransport t = new(23230);
+        TcpLoopbackTransport transport = new(23230);
         using MemoryStream typeStream = new MemoryStream();
         using MemoryStream dataStream = new MemoryStream();
 
         // act
-        Serializer.Write(t, typeStream, dataStream);
+        Serializer.Write(transport, typeStream, dataStream);
         typeStream.Seek(0, SeekOrigin.Begin);
         dataStream.Seek(0, SeekOrigin.Begin);
-        t = Serializer.Read<TcpLoopbackTransport>(typeStream, dataStream);
+        transport = Serializer.Read<TcpLoopbackTransport>(typeStream, dataStream);
 
         // assert
-        Assert.That(t, Is.Not.Null);
-        Assert.That(t.Port, Is.EqualTo(23230));
+        transport.Should().NotBeNull();
+        transport.Port.Should().Be(23230);
     }
 }

@@ -133,7 +133,7 @@ internal abstract class DynamicExecutionTest : TestBase
             () => $"Host has exited" +
             $"{Environment.NewLine}-- Out:{this.Host.StandardOutput.ReadToEnd()}" +
             $"{Environment.NewLine}-- Error:{this.Host.StandardError.ReadToEnd()}");
-        Assert.That(client.WaitForExit(5_000), Is.True, "Client has exited");
+        client.WaitForExit(5_000).Should().BeTrue("client should have exited");
     }
 
     protected void RunHostAndClient<TClientConnectionHandler, THostConnectionHandler>()

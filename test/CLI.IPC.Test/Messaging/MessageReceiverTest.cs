@@ -29,7 +29,7 @@ internal class MessageReceiverTest : TestBase
         sendSocket.SendTo(new byte[] { (byte)MessageType.Exit }, endPoint);
 
         // act & assert
-        Assert.That(() => callReceiveMethod(messageReceiver), Throws.InstanceOf<ConnectionException>());
+        Invoking(() => callReceiveMethod(messageReceiver)).Should().Throw<ConnectionException>();
     }
 
     [Test]
@@ -43,7 +43,7 @@ internal class MessageReceiverTest : TestBase
         string result = messageReceiver.ExpectString();
 
         // assert
-        Assert.That(result, Is.Not.Null.And.Empty);
+        result.Should().NotBeNull().And.BeEmpty();
     }
 
     [Test]
@@ -54,7 +54,7 @@ internal class MessageReceiverTest : TestBase
         sendSocket.SendTo(Array.Empty<byte>(), endPoint);
 
         // act & assert
-        Assert.That(() => messageReceiver.ExpectBytes(1), Throws.InstanceOf<ConnectionException>());
+        Invoking(() => messageReceiver.ExpectBytes(1)).Should().Throw<ConnectionException>();
     }
 
     private Socket CreateUdpSocket()

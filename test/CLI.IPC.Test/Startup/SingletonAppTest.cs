@@ -72,7 +72,7 @@ internal class SingletonAppTest : SingletonAppTestBase
     public void RequestInstanceThrowsExceptionIfNoApplicationIsStartedBeforeTimeout()
     {
         // act & assert
-        Assert.That(() => this.singletonApp.RequestInstance(), Throws.InstanceOf<SingletonAppException>());
+        Invoking(() => this.singletonApp.RequestInstance()).Should().Throw<SingletonAppException>();
     }
 
     [Test]
@@ -82,9 +82,8 @@ internal class SingletonAppTest : SingletonAppTestBase
         this.singletonApp.ReportInstanceRunning();
 
         // assert
-        Assert.That(
-            () => this.disposables.Add(File.Open(this.negotiationFile + ".run_lock", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite | FileShare.Delete)),
-            Throws.InstanceOf<IOException>());
+        Action openRunLockShared = () => this.disposables.Add(File.Open(this.negotiationFile + ".run_lock", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite | FileShare.Delete));
+        openRunLockShared.Should().Throw<IOException>();
     }
 
     [Test]
@@ -94,14 +93,14 @@ internal class SingletonAppTest : SingletonAppTestBase
         this.disposables.Add(File.Open(this.negotiationFile + ".run_lock", FileMode.Create));
 
         // act & assert
-        Assert.That(() => this.singletonApp.ReportInstanceRunning(), Throws.InstanceOf<SingletonAppException>());
+        Invoking(() => this.singletonApp.ReportInstanceRunning()).Should().Throw<SingletonAppException>();
     }
 
     [Test]
     public void ReportInstanceShuttingDownThrowsExceptionIfReportInstanceRunningWasNotCalled()
     {
         // act & assert
-        Assert.That(() => this.singletonApp.ReportInstanceShuttingDown(), Throws.InstanceOf<InvalidOperationException>());
+        Invoking(() => this.singletonApp.ReportInstanceShuttingDown()).Should().Throw<InvalidOperationException>();
     }
 
     [Test]
@@ -114,7 +113,7 @@ internal class SingletonAppTest : SingletonAppTestBase
         this.singletonApp.ReportInstanceShuttingDown();
 
         // assert
-        Assert.That(() => this.disposables.Add(File.Open(this.negotiationFile + ".run_lock", FileMode.Create)), Throws.Nothing);
+        Invoking(() => this.disposables.Add(File.Open(this.negotiationFile + ".run_lock", FileMode.Create))).Should().NotThrow();
     }
 
     [Test]
@@ -126,9 +125,8 @@ internal class SingletonAppTest : SingletonAppTestBase
         );
 
         // assert
-        Assert.That(
-            () => this.disposables.Add(File.Open(this.negotiationFile + ".start_lock", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite | FileShare.Delete)),
-            Throws.InstanceOf<IOException>());
+        Action openStartLockShared = () => this.disposables.Add(File.Open(this.negotiationFile + ".start_lock", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite | FileShare.Delete));
+        openStartLockShared.Should().Throw<IOException>();
     }
 
     [Test]
@@ -138,7 +136,7 @@ internal class SingletonAppTest : SingletonAppTestBase
         this.disposables.Add(this.singletonApp.SuspendStartup());
 
         // act & assert
-        Assert.That(() => this.disposables.Add(this.singletonApp.SuspendStartup()), Throws.InstanceOf<SingletonAppException>());
+        Invoking(() => this.disposables.Add(this.singletonApp.SuspendStartup())).Should().Throw<SingletonAppException>();
     }
 
     [Test]
@@ -151,7 +149,7 @@ internal class SingletonAppTest : SingletonAppTestBase
         disposable.Dispose();
 
         // assert
-        Assert.That(() => this.disposables.Add(File.Open(this.negotiationFile + ".start_lock", FileMode.Create)), Throws.Nothing);
+        Invoking(() => this.disposables.Add(File.Open(this.negotiationFile + ".start_lock", FileMode.Create))).Should().NotThrow();
     }
 
     [Theory]
@@ -164,10 +162,10 @@ internal class SingletonAppTest : SingletonAppTestBase
         }
 
         // act
-        bool result = this.singletonApp.IsInstanceRunning();
+        bool isInstanceRunning = this.singletonApp.IsInstanceRunning();
 
         // assert
-        Assert.That(result, Is.EqualTo(fileLocked));
+        isInstanceRunning.Should().Be(fileLocked);
     }
 
 
@@ -182,9 +180,9 @@ internal class SingletonAppTest : SingletonAppTestBase
         }
 
         // act
-        bool result = this.singletonApp.IsInstanceStarting();
+        bool isInstanceStarting = this.singletonApp.IsInstanceStarting();
 
         // assert
-        Assert.That(result, Is.EqualTo(fileLocked));
+        isInstanceStarting.Should().Be(fileLocked);
     }
 }

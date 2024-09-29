@@ -28,15 +28,15 @@ internal class MultipleClientsTest : DynamicExecutionTest
         }
 
         // assert
-        Assert.Multiple(() =>
+        using (new AssertionScope())
         {
             foreach (Process client in clients)
             {
-                Assert.That(client.ExitCode, Is.EqualTo(0));
-                Assert.That(client.StandardOutput.ReadToEnd(), Is.EqualTo("Done"));
-                Assert.That(client.StandardError.ReadToEnd(), Is.Empty);
+                client.ExitCode.Should().Be(0);
+                client.StandardOutput.ReadToEnd().Should().Be("Done");
+                client.StandardError.ReadToEnd().Should().BeEmpty();
             }
-        });
+        }
     }
 
     private class ClientConnectionHandler : IClientConnectionHandler

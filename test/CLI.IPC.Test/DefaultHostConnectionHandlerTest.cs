@@ -17,31 +17,31 @@ internal class DefaultHostConnectionHandlerTest : TestBase
     public void Arguments()
     {
         // act
-        string[] result = this.handler.Arguments;
+        string[] arguments = this.handler.Arguments;
 
         // assert
-        Assert.That(result, Is.EqualTo(Environment.GetCommandLineArgs()));
+        arguments.Should().Equal(Environment.GetCommandLineArgs());
     }
 
     [Test]
     public void CurrentDirectory()
     {
         // act
-        string result = this.handler.CurrentDirectory;
+        string currentDirectory = this.handler.CurrentDirectory;
 
         // assert
-        Assert.That(result, Is.EqualTo(Environment.CurrentDirectory));
+        currentDirectory.Should().Be(Environment.CurrentDirectory);
     }
 
     [Test]
     public void ProcessID()
     {
         // act
-        int result = this.handler.ProcessID;
+        int processId = this.handler.ProcessID;
 
         // assert
         using Process p = Process.GetCurrentProcess();
-        Assert.That(result, Is.EqualTo(p.Id));
+        processId.Should().Be(p.Id);
     }
 
     [Test]
@@ -51,15 +51,14 @@ internal class DefaultHostConnectionHandlerTest : TestBase
         TextWriter defaultWriter = Console.Out;
         try
         {
-            using StringWriter stringWriter = new();
-            Console.SetOut(stringWriter);
+            using StringWriter consoleOut = new();
+            Console.SetOut(consoleOut);
 
             // act
             this.handler.HandleOutString("MyOutString");
 
             // arrange
-            Assert.That(stringWriter.ToString(), Is.EqualTo("MyOutString"));
-
+            consoleOut.ToString().Should().Be("MyOutString");
         }
         finally
         {
@@ -74,15 +73,14 @@ internal class DefaultHostConnectionHandlerTest : TestBase
         TextWriter defaultWriter = Console.Error;
         try
         {
-            using StringWriter stringWriter = new();
-            Console.SetError(stringWriter);
+            using StringWriter consoleError = new();
+            Console.SetError(consoleError);
 
             // act
             this.handler.HandleErrorString("MyErrorString");
 
             // arrange
-            Assert.That(stringWriter.ToString(), Is.EqualTo("MyErrorString"));
-
+            consoleError.ToString().Should().Be("MyErrorString");
         }
         finally
         {

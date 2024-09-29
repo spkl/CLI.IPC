@@ -76,16 +76,16 @@ internal class SingletonTest : TestBase
 
         // assert
         TestContext.Out.WriteLine($"{startedProcesses} processes were started.");
-        Assert.Multiple(() =>
+        using (new AssertionScope())
         {
-            Assert.That(exitCodes, Has.Count.EqualTo(startedProcesses), "Number of exit codes");
-            Assert.That(stdOutputs, Has.Count.EqualTo(startedProcesses), "Number of std outputs");
-            Assert.That(errOutputs, Has.Count.EqualTo(startedProcesses), "Number of err outputs");
-            Assert.That(exitCodes, Has.All.EqualTo(0), "Exit codes");
-            Assert.That(stdOutputs.Distinct().ToArray(), Has.Exactly(expectedProcesses).Items.And.All.StartsWith("PID "), "Std outputs");
-            Assert.That(errOutputs, Has.All.Empty, "Err outputs");
-            Assert.That(Process.GetProcessesByName("spkl.CLI.IPC.Test.Singleton").Length, Is.EqualTo(0), "There should be no leftover process.");
-        });
+            exitCodes.Should().HaveCount(startedProcesses);
+            stdOutputs.Should().HaveCount(startedProcesses);
+            errOutputs.Should().HaveCount(startedProcesses);
+            exitCodes.Should().AllSatisfy(exitCode => exitCode.Should().Be(0));
+            stdOutputs.Distinct().Should().HaveCount(expectedProcesses).And.AllSatisfy(output => output.Should().StartWith("PID "));
+            errOutputs.Should().AllSatisfy(errOutput => errOutput.Should().BeEmpty());
+            Process.GetProcessesByName("spkl.CLI.IPC.Test.Singleton").Should().BeEmpty("there should be no leftover process");
+        }
     }
 
     [TearDown]

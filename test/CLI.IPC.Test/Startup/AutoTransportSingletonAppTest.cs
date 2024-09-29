@@ -1,5 +1,6 @@
 ﻿using spkl.CLI.IPC.Internal;
 using spkl.CLI.IPC.Startup;
+using System;
 using System.IO;
 
 namespace spkl.CLI.IPC.Test.Startup;
@@ -38,8 +39,8 @@ internal class AutoTransportSingletonAppTest : SingletonAppTestBase
         ITransport transport = this.singletonApp.Transport;
 
         // assert
-        Assert.That(transport, Is.InstanceOf<TcpLoopbackTransport>());
-        Assert.That(((TcpLoopbackTransport)transport).Port, Is.EqualTo(1234));
+        transport.Should().BeOfType<TcpLoopbackTransport>();
+        transport.As<TcpLoopbackTransport>().Port.Should().Be(1234);
     }
 
     [Test]
@@ -49,7 +50,7 @@ internal class AutoTransportSingletonAppTest : SingletonAppTestBase
         this.disposables.Add(File.Open(this.negotiationFile + ".run_lock", FileMode.Create));
 
         // act & assert
-        Assert.That(() => this.singletonApp.RequestInstance(), Throws.InstanceOf<SingletonAppException>());
+        Invoking(() => this.singletonApp.RequestInstance()).Should().Throw<SingletonAppException>();
     }
 
     [Test]
@@ -61,7 +62,7 @@ internal class AutoTransportSingletonAppTest : SingletonAppTestBase
         this.disposables.Add(File.Open(this.negotiationFile + ".transport_ready", FileMode.Create));
 
         // act & assert
-        Assert.That(() => this.singletonApp.RequestInstance(), Throws.InstanceOf<SingletonAppException>());
+        Invoking(() => this.singletonApp.RequestInstance()).Should().Throw<SingletonAppException>();
     }
 
     [Test]
@@ -71,12 +72,10 @@ internal class AutoTransportSingletonAppTest : SingletonAppTestBase
         this.singletonApp.ReportInstanceRunning();
 
         // assert
-        Assert.That(
-            () => this.disposables.Add(File.Open(this.negotiationFile + ".transport_lock", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite | FileShare.Delete)),
-            Throws.InstanceOf<IOException>());
-        Assert.That(
-            () => this.disposables.Add(File.Open(this.negotiationFile + ".transport_ready", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite | FileShare.Delete)),
-            Throws.InstanceOf<IOException>());
+        Action openTransportLockShared = () => this.disposables.Add(File.Open(this.negotiationFile + ".transport_lock", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite | FileShare.Delete));
+        openTransportLockShared.Should().Throw<IOException>();
+        Action openTransportReadyShared = () => this.disposables.Add(File.Open(this.negotiationFile + ".transport_ready", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite | FileShare.Delete));
+        openTransportReadyShared.Should().Throw<IOException>();
     }
 
     [Test]
@@ -94,8 +93,8 @@ internal class AutoTransportSingletonAppTest : SingletonAppTestBase
         {
             ITransport transport = Serializer.Read<ITransport>(type, data);
 
-            Assert.That(transport, Is.InstanceOf<TcpLoopbackTransport>());
-            Assert.That(((TcpLoopbackTransport)transport).Port, Is.EqualTo(2345));
+            transport.Should().BeOfType<TcpLoopbackTransport>();
+            transport.As<TcpLoopbackTransport>().Port.Should().Be(2345);
         }
     }
 
@@ -106,7 +105,7 @@ internal class AutoTransportSingletonAppTest : SingletonAppTestBase
         this.disposables.Add(File.Open(this.negotiationFile + ".transport_lock", FileMode.Create));
 
         // act & assert
-        Assert.That(() => this.singletonApp.ReportInstanceRunning(), Throws.InstanceOf<SingletonAppException>());
+        Invoking(() => this.singletonApp.ReportInstanceRunning()).Should().Throw<SingletonAppException>();
     }
 
     [Test]
@@ -119,10 +118,10 @@ internal class AutoTransportSingletonAppTest : SingletonAppTestBase
         this.singletonApp.ReportInstanceShuttingDown();
 
         // assert
-        Assert.That(() => this.disposables.Add(File.Open(this.negotiationFile + ".transport_type", FileMode.Create)), Throws.Nothing);
-        Assert.That(() => this.disposables.Add(File.Open(this.negotiationFile + ".transport_data", FileMode.Create)), Throws.Nothing);
-        Assert.That(() => this.disposables.Add(File.Open(this.negotiationFile + ".transport_ready", FileMode.Create)), Throws.Nothing);
-        Assert.That(() => this.disposables.Add(File.Open(this.negotiationFile + ".transport_lock", FileMode.Create)), Throws.Nothing);
+        Invoking(() => this.disposables.Add(File.Open(this.negotiationFile + ".transport_type", FileMode.Create))).Should().NotThrow();
+        Invoking(() => this.disposables.Add(File.Open(this.negotiationFile + ".transport_data", FileMode.Create))).Should().NotThrow();
+        Invoking(() => this.disposables.Add(File.Open(this.negotiationFile + ".transport_ready", FileMode.Create))).Should().NotThrow();
+        Invoking(() => this.disposables.Add(File.Open(this.negotiationFile + ".transport_lock", FileMode.Create))).Should().NotThrow();
     }
 
     [Test]
@@ -134,9 +133,8 @@ internal class AutoTransportSingletonAppTest : SingletonAppTestBase
         );
 
         // assert
-        Assert.That(
-            () => this.disposables.Add(File.Open(this.negotiationFile + ".start_lock", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite | FileShare.Delete)),
-            Throws.InstanceOf<IOException>());
+        Action openStartLockShared = () => this.disposables.Add(File.Open(this.negotiationFile + ".start_lock", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite | FileShare.Delete));
+        openStartLockShared.Should().Throw<IOException>();
     }
 
     [Theory]
@@ -149,10 +147,10 @@ internal class AutoTransportSingletonAppTest : SingletonAppTestBase
         }
 
         // act
-        bool result = this.singletonApp.IsInstanceRunning();
+        bool isInstanceRunning = this.singletonApp.IsInstanceRunning();
 
         // assert
-        Assert.That(result, Is.EqualTo(fileLocked));
+        isInstanceRunning.Should().Be(fileLocked);
     }
 
     [Theory]
@@ -165,10 +163,10 @@ internal class AutoTransportSingletonAppTest : SingletonAppTestBase
         }
 
         // act
-        bool result = this.singletonApp.IsInstanceStarting();
+        bool isInstanceStarting = this.singletonApp.IsInstanceStarting();
 
         // assert
-        Assert.That(result, Is.EqualTo(fileLocked));
+        isInstanceStarting.Should().Be(fileLocked);
     }
 
 #if NET6_0_OR_GREATER
@@ -179,7 +177,7 @@ internal class AutoTransportSingletonAppTest : SingletonAppTestBase
         ITransport transport = this.singletonApp.Transport;
 
         // assert
-        Assert.That(transport, Is.InstanceOf<UdsTransport>());
+        transport.Should().BeOfType<UdsTransport>();
     }
 
     [Test]
@@ -194,7 +192,7 @@ internal class AutoTransportSingletonAppTest : SingletonAppTestBase
         ITransport transport = this.singletonApp.Transport;
 
         // assert
-        Assert.That(transport, Is.InstanceOf<TcpLoopbackTransport>());
+        transport.Should().BeOfType<TcpLoopbackTransport>();
     }
 #else
     [Test]
@@ -204,7 +202,7 @@ internal class AutoTransportSingletonAppTest : SingletonAppTestBase
         ITransport transport = this.singletonApp.Transport;
 
         // assert
-        Assert.That(transport, Is.InstanceOf<TcpLoopbackTransport>());
+        transport.Should().BeOfType<TcpLoopbackTransport>();
     }
 #endif
 

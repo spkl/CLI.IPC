@@ -46,12 +46,12 @@ internal class MessageChannelHostTest : TestBase
         // act
         this.messageChannelHost.AcceptConnections();
         new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp).Connect(new IPEndPoint(IPAddress.Loopback, port));
-        bool timeout = !waitHandle.WaitOne(TimeSpan.FromSeconds(5));
+        bool timedOut = !waitHandle.WaitOne(TimeSpan.FromSeconds(5));
 
         // assert
-        Assert.That(timeout, Is.False, "Timeout");
-        Assert.That(receivedException, Is.EqualTo(exception));
-        Assert.That(receivedErrorPoint, Is.EqualTo(ListenerErrorPoint.ConnectionAccept));
+        timedOut.Should().BeFalse();
+        receivedException.Should().BeSameAs(exception);
+        receivedErrorPoint.Should().Be(ListenerErrorPoint.ConnectionAccept);
     }
 
     [Test]
@@ -85,11 +85,11 @@ internal class MessageChannelHostTest : TestBase
         // act
         this.messageChannelHost.AcceptConnections();
         new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp).Connect(new IPEndPoint(IPAddress.Loopback, port));
-        bool timeout = !waitHandle.WaitOne(TimeSpan.FromSeconds(5));
+        bool timedOut = !waitHandle.WaitOne(TimeSpan.FromSeconds(5));
 
         // assert
-        Assert.That(timeout, Is.False, "Timeout");
-        Assert.That(receivedException, Is.EqualTo(exception));
-        Assert.That(receivedErrorPoint, Is.EqualTo(ListenerErrorPoint.ClientConnectionHandler));
+        timedOut.Should().BeFalse();
+        receivedException.Should().BeSameAs(exception);
+        receivedErrorPoint.Should().Be(ListenerErrorPoint.ClientConnectionHandler);
     }
 }

@@ -19,9 +19,9 @@ internal class StartupBehaviorTest : TestBase
         startupBehavior.StartInstance();
 
         // assert
-        Assert.That(startupBehavior.NegotiationFileBasePath, Is.EqualTo(arg1));
-        Assert.That(startupBehavior.PollingPeriod, Is.EqualTo(arg2));
-        Assert.That(startupBehavior.TimeoutThreshold, Is.EqualTo(arg3));
-        Assert.That(calls, Is.EqualTo(1));
+        startupBehavior.NegotiationFileBasePath.Should().Be(arg1);
+        startupBehavior.PollingPeriod.Should().Be(arg2);
+        startupBehavior.TimeoutThreshold.Should().Be(arg3);
+        calls.Should().Be(1);
     }
 }
