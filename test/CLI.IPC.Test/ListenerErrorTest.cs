@@ -14,7 +14,7 @@ internal class ListenerErrorTest : TestBase
         Exception result = error.Exception;
 
         // assert
-        Assert.That(result, Is.EqualTo(exception));
+        result.Should().BeSameAs(exception);
     }
 
     [Theory]
@@ -27,7 +27,7 @@ internal class ListenerErrorTest : TestBase
         ListenerErrorPoint result = error.ErrorPoint;
 
         // assert
-        Assert.That(result, Is.EqualTo(value));
+        result.Should().Be(value);
     }
 
     [Test]
@@ -43,7 +43,7 @@ internal class ListenerErrorTest : TestBase
         bool result = error.IsHostInterrupted;
 
         // assert
-        Assert.That(result, Is.EqualTo(expected));
+        result.Should().Be(expected);
     }
 
     [Test]
@@ -57,6 +57,6 @@ internal class ListenerErrorTest : TestBase
         string result = error.ToString();
 
         // assert
-        Assert.That(result, Is.EqualTo(exception.ToString()));
+        result.Should().Be(exception.ToString());
     }
 }

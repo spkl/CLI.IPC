@@ -11,6 +11,6 @@ internal class MessageSenderTest : TestBase
         MessageSender messageSender = new(new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp));
 
         // act & assert
-        Assert.That(() => messageSender.SendOutStr(""), Throws.InstanceOf<ConnectionException>().With.InnerException.InstanceOf<SocketException>());
+        Invoking(() => messageSender.SendOutStr("")).Should().Throw<ConnectionException>().WithInnerException<SocketException>();
     }
 }

@@ -42,7 +42,8 @@ internal class HostTest : TestBase
         File.WriteAllText(fileName, "");
 
         // act & assert
-        Assert.That(() => this.host = Host.Start(new UdsTransport(fileName), new ClientConnectionHandler()), Throws.Nothing);
+        Action startHost = () => this.host = Host.Start(new UdsTransport(fileName), new ClientConnectionHandler());
+        startHost.Should().NotThrow();
         this.WaitForHostStartUp();
     }
 #endif
@@ -66,18 +67,22 @@ internal class HostTest : TestBase
         this.host.WaitUntilAllClientsDisconnected();
 
         // assert
-        Assert.That(clientConnectionHandler.ReceivedClientProperties, Is.Not.Null);
-        Assert.That(clientConnectionHandler.ReceivedClientProperties.Arguments, Is.EqualTo(hostConnectionHandler.Arguments));
-        Assert.That(clientConnectionHandler.ReceivedClientProperties.CurrentDirectory, Is.EqualTo(hostConnectionHandler.CurrentDirectory));
-        Assert.That(clientConnectionHandler.ReceivedClientProperties.ProcessID, Is.EqualTo(hostConnectionHandler.ExpectedProcessID));
+        ClientProperties expectedClientProperties = new()
+        {
+            Arguments = hostConnectionHandler.Arguments,
+            CurrentDirectory = hostConnectionHandler.CurrentDirectory,
+            ProcessID = hostConnectionHandler.ExpectedProcessID
+        };
 
-        Assert.That(hostConnectionHandler.ReceivedOutString, Is.EqualTo("Out1Out2" + Environment.NewLine));
-        Assert.That(hostConnectionHandler.ReceivedErrorString, Is.EqualTo("Error1Error2" + Environment.NewLine));
-        Assert.That(hostConnectionHandler.ReceivedExitCode, Is.EqualTo(42));
+        clientConnectionHandler.ReceivedClientProperties.Should().BeEquivalentTo(expectedClientProperties);
 
-        Assert.That(connectedClientsBefore, Is.EqualTo(0), "Number of connected clients before connecting");
-        Assert.That(connectedClientsDuring, Is.EqualTo(1), "Number of connected clients during connection");
-        Assert.That(this.host.ConnectedClients, Is.EqualTo(0), "Number of connected clients after shutdown");
+        hostConnectionHandler.ReceivedOutString.Should().Be("Out1Out2" + Environment.NewLine);
+        hostConnectionHandler.ReceivedErrorString.Should().Be("Error1Error2" + Environment.NewLine);
+        hostConnectionHandler.ReceivedExitCode.Should().Be(42);
+
+        connectedClientsBefore.Should().Be(0);
+        connectedClientsDuring.Should().Be(1);
+        this.host.ConnectedClients.Should().Be(0, "host was shut down");
     }
 
     [Test]
@@ -89,7 +94,7 @@ internal class HostTest : TestBase
         this.WaitForHostStartUp();
 
         // act & assert
-        Assert.That(() => this.host.WaitUntilAllClientsDisconnected(), Throws.InvalidOperationException);
+        Invoking(() => this.host.WaitUntilAllClientsDisconnected()).Should().Throw<InvalidOperationException>();
     }
 
     [Test]
@@ -103,7 +108,7 @@ internal class HostTest : TestBase
         this.host.WaitUntilAllClientsDisconnected();
 
         // act & assert
-        Assert.That(() => this.host.WaitUntilAllClientsDisconnected(), Throws.InvalidOperationException);
+        Invoking(() => this.host.WaitUntilAllClientsDisconnected()).Should().Throw<InvalidOperationException>();
     }
 
 

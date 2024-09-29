@@ -28,17 +28,17 @@ internal class DefaultHostConnectionHandlerTest : DynamicExecutionTest
         }
 #endif
 
-        Assert.Multiple(() =>
+        using (new AssertionScope())
         {
-            Assert.That(this.Client.ExitCode, Is.EqualTo(42));
-            Assert.That(this.Client.StandardOutput.ReadToEnd(), Is.EqualTo(
+            this.Client.ExitCode.Should().Be(42);
+            this.Client.StandardOutput.ReadToEnd().Should().Be(
 @$"Arguments: {expectedExecutable},{string.Join(",", this.ClientArguments)}.
 CurrentDirectory: {TestContext.CurrentContext.TestDirectory}.
-"));
-            Assert.That(this.Client.StandardError.ReadToEnd(), Is.EqualTo(
+");
+            this.Client.StandardError.ReadToEnd().Should().Be(
 @"This is an error output.
-"));
-        });
+");
+        }
     }
 
     private class ClientConnectionHandler : IClientConnectionHandler

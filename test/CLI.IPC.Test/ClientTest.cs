@@ -1,5 +1,6 @@
 ﻿using spkl.CLI.IPC.Messaging;
 using spkl.CLI.IPC.Services;
+using System;
 using System.Net.Sockets;
 
 namespace spkl.CLI.IPC.Test;
@@ -19,7 +20,8 @@ internal class ClientTest : TestBase
         IHostConnectionHandler hostConnectionHandler = Substitute.For<IHostConnectionHandler>();
 
         // act & assert
-        Assert.That(() => Client.Attach(transport, hostConnectionHandler), Throws.InstanceOf<ConnectionException>().With.Message.Contains("Could not connect"));
+        Action attach = () => Client.Attach(transport, hostConnectionHandler);
+        attach.Should().Throw<ConnectionException>().WithMessage("Could not connect*");
     }
 
     [Test]
@@ -33,6 +35,7 @@ internal class ClientTest : TestBase
         ServiceProvider.MessageChannelFactory.CreateForOutgoing(transport).Returns(messageChannel);
 
         // act & assert
-        Assert.That(() => Client.Attach(transport, hostConnectionHandler), Throws.InstanceOf<ConnectionException>().With.Message.Contains("There was an unexpected connection error"));
+        Action attach = () => Client.Attach(transport, hostConnectionHandler);
+        attach.Should().Throw<ConnectionException>().WithMessage("There was an unexpected connection error*");
     }
 }

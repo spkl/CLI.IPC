@@ -14,11 +14,11 @@ internal class UdsTransportTest : TestBase
         UdsTransport t = new("test");
 
         // act
-        EndPoint result = t.EndPoint;
+        EndPoint endPoint = t.EndPoint;
 
         // assert
-        Assert.That(result, Is.InstanceOf<UnixDomainSocketEndPoint>());
-        Assert.That(((UnixDomainSocketEndPoint)result).ToString(), Is.EqualTo("test"));
+        endPoint.Should().BeOfType<UnixDomainSocketEndPoint>();
+        endPoint.ToString().Should().Be("test");
     }
 
     [Test]
@@ -28,29 +28,29 @@ internal class UdsTransportTest : TestBase
         UdsTransport t = new("test");
 
         // act
-        Socket result = t.Socket;
+        Socket socket = t.Socket;
 
         // assert
-        Assert.That(result, Is.Not.Null);
+        socket.Should().NotBeNull();
     }
 
     [Test]
     public void CanSerialize()
     {
         // arrange
-        UdsTransport t = new("test");
+        UdsTransport transport = new("test");
         using MemoryStream typeStream = new MemoryStream();
         using MemoryStream dataStream = new MemoryStream();
 
         // act
-        Serializer.Write(t, typeStream, dataStream);
+        Serializer.Write(transport, typeStream, dataStream);
         typeStream.Seek(0, SeekOrigin.Begin);
         dataStream.Seek(0, SeekOrigin.Begin);
-        t = Serializer.Read<UdsTransport>(typeStream, dataStream);
+        transport = Serializer.Read<UdsTransport>(typeStream, dataStream);
 
         // assert
-        Assert.That(t, Is.Not.Null);
-        Assert.That(t.FilePath, Is.EqualTo("test"));
+        transport.Should().NotBeNull();
+        transport.FilePath.Should().Be("test");
     }
 }
 #endif

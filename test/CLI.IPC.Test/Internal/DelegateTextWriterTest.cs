@@ -29,7 +29,7 @@ internal class DelegateTextWriterTest : TestBase
         Encoding result = this.writer.Encoding;
 
         // assert
-        Assert.That(result, Is.EqualTo(Encoding.UTF8));
+        result.Should().Be(Encoding.UTF8);
     }
 
     [Test]
@@ -39,7 +39,7 @@ internal class DelegateTextWriterTest : TestBase
         this.writer.Write('x');
 
         // assert
-        Assert.That(this.writtenStrings, Is.EqualTo(new string[] { "x" }));
+        this.writtenStrings.Should().Equal(new string[] { "x" });
     }
 
     [Test]
@@ -49,7 +49,7 @@ internal class DelegateTextWriterTest : TestBase
         this.writer.Write("foobar".ToCharArray(), 1, 4);
 
         // assert
-        Assert.That(this.writtenStrings, Is.EqualTo(new string[] { "ooba" }));
+        this.writtenStrings.Should().Equal(new string[] { "ooba" });
     }
 
     [Test]
@@ -59,7 +59,7 @@ internal class DelegateTextWriterTest : TestBase
         this.writer.Write("foobar");
 
         // assert
-        Assert.That(this.writtenStrings, Is.EqualTo(new string[] { "foobar" }));
+        this.writtenStrings.Should().Equal(new string[] { "foobar" });
     }
 
     [Test]
@@ -69,6 +69,6 @@ internal class DelegateTextWriterTest : TestBase
         this.writer.Write((string?)null);
 
         // assert
-        Assert.That(this.writtenStrings, Is.Empty);
+        this.writtenStrings.Should().BeEmpty();
     }
 }

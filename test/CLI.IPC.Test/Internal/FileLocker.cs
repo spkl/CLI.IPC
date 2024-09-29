@@ -24,7 +24,7 @@ internal class FileLocker : IDisposable
         process.Start();
 
         string? output = process.StandardOutput.ReadLine();
-        Assert.That(output, Is.EqualTo("locked"));
+        output.Should().Be("locked");
 
         return new FileLocker(process);
     }

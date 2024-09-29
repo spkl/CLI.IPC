@@ -29,20 +29,20 @@ internal class FileLockTest : TestBase
     public void IsNotLockedInitially()
     {
         // act
-        bool result = this.fileLock.IsLocked();
+        bool isLocked = this.fileLock.IsLocked();
 
         // assert
-        Assert.That(result, Is.False);
+        isLocked.Should().BeFalse();
     }
 
     [Test]
     public void IsNotHoldingLockInitially()
     {
         // act
-        bool result = this.fileLock.IsHoldingLock();
+        bool isHoldingLock = this.fileLock.IsHoldingLock();
 
         // assert
-        Assert.That(result, Is.False);
+        isHoldingLock.Should().BeFalse();
     }
 
     [Test]
@@ -52,23 +52,23 @@ internal class FileLockTest : TestBase
         this.fileLock.Lock();
 
         // assert
-        Assert.That(this.fileLock.Path, Does.Exist);
-        Assert.That(() => FileStreams.OpenForSharedReading(this.fileLock.Path), Throws.Exception);
-        Assert.That(this.fileLock.IsHoldingLock(), Is.True);
-        Assert.That(this.fileLock.IsLocked(), Is.True);
+        File.Exists(this.fileLock.Path).Should().BeTrue();
+        Invoking(() => FileStreams.OpenForSharedReading(this.fileLock.Path)).Should().Throw<Exception>();
+        this.fileLock.IsHoldingLock().Should().BeTrue();
+        this.fileLock.IsLocked().Should().BeTrue();
     }
 
     [Test]
     public void TryLockLocksTheFileIfItIsNotLocked()
     {
         // act
-        bool result = this.fileLock.TryLock();
+        bool tryLock = this.fileLock.TryLock();
 
         // assert
-        Assert.That(result, Is.True);
-        Assert.That(() => FileStreams.OpenForSharedReading(this.fileLock.Path), Throws.Exception);
-        Assert.That(this.fileLock.IsHoldingLock(), Is.True);
-        Assert.That(this.fileLock.IsLocked(), Is.True);
+        tryLock.Should().BeTrue();
+        Invoking(() => FileStreams.OpenForSharedReading(this.fileLock.Path)).Should().Throw<Exception>();
+        this.fileLock.IsHoldingLock().Should().BeTrue();
+        this.fileLock.IsLocked().Should().BeTrue();
     }
 
     [Test]
@@ -78,11 +78,11 @@ internal class FileLockTest : TestBase
         using FileLocker _ = FileLocker.Lock(this.fileLock.Path);
 
         // act
-        bool result = this.fileLock.TryLock();
+        bool tryLock = this.fileLock.TryLock();
 
         // assert
-        Assert.That(result, Is.False);
-        Assert.That(this.fileLock.IsHoldingLock(), Is.False);
+        tryLock.Should().BeFalse();
+        this.fileLock.IsHoldingLock().Should().BeFalse();
     }
 
     [Test]
@@ -97,12 +97,12 @@ internal class FileLockTest : TestBase
         });
 
         // act
-        bool result = this.fileLock.TryLock(TimeSpan.FromSeconds(3));
+        bool tryLock = this.fileLock.TryLock(TimeSpan.FromSeconds(3));
 
         // assert
-        Assert.That(result, Is.True);
-        Assert.That(() => FileStreams.OpenForSharedReading(this.fileLock.Path), Throws.Exception);
-        Assert.That(this.fileLock.IsHoldingLock(), Is.True);
+        tryLock.Should().BeTrue();
+        Invoking(() => FileStreams.OpenForSharedReading(this.fileLock.Path)).Should().Throw<Exception>();
+        this.fileLock.IsHoldingLock().Should().BeTrue();
     }
 
     [Test]
@@ -112,11 +112,11 @@ internal class FileLockTest : TestBase
         using FileLocker _ = FileLocker.Lock(this.fileLock.Path);
 
         // act
-        bool result = this.fileLock.TryLock(TimeSpan.FromSeconds(1));
+        bool tryLock = this.fileLock.TryLock(TimeSpan.FromSeconds(1));
 
         // assert
-        Assert.That(result, Is.False);
-        Assert.That(this.fileLock.IsHoldingLock(), Is.False);
+        tryLock.Should().BeFalse();
+        this.fileLock.IsHoldingLock().Should().BeFalse();
     }
 
     [Test]
@@ -126,11 +126,11 @@ internal class FileLockTest : TestBase
         using FileLocker _ = FileLocker.Lock(this.fileLock.Path);
 
         // act
-        bool result = this.fileLock.IsLocked();
+        bool isLocked = this.fileLock.IsLocked();
 
         // assert
-        Assert.That(result, Is.True);
-        Assert.That(this.fileLock.IsHoldingLock(), Is.False);
+        isLocked.Should().BeTrue();
+        this.fileLock.IsHoldingLock().Should().BeFalse();
     }
 
     [Test]
@@ -141,11 +141,11 @@ internal class FileLockTest : TestBase
         this.fileLock.Unlock();
 
         // act
-        bool result = this.fileLock.IsLocked();
+        bool isLocked = this.fileLock.IsLocked();
 
         // assert
-        Assert.That(result, Is.False);
-        Assert.That(this.fileLock.IsHoldingLock(), Is.False);
+        isLocked.Should().BeFalse();
+        this.fileLock.IsHoldingLock().Should().BeFalse();
     }
 
     [Test]
@@ -155,11 +155,11 @@ internal class FileLockTest : TestBase
         File.WriteAllText(this.fileLock.Path, string.Empty);
 
         // act
-        bool result = this.fileLock.IsLocked();
+        bool isLocked = this.fileLock.IsLocked();
 
         // assert
-        Assert.That(result, Is.False);
-        Assert.That(this.fileLock.IsHoldingLock(), Is.False);
+        isLocked.Should().BeFalse();
+        this.fileLock.IsHoldingLock().Should().BeFalse();
     }
 
     [Test]
@@ -172,8 +172,8 @@ internal class FileLockTest : TestBase
         this.fileLock.Unlock();
 
         // assert
-        Assert.That(this.fileLock.Path, Does.Not.Exist);
-        Assert.That(() => FileStreams.OpenForExclusiveWriting(this.fileLock.Path).Dispose(), Throws.Nothing);
-        Assert.That(this.fileLock.IsHoldingLock(), Is.False);
+        File.Exists(this.fileLock.Path).Should().BeFalse();
+        Invoking(() => FileStreams.OpenForExclusiveWriting(this.fileLock.Path).Dispose()).Should().NotThrow();
+        this.fileLock.IsHoldingLock().Should().BeFalse();
     }
 }

@@ -18,13 +18,13 @@ internal class HostShutdownTest : DynamicExecutionTest
         this.Host.StandardInput.WriteLine();
 
         // assert
-        Assert.That(this.Host.WaitForExit(5_000), Is.True);
-        Assert.Multiple(() =>
+        this.Host.WaitForExit(5_000).Should().BeTrue();
+        using (new AssertionScope())
         {
-            Assert.That(this.Host.ExitCode, Is.Zero);
-            Assert.That(this.Host.StandardOutput.ReadToEnd(), Is.Empty);
-            Assert.That(this.Host.StandardError.ReadToEnd(), Is.Empty);
-        });
+            this.Host.ExitCode.Should().Be(0);
+            this.Host.StandardOutput.ReadToEnd().Should().BeEmpty();
+            this.Host.StandardError.ReadToEnd().Should().BeEmpty();
+        }
     }
 
     private class ClientConnectionHandler : IClientConnectionHandler
