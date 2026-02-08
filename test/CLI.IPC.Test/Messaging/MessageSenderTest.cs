@@ -2,6 +2,7 @@
 using System.Net.Sockets;
 
 namespace spkl.CLI.IPC.Test.Messaging;
+
 internal class MessageSenderTest : TestBase
 {
     [Test]

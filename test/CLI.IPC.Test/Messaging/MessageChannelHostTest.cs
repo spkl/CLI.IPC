@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace spkl.CLI.IPC.Test.Messaging;
+
 internal class MessageChannelHostTest : TestBase
 {
     private MessageChannelHost? messageChannelHost;

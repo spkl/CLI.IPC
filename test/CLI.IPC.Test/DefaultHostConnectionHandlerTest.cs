@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 
 namespace spkl.CLI.IPC.Test;
+
 internal class DefaultHostConnectionHandlerTest : TestBase
 {
     private DefaultHostConnectionHandler handler;

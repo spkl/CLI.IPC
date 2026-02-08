@@ -4,6 +4,7 @@
 using System;
 
 namespace spkl.CLI.IPC.Internal;
+
 internal class Disposable : IDisposable
 {
     private Action? disposeCallback;

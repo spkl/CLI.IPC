@@ -2,6 +2,7 @@
 using System;
 
 namespace spkl.CLI.IPC.Test.Startup;
+
 internal class StartupBehaviorTest : TestBase
 {
     [Test]

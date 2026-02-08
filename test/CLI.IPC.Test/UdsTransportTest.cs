@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 
 namespace spkl.CLI.IPC.Test;
+
 internal class UdsTransportTest : TestBase
 {
     [Test]
