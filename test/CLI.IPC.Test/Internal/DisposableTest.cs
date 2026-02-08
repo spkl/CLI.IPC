@@ -1,6 +1,7 @@
 ﻿using spkl.CLI.IPC.Internal;
 
 namespace spkl.CLI.IPC.Test.Internal;
+
 internal class DisposableTest : TestBase
 {
     [Test]

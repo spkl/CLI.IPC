@@ -4,6 +4,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 
 namespace spkl.CLI.IPC.Test.Internal;
+
 internal class FileLocker : IDisposable
 {
     public static FileLocker Lock(string path)

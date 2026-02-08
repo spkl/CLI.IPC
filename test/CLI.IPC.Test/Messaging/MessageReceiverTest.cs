@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 
 namespace spkl.CLI.IPC.Test.Messaging;
+
 internal class MessageReceiverTest : TestBase
 {
     public static IEnumerable<TestCaseData> ReceiveMethods

@@ -7,6 +7,7 @@ using System.Runtime.Serialization;
 using System.Text;
 
 namespace spkl.CLI.IPC.Internal;
+
 internal static class Serializer
 {
     public static void Write(object obj, Stream typeStream, Stream dataStream)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace spkl.CLI.IPC.Test.Internal;
+
 internal class DelegateTextWriterTest : TestBase
 {
     private readonly List<string> writtenStrings = new();

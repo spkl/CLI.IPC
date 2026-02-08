@@ -1,6 +1,7 @@
 ﻿using System;
 
 namespace spkl.CLI.IPC.Test;
+
 internal class ListenerErrorTest : TestBase
 {
     [Test]
