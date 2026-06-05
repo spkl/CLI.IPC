@@ -49,7 +49,7 @@ internal class AutoTransportSingletonAppTest : SingletonAppTestBase
         this.disposables.Add(File.Open(this.negotiationFile + ".run_lock", FileMode.Create));
 
         // act & assert
-        Assert.That(() => this.singletonApp.RequestInstance(), Throws.InstanceOf<SingletonAppException>());
+        Assert.That(this.singletonApp.RequestInstance, Throws.InstanceOf<SingletonAppException>());
     }
 
     [Test]
@@ -61,7 +61,7 @@ internal class AutoTransportSingletonAppTest : SingletonAppTestBase
         this.disposables.Add(File.Open(this.negotiationFile + ".transport_ready", FileMode.Create));
 
         // act & assert
-        Assert.That(() => this.singletonApp.RequestInstance(), Throws.InstanceOf<SingletonAppException>());
+        Assert.That(this.singletonApp.RequestInstance, Throws.InstanceOf<SingletonAppException>());
     }
 
     [Test]
@@ -106,7 +106,7 @@ internal class AutoTransportSingletonAppTest : SingletonAppTestBase
         this.disposables.Add(File.Open(this.negotiationFile + ".transport_lock", FileMode.Create));
 
         // act & assert
-        Assert.That(() => this.singletonApp.ReportInstanceRunning(), Throws.InstanceOf<SingletonAppException>());
+        Assert.That(this.singletonApp.ReportInstanceRunning, Throws.InstanceOf<SingletonAppException>());
     }
 
     [Test]

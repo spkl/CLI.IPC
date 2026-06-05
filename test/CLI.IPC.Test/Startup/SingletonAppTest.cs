@@ -72,7 +72,7 @@ internal class SingletonAppTest : SingletonAppTestBase
     public void RequestInstanceThrowsExceptionIfNoApplicationIsStartedBeforeTimeout()
     {
         // act & assert
-        Assert.That(() => this.singletonApp.RequestInstance(), Throws.InstanceOf<SingletonAppException>());
+        Assert.That(this.singletonApp.RequestInstance, Throws.InstanceOf<SingletonAppException>());
     }
 
     [Test]
@@ -94,14 +94,14 @@ internal class SingletonAppTest : SingletonAppTestBase
         this.disposables.Add(File.Open(this.negotiationFile + ".run_lock", FileMode.Create));
 
         // act & assert
-        Assert.That(() => this.singletonApp.ReportInstanceRunning(), Throws.InstanceOf<SingletonAppException>());
+        Assert.That(this.singletonApp.ReportInstanceRunning, Throws.InstanceOf<SingletonAppException>());
     }
 
     [Test]
     public void ReportInstanceShuttingDownThrowsExceptionIfReportInstanceRunningWasNotCalled()
     {
         // act & assert
-        Assert.That(() => this.singletonApp.ReportInstanceShuttingDown(), Throws.InstanceOf<InvalidOperationException>());
+        Assert.That(this.singletonApp.ReportInstanceShuttingDown, Throws.InstanceOf<InvalidOperationException>());
     }
 
     [Test]

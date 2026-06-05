@@ -117,7 +117,7 @@ public sealed class SingletonApp : IDisposable, ISingletonApp
             throw new SingletonAppException($"Timed out: Could not get lock on {this.startupLock.Path} within {this.behavior.TimeoutThreshold}.");
         }
 
-        return new Disposable(() => this.startupLock.Unlock());
+        return new Disposable(this.startupLock.Unlock);
     }
 
     /// <inheritdoc/>
